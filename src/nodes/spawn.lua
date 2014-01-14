@@ -25,7 +25,6 @@ function Spawn.new(node, collider, enemytype)
     spawn.node = node
     spawn.state = "closed"
     spawn.type = node.properties.type
-    spawn.message = node.properties.message or 'You found a '..node.name..'!'
     spawn.spawnType = node.properties.spawnType or 'proximity'
     -- If the spawn is a chest, or another interactive-type spawn, be sure to
     -- set the isInteractive flag for interaction
@@ -49,8 +48,7 @@ function Spawn.new(node, collider, enemytype)
         closed = anim8.newAnimation( 'once', g(1,1), 1),
         open = anim8.newAnimation( 'once', g(1,2), 1),
     }
-    spawn.spritename = node.properties.sprite or 'chest'
-    spawn.sprite = love.graphics.newImage( 'images/spawn/'..spawn.spritename..'.png' )
+    spawn.sprite = love.graphics.newImage( 'images/chest.png' )
     spawn.sprite:setFilter('nearest', 'nearest')
     return spawn
 end
@@ -139,7 +137,7 @@ function Spawn:keypressed( button, player )
             local node = self:createNode()
             node.delay = 0
             node.life = math.huge
-            local message = {''..self.message..''}
+            local message = {'You found a "'..self.node.name..'" !'}
             local callback = function(result)
                 self.prompt = nil
                 player.freeze = false

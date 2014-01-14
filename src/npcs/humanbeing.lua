@@ -1,37 +1,33 @@
--- inculdes
+local human = {}
 
-return {
-    width = 32,
-    height = 48,
-    animations = {
-        default = {
-            'loop',{'1,1','11,1'},.5,
-        },
-        walking = {
-            'loop',{'1,1','2,1','3,1'},.2,
-        },
-    },
+human.sprite = love.graphics.newImage('images/npc/human-being.png')
+human.tickImage = love.graphics.newImage('images/menu/selector.png')
+human.menuImage = love.graphics.newImage('images/npc/human-being_menu.png')
+human.walk = false
+human.stare = true
 
-    noinventory = "Mum Mont Muve Mummfmen Mo Murm Muu.",
-    nocommands = "Mum Mont Muurk Murunds Urm Muu.",
-
-    stare = true,
-
-    talk_items = {
+human.items = {
+    -- { ['text']='exit' },
+    -- { ['text']='inventory' },
+    -- { ['text']='command' },
+    -- { ['text']='talk', ['option']={
         { ['text']='i am done with you' },
         { ['text']='where is ...', ['option']={
-        { ['text']='i am done with you' },
-        { ['text']="the registrar" },
-        { ['text']="the ac repair school" },
-        { ['text']="my valentine" },
-        { ['text']="my dignity" },
-        { ['text']="magnitude" },
-        { ['text']="the dean's office", },
+            { ['text']='i am done with you' },
+            { ['text']="the registrar" },
+            { ['text']="the ac repair school" },
+            { ['text']="my valentine" },
+            { ['text']="my dignity" },
+            { ['text']="magnitude" },
+            { ['text']="the dean's office", },
+
         }},
-    { ['text']='why are you mumbling?' },
-    { ['text']='who are you?' },
-    },
-    talk_responses = {
+        { ['text']='why are you mumbling?' },
+        { ['text']='who are you?' },
+    -- }},
+}
+
+human.responses = {
     ["who are you?"]={"Mi um a MuUnnn Meee-Ming!",},
     ["why are you mumbling?"]={"Mummmm?",},
     ["the dean's office"]={"Mummmf Ummm!",},
@@ -40,5 +36,6 @@ return {
     ["my valentine"]={"Mummentine?",},
     ["my dignity"]={"?",},
     ["magnitude"]={"Mummop, Mummop",},
-    },
 }
+
+return human

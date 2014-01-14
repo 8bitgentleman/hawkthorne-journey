@@ -3,6 +3,7 @@
 -- Manages the player's currently held items
 -----------------------------------------------------------------------
 
+local controls  = require 'controls'
 local anim8     = require 'vendor/anim8'
 local sound     = require 'vendor/TEsound'
 local camera    = require 'camera'
@@ -20,12 +21,10 @@ Inventory.__index = Inventory
 --Load in all the sprites we're going to be using.
 local sprite = love.graphics.newImage('images/inventory/inventory.png')
 local scrollSprite = love.graphics.newImage('images/inventory/scrollbar.png')
-local selectionSprite = love.graphics.newImage('images/inventory/selectionBadge.png')
-local selectionCraftingSprite = love.graphics.newImage('images/inventory/selectioncraftingannex.png')
+local selectionSprite = love.graphics.newImage('images/inventory/selection.png')
 local curWeaponSelect = love.graphics.newImage('images/inventory/selectedweapon.png')
 local craftingAnnexSprite = love.graphics.newImage('images/inventory/craftingannex.png')
 craftingAnnexSprite:setFilter('nearest', 'nearest')
-selectionSprite:setFilter('nearest', 'nearest')
 sprite:setFilter('nearest', 'nearest')
 scrollSprite:setFilter('nearest','nearest')
 
@@ -219,10 +218,10 @@ function Inventory:draw( playerPosition )
         if self.cursorPos.x < 2 then --If the cursor is in the main inventory section, draw this way
             love.graphics.drawq(selectionSprite, 
                 love.graphics.newQuad(0,0,selectionSprite:getWidth(),selectionSprite:getHeight(),selectionSprite:getWidth(),selectionSprite:getHeight()),
-                (ffPos.x-17) + self.cursorPos.x * 38, ffPos.y + self.cursorPos.y * 18)
+                ffPos.x + self.cursorPos.x * 38, ffPos.y + self.cursorPos.y * 18)
         else --Otherwise, we're in the crafting annex, so draw this way.
-            love.graphics.drawq(selectionCraftingSprite,
-                love.graphics.newQuad(0,0,selectionCraftingSprite:getWidth(), selectionCraftingSprite:getHeight(), selectionCraftingSprite:getWidth(), selectionCraftingSprite:getHeight()),
+            love.graphics.drawq(selectionSprite,
+                love.graphics.newQuad(0,0,selectionSprite:getWidth(), selectionSprite:getHeight(), selectionSprite:getWidth(), selectionSprite:getHeight()),
                 ffPos.x + (self.cursorPos.x - 3) * 19 + 101, ffPos.y + 18)
         end
 
@@ -242,12 +241,14 @@ function Inventory:draw( playerPosition )
         --Draw the crafting window
         if self.craftingVisible then
             if self.currentIngredients.a then
+                local indexDisplay = debugger.on and self.currentIngredients.a or nil
                 local item = self.currentIngredients.a
-                item:draw({x=ffPos.x + 102,y= ffPos.y + 19})
+                item:draw({x=ffPos.x + 102,y= ffPos.y + 19}, indexDisplay)
             end
             if self.currentIngredients.b then
+                local indexDisplay = debugger.on and self.currentIngredients.b or nil
                 local item = self.currentIngredients.b
-                item:draw({x=ffPos.x + 121,y= ffPos.y + 19})
+                item:draw({x=ffPos.x + 121,y= ffPos.y + 19}, indexDisplay)
             end
             --Draw the result of a valid recipe
             if self.currentIngredients.a and self.currentIngredients.b then
@@ -445,6 +446,9 @@ function Inventory:drop()
         
         local height = item.image:getHeight() - 15
 
+        itemProps.width = item.image:getWidth()
+        itemProps.height = item.image:getHeight() - 15
+
         itemProps.width = itemProps.width or item.image:getWidth()
         itemProps.height = itemProps.height or height
 
@@ -463,13 +467,6 @@ function Inventory:drop()
             self:removeItem(slotIndex, self.currentPageName)
             if myNewNode.drop then
                 myNewNode:drop(self.player)
-                
-                -- Throws the weapon when dropping it
-                -- velocity.x is based off direction
-                -- velocity.y is constant from being thrown upwards
-                myNewNode.velocity = {x = (self.player.character.direction == 'left' and -1 or 1) * 100,
-                                      y = -200,
-                                     }
             end
             sound.playSfx('click')
         end
@@ -712,8 +709,6 @@ function Inventory:craftCurrentSlot()
         self.currentIngredients.a = moveItem
     else
         self.currentIngredients.b = moveItem
-        local craftitems = self.currentIngredients
-        self.cursorPos.x = self:findResult(craftitems.a,craftitems.b) and 2 or 4
     end
 end
 

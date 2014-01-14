@@ -6,7 +6,6 @@
 
 return{
     name = 'boneclub',
-    description = 'Bone Club',
     type = 'weapon',
     subtype = 'melee',
 }

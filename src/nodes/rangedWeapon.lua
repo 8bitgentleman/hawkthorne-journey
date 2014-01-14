@@ -6,6 +6,7 @@
 local sound = require 'vendor/TEsound'
 local anim8 = require 'vendor/anim8'
 local Timer = require 'vendor/timer'
+local controls = require 'controls'
 local game = require 'game'
 local GS = require 'vendor/gamestate'
 local weaponClass = require 'nodes/weapon'
@@ -190,9 +191,11 @@ function Weapon:wield()
 end
 
 -- handles weapon being dropped in the real world
-function Weapon:drop(player)
+function Weapon:drop()
     self.dropping = true
-
+    self.velocity = {x=self.player.velocity.x,
+                     y=self.player.velocity.y,
+    }
     self.player:setSpriteStates('default')
     self.player.currently_held = nil
     self.player = nil

@@ -9,17 +9,17 @@ local window = require 'window'
 local screen = Gamestate.new()
 
 function screen:init()
+  self.message = ""
+  self.progress = 0
   self.updater = sparkle.newUpdater(app.config.iteration or "0.0.0",
                                     app.config.feedurl or "")
 
+  self.logo = love.graphics.newImage('images/menu/splash.png')
+  self.time = 0
 end
 
 function screen:enter()
-  self.message = ""
-  self.progress = 0
-  self.time = 0
-  self.logo = love.graphics.newImage('images/menu/splash.png')
-  self.bg = sound.playMusic("ending")
+  self.bg = sound.playMusic("opening")
   self.updater:start()
 end
 
@@ -41,11 +41,10 @@ function screen:update(dt)
     return
   end
 
-  Gamestate.switch('welcome')
+  Gamestate.switch('splash')
 end
 
 function screen:leave()
-  self.logo = nil
   love.graphics.setColor(255, 255, 255, 255)
 end
 

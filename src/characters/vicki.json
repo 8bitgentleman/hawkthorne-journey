@@ -6,8 +6,7 @@
     }
   },
   "costumes": [
-    {"category": "base", "name": "Vicki Cooper", "sheet": "base", "ow": 1},
-    {"category": "s3e19", "name": "Chess Knight", "sheet": "knight", "ow": 2}
+    {"category": "base", "name": "Vicki Cooper", "sheet": "base", "ow": 1}
   ], 
   "name": "vicki",
   "offset": 7

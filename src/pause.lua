@@ -3,6 +3,7 @@ local window = require 'window'
 local camera = require 'camera'
 local fonts = require 'fonts'
 local sound = require 'vendor/TEsound'
+local controls = require 'controls'
 local state = Gamestate.new()
 local VerticalParticles = require "verticalparticles"
 local Timer = require 'vendor/timer'
@@ -14,7 +15,7 @@ function state:init()
     self.background = love.graphics.newImage("images/menu/pause.png")
 end
 
-function state:enter(previous, player)
+function state:enter(previous)
     love.graphics.setBackgroundColor(0, 0, 0)
 
     sound.playMusic( "daybreak" )
@@ -26,7 +27,6 @@ function state:enter(previous, player)
     
     if previous ~= Gamestate.get('options') and previous ~= Gamestate.get('instructions') and previous ~= Gamestate.get('overworld') then
         self.previous = previous
-        self.player = player
     end
     
     self.konami = { 'UP', 'UP', 'DOWN', 'DOWN', 'LEFT', 'RIGHT', 'LEFT', 'RIGHT', 'JUMP', 'ATTACK' }
@@ -81,7 +81,7 @@ function state:keypressed( button )
         elseif self.option == 3 then
             Player.kill()
             self.previous:quit()
-            Gamestate.switch('start')
+            Gamestate.switch(Gamestate.home)
         elseif self.option == 4 then
             love.event.push("quit")
         end
@@ -95,8 +95,6 @@ function state:draw()
       camera:getWidth() / 2 - self.background:getWidth() / 2,
       camera:getHeight() / 2 - self.background:getHeight() / 2)
 
-    local controls = self.player.controls
-
     love.graphics.setColor( 0, 0, 0, 255 )
     love.graphics.print('Controls', 198, 101)
     love.graphics.print('Options', 198, 131)
@@ -105,8 +103,8 @@ function state:draw()
     love.graphics.print('Quit to Desktop', 198, 221)
     love.graphics.setColor( 255, 255, 255, 255 )
     love.graphics.draw(self.arrow, 156, 96 + 30 * self.option)
-    local back = controls:getKey("START") .. ": BACK TO GAME"
-    local howto = controls:getKey("ATTACK") .. " OR " .. controls:getKey("JUMP") .. ": SELECT ITEM"
+    local back = controls.getKey("START") .. ": BACK TO GAME"
+    local howto = controls.getKey("ATTACK") .. " OR " .. controls.getKey("JUMP") .. ": SELECT ITEM"
     love.graphics.print(back, 25, 25)
     love.graphics.print(howto, 25, 55)
 end

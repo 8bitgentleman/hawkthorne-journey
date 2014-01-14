@@ -12,12 +12,12 @@ local quads = {
     love.graphics.newQuad(splatterSize.width * 2, 0, splatterSize.width, splatterSize.height, splatters:getWidth(), splatters:getHeight()),
 }
 
+
+Splat.splats = {}
+
 function Splat.new(node)
-    local splat = {}
-    setmetatable(splat, Splat)
-    splat.splats = {}
-    splat.node = {x=0, width=0}
-    return splat
+    Splat.node = {x=0, width=0}
+    return Splat
 end
 
 function Splat:setup_stencils()
@@ -58,7 +58,7 @@ end
 
 function Splat:add(x,y,width,height)
     
-    table.insert(self.splats, {
+    table.insert( self.splats, {
         position = {
             x = x,
             y = y
@@ -72,7 +72,11 @@ function Splat:add(x,y,width,height)
 
     if not self.stencils then
         self:setup_stencils()
+        return self
+    else
+        return false
     end
+
 end
 
 function Splat:draw()

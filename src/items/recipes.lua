@@ -48,11 +48,17 @@ return {
     {
         { type='material', name='stick' },
         { type='material', name='stick' },
-        { type='weapon', name='switch' }
+        { type='weapon', name='club' }
     },
     {
         { type='material', name='stick' },
         { type='material', name='leaf' },
         { type='weapon', name='arrow' }
+    },
+    --Beyond here has been added by 8bitgentelman
+    {
+        { type='material', name='keyshardbottom' },
+        { type='material', name='keyshardtop' },
+        { type='key', name='towerkey' }
     },
 }

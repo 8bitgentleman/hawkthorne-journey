@@ -1,27 +1,19 @@
--- inculdes
+local townknight = {}
 
-return {
-    width = 32,
-    height = 48,   
-    animations = {
-        default = {
-            'loop',{'1,1','11,1'},.5,
-        },
-        walking = {
-            'loop',{'1,1','2,1','3,1'},.2,
-        },
+townknight.sprite = love.graphics.newImage('images/npc/townknight.png')
+townknight.tickImage = love.graphics.newImage('images/menu/selector.png')
+townknight.menuImage = love.graphics.newImage('images/npc/townknight-menu.png')
+townknight.walk = false
+townknight.stare = true
 
-    },
-
-    stare = true,
-
-    talk_items = {
+townknight.items = {
         { ['text']='i am done with you' },
         { ['text']='Any useful info for me?' },
         { ['text']='This town is in ruins!' },
         { ['text']='Hello!' },
-    },
-    talk_responses = {
+}
+
+townknight.responses = {
     ["Hello!"]={
         "A stranger! Haven't seen one of you in a while around here.",
         "Best be on guard, folk here don't take to strangers kindly these days.",
@@ -35,5 +27,6 @@ return {
         "One of them, I hear, is a key that unlocks a fabled world called Greendale.",
         "Now there's what I call a journey.",
     },
-    },
 }
+
+return townknight

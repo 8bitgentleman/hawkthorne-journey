@@ -6,7 +6,6 @@ local Projectile = require 'nodes/projectile'
 local GS = require 'vendor/gamestate'
 return{
     name = "icicle",
-    description = "Icicle",
     type = "weapon",
     subtype = "projectile",
     MAX_ITEMS = 10,

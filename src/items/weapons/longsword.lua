@@ -6,7 +6,6 @@
 
 return{
     name = 'longsword',
-    description = 'Longsword',
     type = 'weapon',
     subtype = 'melee',
 }

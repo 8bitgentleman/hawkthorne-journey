@@ -42,17 +42,17 @@ bin/tmx2lua:
 
 bin/love.app/Contents/MacOS/love:
 	mkdir -p bin
-	$(wget) https://bitbucket.org/rude/love/downloads/love-0.8.0-macosx-ub.zip
-	unzip -q love-0.8.0-macosx-ub.zip
-	rm -f love-0.8.0-macosx-ub.zip
+	$(wget) https://bitbucket.org/kyleconroy/love/downloads/love-sparkle.zip
+	unzip -q love-sparkle.zip
+	rm -f love-sparkle.zip
 	mv love.app bin
+	cp osx/dsa_pub.pem bin/love.app/Contents/Resources
 	cp osx/Info.plist bin/love.app/Contents
 
 /usr/bin/love:
-	wget https://bitbucket.org/rude/love/downloads/love_0.8.0-0precise1_amd64.deb
-	-sudo dpkg -i love_0.8.0-0precise1_amd64.deb
+	sudo add-apt-repository -y ppa:bartbes/love-stable
 	sudo apt-get update -y
-	sudo apt-get install -f -y
+	sudo apt-get install -y love
 
 ######################################################
 # THE REST OF THESE TARGETS ARE FOR RELEASE AUTOMATION

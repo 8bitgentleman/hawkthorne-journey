@@ -5,7 +5,6 @@
 -----------------------------------------------
 return{
     name = "throwingknife",
-    description = "Throwing Knife",
     type = "weapon",
     subtype = "projectile",
     MAX_ITEMS = 15,

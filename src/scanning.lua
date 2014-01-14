@@ -1,5 +1,6 @@
 local Gamestate = require 'vendor/gamestate'
 local fonts = require 'fonts'
+local controls = require 'controls'
 local window = require 'window'
 local camera = require 'camera'
 local sound = require 'vendor/TEsound'
@@ -17,20 +18,21 @@ end
 function state:enter(previous)
   self:refresh()
   self.previous = previous
-  self.music = sound.playMusic("opening")
 end
 
+
 function state:keypressed( button )
-  Timer.clear()
-  if button == "START" then
-    Gamestate.switch("start")
-    return true
-  else
-    Gamestate.switch("select")
-  end
+    Timer.clear()
+    if button == "START" then
+      Gamestate.switch("splash")
+      return true
+    else
+      Gamestate.switch("select")
+    end
 end
 
 function state:update(dt)
+
   self.backgroundanimate:update(dt)
   self.namesanimate:update(dt)
   self.computeranimate:update(dt)
@@ -49,14 +51,15 @@ function state:update(dt)
   self.annieanimation:update(dt)
   self.troyanimation:update(dt)
   self.pierceanimation:update(dt)
+
 end
 
 function state:draw()
 
   --background colour
-  love.graphics.setColor( 60, 86, 173, 255 )
-  love.graphics.rectangle( 'fill', 0, 0, love.graphics:getWidth(), love.graphics:getHeight() )
-  love.graphics.setColor( 255, 255, 255, 255 )
+    love.graphics.setColor( 60, 86, 173, 255 )
+    love.graphics.rectangle( 'fill', 0, 0, love.graphics:getWidth(), love.graphics:getHeight() )
+    love.graphics.setColor( 255, 255, 255, 255 )
 
   -- coloured backgrounds
   local width = window.width
@@ -88,6 +91,7 @@ function state:draw()
 end
 
 function state:refresh()
+
   -- sets length of time for animation
   local rtime = 10
 
@@ -172,43 +176,7 @@ function state:refresh()
 
 -- animation runs for rtime secs
   Timer.add(rtime, function() Gamestate.switch("select") end)
-end
 
-
-function state:leave() 
-  self.backgrounds = nil
-  self.names = nil
-  self.computer = nil
-  self.description = nil
-  self.scanbar = nil
-  self.scanwords = nil 
-  self.blank = nil
-  self.isprites = nil
-  self.iscan = nil
-  self.jeff = nil
-  self.britta = nil
-  self.abed = nil
-  self.shirley = nil
-  self.annie = nil
-  self.troy = nil
-  self.pierce = nil
-
-  state.backgroundanimate = nil
-  state.namesanimate = nil
-  state.computeranimate = nil
-  state.descriptionanimate = nil
-  state.scanbaranimate = nil
-  state.scanwordsanimate = nil
-  state.blankanimate = nil
-  state.ispritesanimate = nil
-  state.iscananimate = nil
-  state.jeffanimation = nil
-  state.brittaanimation = nil
-  state.abedanimation = nil
-  state.shirleyanimation = nil
-  state.annieanimation = nil
-  state.troyanimation = nil
-  state.pierceanimation = nil
 end
 
 return state

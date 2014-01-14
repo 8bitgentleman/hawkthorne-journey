@@ -519,18 +519,14 @@
     <property name="window" value="5"/>
    </properties>
   </object>
-  <object name="lost_dvd" type="key" x="264" y="1104" width="24" height="24">
-   <properties>
-    <property name="info" value="You found the meaning of Christmas - the first season of Lost on DVD. It's a metaphor; it represents lack of pay off. "/>
-   </properties>
-  </object>
+  <object name="lost" type="material" x="264" y="1104" width="24" height="24"/>
   <object type="movingplatform" x="456" y="456" width="48" height="24">
    <properties>
     <property name="line" value="ice_2"/>
     <property name="offset_x" value="0"/>
     <property name="offset_y" value="0"/>
     <property name="speed" value="0.45"/>
-    <property name="sprite" value="images/platforms/iceplatform.png"/>
+    <property name="sprite" value="images/iceplatform.png"/>
     <property name="start" value="0"/>
    </properties>
   </object>
@@ -540,7 +536,7 @@
     <property name="offset_x" value="0"/>
     <property name="offset_y" value="0"/>
     <property name="speed" value="0.55"/>
-    <property name="sprite" value="images/platforms/iceplatform.png"/>
+    <property name="sprite" value="images/iceplatform.png"/>
     <property name="start" value="0"/>
    </properties>
   </object>
@@ -550,7 +546,7 @@
     <property name="offset_x" value="0"/>
     <property name="offset_y" value="0"/>
     <property name="speed" value="0.53"/>
-    <property name="sprite" value="images/platforms/iceplatform.png"/>
+    <property name="sprite" value="images/iceplatform.png"/>
     <property name="start" value="0"/>
    </properties>
   </object>
@@ -559,7 +555,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesright.png"/>
+    <property name="sprite" value="images/iciclesright.png"/>
    </properties>
   </object>
   <object type="liquid" x="384" y="360" width="24" height="24">
@@ -567,7 +563,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesleft.png"/>
+    <property name="sprite" value="images/iciclesleft.png"/>
    </properties>
   </object>
   <object type="liquid" x="360" y="464" width="24" height="24">
@@ -575,7 +571,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesright.png"/>
+    <property name="sprite" value="images/iciclesright.png"/>
    </properties>
   </object>
   <object type="liquid" x="384" y="573" width="24" height="24">
@@ -583,7 +579,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesleft.png"/>
+    <property name="sprite" value="images/iciclesleft.png"/>
    </properties>
   </object>
   <object type="liquid" x="456" y="216" width="24" height="24">
@@ -591,7 +587,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesright.png"/>
+    <property name="sprite" value="images/iciclesright.png"/>
    </properties>
   </object>
   <object type="liquid" x="480" y="328" width="24" height="24">
@@ -599,7 +595,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesleft.png"/>
+    <property name="sprite" value="images/iciclesleft.png"/>
    </properties>
   </object>
   <object type="liquid" x="456" y="427" width="24" height="24">
@@ -607,7 +603,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesright.png"/>
+    <property name="sprite" value="images/iciclesright.png"/>
    </properties>
   </object>
   <object type="liquid" x="480" y="528" width="24" height="24">
@@ -615,7 +611,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesleft.png"/>
+    <property name="sprite" value="images/iciclesleft.png"/>
    </properties>
   </object>
   <object type="liquid" x="552" y="216" width="24" height="24">
@@ -623,7 +619,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesright.png"/>
+    <property name="sprite" value="images/iciclesright.png"/>
    </properties>
   </object>
   <object type="liquid" x="576" y="312" width="24" height="24">
@@ -631,7 +627,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesleft.png"/>
+    <property name="sprite" value="images/iciclesleft.png"/>
    </properties>
   </object>
   <object type="liquid" x="552" y="408" width="24" height="24">
@@ -639,7 +635,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/iciclesright.png"/>
+    <property name="sprite" value="images/iciclesright.png"/>
    </properties>
   </object>
   <object type="liquid" x="360" y="864" width="72" height="24">
@@ -647,7 +643,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/icicles2.png"/>
+    <property name="sprite" value="images/icicles2.png"/>
    </properties>
   </object>
   <object type="enemy" x="672" y="456" width="48" height="48">
@@ -785,7 +781,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/icicles2.png"/>
+    <property name="sprite" value="images/icicles2.png"/>
    </properties>
   </object>
   <object name="bone" type="material" x="432" y="1104" width="24" height="24"/>
@@ -803,7 +799,7 @@
     <property name="injure" value="true"/>
     <property name="mode" value="once"/>
     <property name="speed" value="0.9"/>
-    <property name="sprite" value="images/sprites/winter/icicles2.png"/>
+    <property name="sprite" value="images/icicles2.png"/>
    </properties>
   </object>
   <object name="crystal" type="material" x="456" y="840" width="24" height="24"/>

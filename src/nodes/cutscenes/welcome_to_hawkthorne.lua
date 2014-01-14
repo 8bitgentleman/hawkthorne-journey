@@ -2,12 +2,16 @@ local anim8 = require 'vendor/anim8'
 local gamestate = require 'vendor/gamestate'
 local tween = require 'vendor/tween'
 local sound = require 'vendor/TEsound'
-local middle = require 'hawk/middleclass'
 
 local camera = require 'camera'
 local dialog = require 'dialog'
 
+local head = love.graphics.newImage('images/cornelius_head.png')
+local lightning = love.graphics.newImage('images/lightning.png')
+local oval = love.graphics.newImage('images/corn_circles.png')
+local sparkle = love.graphics.newImage('images/cornelius_sparkles.png')
 local Scene = {}
+
 Scene.__index = Scene
 
 local function nametable(layer)
@@ -22,25 +26,6 @@ local function center(node)
   return node.x + node.width / 2, node.y + node.height / 2
 end
 
-local Lightning = middle.class('Lightning')
-
-function Lightning:initialize(x, y)
-  self.image = love.graphics.newImage('images/cutscenes/lightning.png')
-  local h = anim8.newGrid(48, 336, self.image:getWidth(), self.image:getHeight())
-  self.animation = anim8.newAnimation('loop', h('1-6,1'), 0.025)
-  self.position = {x=x, y=y}
-  self.opacity = 0
-end
-
-function Lightning:draw()
-  love.graphics.setColor(255, 255, 255, self.opacity)
-  self.animation:draw(self.image, self.position.x, self.position.y)
-end
-
-function Lightning:update(dt)
-  self.animation:update(dt)
-end
-
 
 function Scene.new(node, collider, layer)
   local scene = {}
@@ -49,25 +34,21 @@ function Scene.new(node, collider, layer)
   scene.y = node.y
   scene.finised = false
 
-  scene.head = love.graphics.newImage('images/cutscenes/cornelius_head.png')
-  scene.ovalImg = love.graphics.newImage('images/cutscenes/corn_circles.png')
-  scene.sparkle = love.graphics.newImage('images/cutscenes/cornelius_sparkles.png')
-
   scene.nodes = nametable(layer)
   scene.nodes.head.opacity = 0
+  scene.nodes.lightning.opacity = 0
   scene.nodes.oval.opacity = 0
   scene.sparkle_opacity = 0
   
   scene.sparkles = {}
   scene.sparkle_animations = {}
-
-  scene.lightning = Lightning(scene.nodes.lightning.x, scene.nodes.lightning.y)
   
   for n in pairs(scene.nodes) do
     if n:match("sparkle") == "sparkle" then
         table.insert(scene.sparkles, n)
     end
   end 
+  
 
   -- dummy camera to prevent tearing
   scene.camera = {
@@ -77,12 +58,14 @@ function Scene.new(node, collider, layer)
     sy = 1,
   }
 
-  local g = anim8.newGrid(144, 192, scene.head:getWidth(), scene.head:getHeight())
+  local g = anim8.newGrid(144, 192, head:getWidth(), head:getHeight())
   scene.talking = anim8.newAnimation('loop', g('1,1', '2,1', '3,1', '2,1', '1,1'), 0.15)
-  local j = anim8.newGrid(192, 264, scene.ovalImg:getWidth(), scene.ovalImg:getHeight())
+  local h = anim8.newGrid(72, 312, lightning:getWidth(), lightning:getHeight())
+  scene.electric = anim8.newAnimation('once', h('1-5,1', '4-5,1'), 0.1)
+  local j = anim8.newGrid(192, 264, oval:getWidth(), oval:getHeight())
   scene.circle = anim8.newAnimation('once', j('1-6,1'), 0.15)
   scene.pulse = anim8.newAnimation('loop', j('5-6,1'), 0.7)
-  local s = anim8.newGrid(24, 24, scene.sparkle:getWidth(), scene.sparkle:getHeight())
+  local s = anim8.newGrid(24, 24, sparkle:getWidth(), sparkle:getHeight())
   
   for spark in pairs(scene.sparkles) do
     local anim = anim8.newAnimation('loop', s('1-4,1'), 0.22 + math.random() / 10)
@@ -107,6 +90,7 @@ function Scene:start(player)
 
   self.fade = {0, 0, 0, 0}
 
+  tween(2, self.fade, {0, 0, 200, 130}, 'outQuad')
 
   script = {
     "Piercinald, in 1980, you said that video games, not moist towelettes, were the business of the future.",
@@ -119,33 +103,26 @@ function Scene:start(player)
   self.dialog = dialog.new("Welcome to Hawkthorne.", function()
 
   tween(3, self.camera, {tx=x, ty=y + 48}, 'outQuad', function()
-  tween(0.1, self.lightning, {opacity=255}, 'outQuad', function()
-  self.shake = true
+  tween(0.1, self.nodes.lightning, {opacity=255}, 'outQuad', function()
   self.enter = true
-  tween(1, self.lightning, {opacity=0}, 'outQuad')
-  tween(1, self.fade, {0, 0, 200, 130}, 'outQuad')
+  tween(1, self.nodes.lightning, {opacity=0}, 'outQuad')
   tween(1, self.nodes.oval, {opacity=255}, 'outQuad', function()
   tween(3, self.nodes.head, {opacity=255}, 'outQuad')
   tween(3, self, {sparkle_opacity=255}, 'outQuad')
   
-  self.shake = false
   self.oval = self.pulse
 
   self.dialog = dialog.create(script)
   self.dialog:open(function()
-  self.shake = true
 
   tween(3, self.nodes.head, {opacity=0}, 'outQuad')
-  tween(3, self, {sparkle_opacity=0}, 'outQuad')
   tween(3, self.nodes.oval, {opacity=0}, 'outQuad', function()
-
-  self.shake = false
   local px, py = current:cameraPosition()
 
   tween(2, self.fade, {0, 0, 0, 0}, 'outQuad')
 
   tween(3, self.camera, {tx=px, ty=py}, 'outQuad', function()
-    sound.playMusic("forest-2")
+    sound.playMusic("forest")
     self.finished = true
   end)
   end)
@@ -160,21 +137,14 @@ end
 
 function Scene:update(dt, player)
   --call setPosition manually to prevent tearing
-  local shake = 0
-
-  if self.shake then
-    shake = (math.random() * 4) - 2
-  end
-
-  camera:setPosition(self.camera.tx + shake, self.camera.ty + shake)
+  camera:setPosition(self.camera.tx, self.camera.ty)
   camera:setScale(self.camera.sx, self.camera.sy)
-
   self.talking:update(dt)
   for _, s in pairs(self.sparkle_animations) do
     s:update(dt)
   end
   if self.enter then
-    self.lightning:update(dt)
+    self.electric:update(dt)
     self.oval:update(dt)
   end
 
@@ -186,21 +156,20 @@ function Scene:draw(player)
     love.graphics.getWidth(), love.graphics.getHeight())
   love.graphics.setColor(255, 255, 255, 255)
     
-
-  -- Lightning
-  self.lightning:draw()
- 
+  love.graphics.setColor(255, 255, 255, self.nodes.lightning.opacity)
+  self.electric:draw(lightning, self.nodes.lightning.x, self.nodes.lightning.y)
+  
   love.graphics.setColor(255, 255, 255, self.nodes.oval.opacity)
-  self.oval:draw(self.ovalImg, self.nodes.oval.x, self.nodes.oval.y)
+  self.oval:draw(oval, self.nodes.oval.x, self.nodes.oval.y)
     
   love.graphics.setColor(255, 255, 255, self.nodes.head.opacity)
-  self.talking:draw(self.head, self.nodes.head.x, self.nodes.head.y)
+  self.talking:draw(head, self.nodes.head.x, self.nodes.head.y)
   love.graphics.setColor(255, 255, 255, 255)
   
   for i, s in pairs(self.sparkle_animations) do
     local spark = self.sparkles[i]
     love.graphics.setColor(255, 255, 255, self.sparkle_opacity)
-    s:draw(self.sparkle, self.nodes[spark].x, self.nodes[spark].y)
+    s:draw(sparkle, self.nodes[spark].x, self.nodes[spark].y)
     love.graphics.setColor(255, 255, 255, 255)
   end
   

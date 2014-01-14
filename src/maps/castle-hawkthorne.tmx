@@ -23,7 +23,7 @@
  </layer>
  <layer name="features" width="98" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt2ktOwzAQxnHvewRWHKFH6Dk4ApfouuWxB0r3LY89j3IYjoDYMwsiTaTEqU2SGYf/T/rUSm6UUS05duwQAAB9O7MuAOFSciW5ti7kHzoNYVl930juJdt6O0YwV/3wKHmSPNfbMYKF6od3yUHyUW8HAACZVpK15MK6EMVjTUO7kdxK7qwLUTzWNLSdZC95sC5E8VjT0F4kr5I360IUjzUBAAC/PK5pZkbX9iXnP21a0+i9FwsnRtf+hd6PylknNq1p5sb9UCK9H5WzTmxa0yzoh2R6P8rTOvGYcXqssbzrPh6eKUM5ZpzOHcvPE3/fdR+rZ0rJPM7vpqxtzhabi3CGpn9tc7bYXCR2huazh5pK9PX7+Z3YVmmbs8XmIrEzNLF7xuoAMB3W70ZSTPn5XtK7kSmfkS3p3QhnZAEAHvwAe+xBzw==
+   eJzt2k1uwjAQhmHve4SuOEKOwDl6hF6CNS103xbY93cPLT0MR0DddxZFmkiJSdwkM07fR/oEUoQywpIzjh0CAKBrV9YFICwkS8mddSH/0CSE2en7SrKWbMrXMYBCjcOr5E3yXr6OAUzVOHxK9pKv8nUAAJBoLrmR3FoXonisqW/3kgfJo3Uhisea+vYkeZa8WBeieKypb1vJTvJhXYjisSYAAOpcWxcAl2uaC6PfdiXlP61a0+i9FwuXRr/9C70flbJOrFrTFMbjkCO9H5WyTqxa00wZh9b0fpSndWKTeXqoufzcfTw8U/rSZJ5Oncvb9nfn7mP1TMmZx/5uzOp6tlgvwhma7tX1bLFeJHaG5tBBTTk6/n5+t7x2UtezxXqR2Bma2D1jdQAYD+t3I22M+fme07uRMZ+RzendCGdkAQAe/AA/h0I6
   </data>
  </layer>
  <objectgroup color="#a41f05" name="nodes" width="98" height="40">
@@ -43,7 +43,7 @@
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="24"/>
-    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="sheet" value="images/flame.png"/>
     <property name="width" value="24"/>
    </properties>
   </object>
@@ -51,7 +51,7 @@
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="24"/>
-    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="sheet" value="images/flame.png"/>
     <property name="width" value="24"/>
    </properties>
   </object>
@@ -59,7 +59,7 @@
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="24"/>
-    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="sheet" value="images/flame.png"/>
     <property name="width" value="24"/>
    </properties>
   </object>
@@ -67,7 +67,7 @@
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="24"/>
-    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="sheet" value="images/flame.png"/>
     <property name="width" value="24"/>
    </properties>
   </object>
@@ -75,7 +75,7 @@
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="24"/>
-    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="sheet" value="images/flame.png"/>
     <property name="width" value="24"/>
    </properties>
   </object>
@@ -83,7 +83,7 @@
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="24"/>
-    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="sheet" value="images/flame.png"/>
     <property name="width" value="24"/>
    </properties>
   </object>
@@ -91,7 +91,7 @@
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="24"/>
-    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="sheet" value="images/flame.png"/>
     <property name="width" value="24"/>
    </properties>
   </object>
@@ -99,13 +99,14 @@
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="24"/>
-    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="sheet" value="images/flame.png"/>
     <property name="width" value="24"/>
    </properties>
   </object>
-  <object type="info" x="131" y="521" width="55" height="78">
+  <object name="tower" type="door" x="131" y="521" width="55" height="78">
    <properties>
-    <property name="info" value="Under construction"/>
+    <property name="level" value="castle-hawkthorne-entrance"/>
+    <property name="to" value="castle-hawkthorne-tower"/>
    </properties>
   </object>
   <object type="info" x="708" y="307" width="55" height="78">

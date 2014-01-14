@@ -8,19 +8,10 @@ local sound = require 'vendor/TEsound'
 local fonts = require 'fonts'
 local state = Gamestate.new()
 local window = require 'window'
-local controls = require('inputcontroller').get()
+local controls = require 'controls'
 local VerticalParticles = require "verticalparticles"
 
 local db = store('options-2')
-
-local OPTIONS = {
-  { name = 'FULLSCREEN',              bool   = false          },
-  { name = 'MUSIC VOLUME',            range  = { 0, 10, 10 }  },
-  { name = 'SFX VOLUME',              range  = { 0, 10, 10 }  },
-  { name = 'SHOW FPS',                bool   = false          },
-  { name = 'SEND PLAY DATA',          bool   = false          },
-  { name = 'RESET SETTINGS AND EXIT', action = 'reset_settings'},
-}
 
 function state:init()
     VerticalParticles.init()
@@ -33,18 +24,17 @@ function state:init()
     self.range_arrow = love.graphics.newImage("images/menu/small_arrow_up.png")
 
     self.option_map = {}
-    self.options = utils.deepcopy(OPTIONS)
+    self.options = db:get('options', {
+    --           display name                   type    value
+        { name = 'FULLSCREEN',             bool   = false          },
+        { name = 'MUSIC VOLUME',           range  = { 0, 10, 10 }  },
+        { name = 'SFX VOLUME',             range  = { 0, 10, 10 }  },
+        { name = 'SHOW FPS',               bool   = false          },
+        {},
+        { name = 'RESET SETTINGS AND EXIT',   action = 'reset_settings' }
+    } )
 
-    -- Load default options first
-    for i, user in pairs(db:get('options', {})) do
-      for j, default in pairs(self.options) do
-        if user.name == default.name then
-            self.options[j] = user
-        end
-      end
-    end
-
-    for i,o in pairs(self.options) do
+    for i,o in pairs( self.options ) do
         if o.name then
             self.option_map[o.name] = self.options[i]
         end
@@ -55,7 +45,6 @@ function state:init()
     self:updateFullscreen()
     self:updateSettings()
     self:updateFpsSetting()
-    self:updateSendDataSetting()
 end
 
 function state:update(dt)
@@ -80,21 +69,14 @@ function state:updateFullscreen()
         local width = love.graphics:getWidth()
         local height = love.graphics:getHeight()
         camera:setScale( window.width / width , window.height / height )
-        love.mouse.setVisible(false)
     else
         camera:setScale(window.scale,window.scale)
         utils.setMode(window.screen_width, window.screen_height, false)
-        love.mouse.setVisible(true)
     end
 end
 
 function state:updateFpsSetting()
     window.showfps = self.option_map['SHOW FPS'].bool
-end
-
-function state:updateSendDataSetting()
-  local setting = self.option_map['SEND PLAY DATA']
-  app.config.tracker = setting and setting.bool or false
 end
 
 function state:updateSettings()
@@ -133,10 +115,6 @@ function state:keypressed( button )
             elseif option.name == 'SHOW FPS' then
                 sound.playSfx( 'confirm' )
                 self:updateFpsSetting()
-                updateOptions = true
-            elseif option.name == 'SEND PLAY DATA' then
-                sound.playSfx( 'confirm' )
-                self:updateSendDataSetting()
                 updateOptions = true
             end
         elseif option.action then
@@ -184,7 +162,7 @@ function state:draw()
     VerticalParticles.draw()
 
     love.graphics.setColor(255, 255, 255)
-    local back = controls:getKey("START") .. ": BACK TO MENU"
+    local back = controls.getKey("START") .. ": BACK TO MENU"
     love.graphics.print(back, 25, 25)
 
 

@@ -1,28 +1,24 @@
--- inculdes
+local xmas = {}
 
-return {
-    width = 32,
-    height = 48, 
-    animations = {
-        default = {
-            'loop',{'1,1','11,1'},.5,
-        },
-        walking = {
-            'loop',{'1,1','2,1','3,1'},.2,
-        },
+xmas.sprite = love.graphics.newImage('images/npc/christmaswizard.png')
+xmas.tickImage = love.graphics.newImage('images/menu/selector.png')
+xmas.menuImage = love.graphics.newImage('images/npc/xmas-wizard-menu.png')
+xmas.walk = false
+xmas.stare = true
 
-    },
-
-    stare = true,
-
-    talk_items = {
+xmas.items = {
+    -- { ['text']='exit' },
+    -- { ['text']='inventory' },
+    -- { ['text']='command' },
+    -- { ['text']='talk', ['option']={
         { ['text']='i am done with you' },
         { ['text']='How do I get out of here?' }, 
         { ['text']='Professor Duncan?' },
         { ['text']='Who are you?' },
+    -- }},
+}
 
-    },
-    talk_responses = {
+xmas.responses = {
     ["Who are you?"]={
         "I am a Christmas Wizard!",
         "And definitely not a psych professor.",
@@ -35,5 +31,6 @@ return {
         "I do not have the slightest idea",
         "What you're talking about.",
     },
-    },
 }
+
+return xmas

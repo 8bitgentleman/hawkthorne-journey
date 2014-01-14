@@ -8,7 +8,7 @@ function Wall.new(node, collider)
     wall.bb.node = wall
     wall.node = node
     collider:setPassive(wall.bb)
-    wall.isSolid = false
+    wall.isSolid = true
 
     return wall
 end
@@ -17,7 +17,7 @@ end
 
 function Wall:collide(node)
     if node.hurt then
-        node:hurt(10)
+        node:hurt(2)
     end
 end
 

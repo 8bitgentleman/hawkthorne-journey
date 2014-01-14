@@ -1,21 +1,16 @@
--- inculdes
+local senorjuan = {}
 
-return {
-    width = 32,
-    height = 48,   
-    animations = {
-        default = {
-            'loop',{'1,1','11,1'},.5,
-        },
-        walking = {
-            'loop',{'1,1','2,1','3,1'},.2,
-        },
+senorjuan.sprite = love.graphics.newImage('images/npc/senorjuan.png')
+senorjuan.tickImage = love.graphics.newImage('images/menu/selector.png')
+senorjuan.menuImage = love.graphics.newImage('images/npc/senorjuan_menu.png')
+senorjuan.walk = false
+senorjuan.stare = true
 
-    },
-
-    stare = true,
-
-    talk_items = {
+senorjuan.items = {
+    -- { ['text']='exit' },
+    -- { ['text']='inventory' },
+    -- { ['text']='command' },
+    -- { ['text']='talk', ['option']={
         { ['text']='i am done with you' },
         { ['text']='Who are you?' },
         { ['text']='Is there another way out?' },
@@ -25,8 +20,11 @@ return {
             { ['text']='Can I pass?' },
             { ['text']='Why are you guarding it?' },
         }},
-    },
-    talk_responses = {
+    -- }},
+}
+
+
+senorjuan.responses = {
     ["Who are you?"]={
         "I am Senor Juan, the lead border guard in charge of making sure no one gets out of this Valley.",
     },
@@ -50,5 +48,7 @@ return {
         "I was hired, to help build and guard this thing.",
         "Some people call me a traitor to the Valley villagers, but hey, money's money.",
     },
-    },
 }
+
+return senorjuan
+

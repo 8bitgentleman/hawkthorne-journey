@@ -1,13 +1,11 @@
 local app       = require 'app'
 local Gamestate = require 'vendor/gamestate'
 local camera    = require 'camera'
-local character = require 'character'
 local sound     = require 'vendor/TEsound'
 local fonts     = require 'fonts'
-local player    = require 'player'
 local state     = Gamestate.new()
 local window    = require 'window'
-local controls  = require('inputcontroller').get()
+local controls  = require 'controls'
 local VerticalParticles = require "verticalparticles"
 
 function state:init()
@@ -55,23 +53,16 @@ end
 -- Loads the given slot number
 -- @param slotNumber the slot number to load
 function state:load_slot( slotNumber )
-  app.gamesaves:activate( slotNumber )
-  local gamesave = app.gamesaves:active()
-  local characterN = gamesave:get('characterName')
-  local costumeN = gamesave:get('costumeName')
-  local point = gamesave:get('savepoint')
-  
-  if characterN ~= nil and costumeN ~= nil then
-    character.pick(characterN, costumeN)
-  end
-
-  if point ~= nil and point.level ~= nil then
-    local current = character.current()
-    current.changed = true
-    Gamestate.switch(point.level, point.name)
-  else
-    Gamestate.switch( 'scanning' )
-  end
+    app.gamesaves:activate( slotNumber )
+    local gamesave = app.gamesaves:all()[ slotNumber ]
+    if gamesave ~= nil then
+        local savepoint = gamesave:get( 'savepoint' )
+        if savepoint ~= nil and savepoint.level ~= nil then
+            Gamestate.switch( 'select' )
+        else
+            Gamestate.switch( 'scanning' )
+        end
+    end
 end
 
 -- Gets the saved slot's level name, or the empty string
@@ -119,7 +110,7 @@ function state:keypressed( button )
         if self.previous.name then
             Gamestate.switch( self.previous )
         else
-            Gamestate.switch( 'welcome' )
+            Gamestate.switch( 'splash' )
         end
         return
     elseif  button == 'ATTACK' or button == 'JUMP' then
@@ -149,8 +140,8 @@ function state:draw()
     VerticalParticles.draw()
 
     love.graphics.setColor(255, 255, 255)
-    local back = controls:getKey("START") .. ": BACK TO MENU"
-    local howto = controls:getKey("ATTACK") .. " OR " .. controls:getKey("JUMP") .. ": SELECT SLOT"
+    local back = controls.getKey("START") .. ": BACK TO MENU"
+    local howto = controls.getKey("ATTACK") .. " OR " .. controls.getKey("JUMP") .. ": SELECT SLOT"
     love.graphics.print(back, 25, 25)
     love.graphics.print(howto, 25, 55)
     local yFactor = 20

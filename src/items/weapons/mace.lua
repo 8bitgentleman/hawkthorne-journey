@@ -6,7 +6,6 @@
 
 return{
     name = 'mace',
-    description = 'Mace',
     type = 'weapon',
     subtype = 'melee',
 }
