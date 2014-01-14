@@ -96,10 +96,7 @@ function Consumable:update(dt)
     end
     if self.dropping then
         -- gravity
-        self.position = {x = self.position.x + self.velocity.x*dt,
-                         y = self.position.y + self.velocity.y*dt
-                        }
-        -- X velocity won't need to change
+        self.position.y = self.position.y + self.velocity.y*dt
         self.velocity.y = self.velocity.y + game.gravity*dt
         -- 12 is half the size
         self.bb:moveTo(self.position.x + 12, self.position.y + 12)

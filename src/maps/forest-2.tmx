@@ -10,7 +10,7 @@
   <property name="title" value="Forest 2"/>
  </properties>
  <tileset firstgid="1" name="forest" tilewidth="24" tileheight="24">
-  <image source="../images/tilesets/forest.png" width="216" height="504"/>
+  <image source="../images/tilesets/forest.png" width="216" height="576"/>
  </tileset>
  <layer name="mountains" width="150" height="24">
   <properties>
@@ -79,7 +79,7 @@
    eJztmFEOgjAMhvFBY4jRhz1LeNJrcBSOwlE4CkfxKHYBDC6dS3FsA/4vaUhwrM360xazDPgmJztYjH5rQvjTfkL4BuFIVVcKuooGnX1FOSmnRvdKyR6hdaUsflCr0sGmCYm2QuuK86mgKxFDPWlHk9YSFzZNSPLC1Y+le5H2STG+tI0+uHtbhNFEJ11v5j137CHFh66G2D85DZXb8wq1o/rcimeNKfR8JdEEt17n/UTnd+yvyeoqBJcsq7XFjmMOg55a44ydtYaDqTWNYz2rqxs9d+2v3nVl62Fb7iMx+PH+dv/uNUdXZt5960oz9LB6NGjKPz51Zc4crnzZ+uY078j5Ook5b6RYN8xvibkzwd7BvPGN5b/tLmZMa0U6F20Z6MofKfajWEBXYAm4uWDP7xnwB75HAQAAFFT/72RF7EDApniSph5kz9iBAAAAAAAAsAPeP4dHoQ==
   </data>
  </layer>
- <objectgroup name="nodes" width="150" height="24">
+ <objectgroup draworder="topdown" name="nodes" width="150" height="24">
   <object name="main" type="door" x="24" y="432" width="24" height="49"/>
   <object name="leaf" type="material" x="1320" y="287" width="24" height="24"/>
   <object name="leaf" type="material" x="2184" y="238" width="24" height="24"/>
@@ -267,7 +267,7 @@
   </object>
   <object name="bridge" type="savepoint" x="1584" y="264" width="24" height="48"/>
  </objectgroup>
- <objectgroup color="#2228a4" name="platform" width="150" height="24">
+ <objectgroup color="#2228a4" draworder="topdown" name="platform" width="150" height="24">
   <object x="2664" y="240" width="360" height="24">
    <properties>
     <property name="drop" value="true"/>
@@ -404,7 +404,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#3999a4" name="block" width="150" height="24">
+ <objectgroup color="#3999a4" draworder="topdown" name="block" width="150" height="24">
   <object x="888" y="456" width="312" height="120"/>
   <object x="1584" y="456" width="504" height="120"/>
   <object x="2136" y="456" width="96" height="120"/>

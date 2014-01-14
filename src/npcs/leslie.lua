@@ -15,7 +15,6 @@ return {
     },
     direction = "left",
     donotfacewhentalking = true,
-    menuColor = {r=255, g=255, b=255, a=255},
     talk_items = {
         { ['text']='i am done with you' },
         { ['text']='Can I buy you a drink?' },
@@ -24,7 +23,7 @@ return {
     },
     talk_responses = {
     ["inventory"]={
-        "These are my wares. I crawled through dense bush to get 'em!",
+        "These are my wares.",
     },
     ["Hello!"]={
         "Hello! I'm Leslie, a travelling Sales-bian from the Plaid Plateau.",

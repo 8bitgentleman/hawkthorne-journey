@@ -26,7 +26,7 @@
    eJzt1jEOgCAQBEBan+MH6P2VT7ewsSEYJZzITEIC3YZwYVMCAPiv9Vx7dA4A4Nt0BgBqlsq5J/8WJTk6ALeMOMNvMm9towAAMLkn3XTEDt7a9Q5K+yi9M3hDADEOB9YMFA==
   </data>
  </layer>
- <objectgroup name="nodes" width="166" height="18">
+ <objectgroup draworder="topdown" name="nodes" width="166" height="18">
   <object name="main" type="door" x="72" y="240" width="49" height="46"/>
   <object type="door" x="24" y="240" width="24" height="48">
    <properties>
@@ -158,13 +158,13 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup name="block" width="166" height="18">
+ <objectgroup draworder="topdown" name="block" width="166" height="18">
   <object x="1" y="385" width="456" height="48"/>
   <object x="625" y="385" width="552" height="48"/>
   <object x="1537" y="385" width="648" height="48"/>
   <object x="2257" y="384" width="1732" height="48"/>
  </objectgroup>
- <objectgroup color="#5500ff" name="platform" width="166" height="18">
+ <objectgroup color="#5500ff" draworder="topdown" name="platform" width="166" height="18">
   <object type="floor" x="0" y="288" width="120" height="24"/>
   <object type="floor" x="168" y="240" width="288" height="24"/>
   <object type="floor" x="217" y="361" width="47" height="11"/>

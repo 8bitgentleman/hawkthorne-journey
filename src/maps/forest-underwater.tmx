@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="80" height="14" tilewidth="24" tileheight="24" backgroundcolor="#949494">
+ <properties>
+  <property name="offset" value="0"/>
+  <property name="overworldName" value="forest-underwater"/>
+  <property name="soundtrack" value="splash"/>
+  <property name="title" value="Forest"/>
+ </properties>
+ <tileset firstgid="1" name="forest" tilewidth="24" tileheight="24">
+  <image source="../images/tilesets/forest.png" width="216" height="576"/>
+ </tileset>
+ <layer name="caveBackground" width="80" height="14" opacity="0.4">
+  <data encoding="base64" compression="zlib">
+   eJztw0ENAAAMA6FTWP9ypmI/SFg1VVVVVd8eWyNVUA==
+  </data>
+ </layer>
+ <layer name="background" width="80" height="14">
+  <data encoding="base64" compression="zlib">
+   eJztzjENAAAIwDCkowxthCCCgzbZvwgAAAD4o7acrl/4owH3MQM7
+  </data>
+ </layer>
+ <layer name="vegitation" width="80" height="14">
+  <properties>
+   <property name="foreground" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt0tEJACAIRVFHc7RGE3KwpNwgSKR74KGfD1EEAAAAwEtTxCKaseo+3XjcLKIZq+7TTdxs+Jl7L67TDv935+f/WxVlF00=
+  </data>
+ </layer>
+ <layer name="platforms" width="80" height="14">
+  <properties>
+   <property name="foreground" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztlkEKgzAQRf9RPIrLbl3WlUfxKN6kabdZlYrrHqU/GEElmuBILXY+fAIzk8zkQSAdgBdQYSQLmI7rs89Fzbra1Ttf6AJo9jQO0vheNpC3Pr/EL7QnpKHeuRDM+2uyyk8k5SeTlB/ff9UCeUIf5TeNm7V9gXOU3zSu/LCdH99sY73btD5J/ErWXRNdzmY6Qp5D5hzisMRvY58ob/Z5D5xjZm0mmekb2otfqpSfTMpPpn/ld6MNfRf2Oys//pNzzmuW/EB/J671PJfyvx50Rn4f5BUNKQ==
+  </data>
+ </layer>
+ <objectgroup color="#001ca4" draworder="topdown" name="nodes" width="80" height="14">
+  <object name="main" type="door" x="72" y="24" width="24" height="48">
+   <properties>
+    <property name="level" value="forest"/>
+    <property name="to" value="waterworld"/>
+   </properties>
+  </object>
+  <object type="enemy" x="168" y="264" width="48" height="48">
+   <properties>
+    <property name="enemytype" value="bubbles"/>
+   </properties>
+  </object>
+  <object type="door" x="1800" y="0" width="96" height="48">
+   <properties>
+    <property name="instant" value="true"/>
+    <property name="level" value="forest"/>
+    <property name="to" value="waterworld-exit"/>
+   </properties>
+  </object>
+  <object type="enemy" x="552" y="288" width="48" height="48">
+   <properties>
+    <property name="enemytype" value="fish"/>
+   </properties>
+  </object>
+  <object name="exit" type="door" x="1800" y="0" width="96" height="48"/>
+  <object type="sprite" x="744" y="120" width="24" height="48">
+   <properties>
+    <property name="animation" value="1-3,1"/>
+    <property name="height" value="48"/>
+    <property name="sheet" value="/images/sprites/feral-woman2.png"/>
+    <property name="width" value="27"/>
+   </properties>
+  </object>
+  <object type="sprite" x="240" y="240" width="24" height="72">
+   <properties>
+    <property name="animation" value="1-4,1|1-4,2"/>
+    <property name="foreground" value="true"/>
+    <property name="height" value="72"/>
+    <property name="sheet" value="/images/sprites/bubble.png"/>
+    <property name="width" value="24"/>
+   </properties>
+  </object>
+  <object type="liquid" x="0" y="-48" width="504" height="384">
+   <properties>
+    <property name="drag" value="true"/>
+    <property name="opacity" value="0.2"/>
+    <property name="sprite" value="images/liquid/water.png"/>
+   </properties>
+  </object>
+  <object type="liquid" x="504" y="192" width="504" height="144">
+   <properties>
+    <property name="drag" value="true"/>
+    <property name="opacity" value="0.2"/>
+    <property name="sprite" value="images/liquid/water.png"/>
+   </properties>
+  </object>
+  <object type="killing_floor_underwater" x="48" y="72" width="24" height="240"/>
+  <object type="healing_floor" x="240" y="240" width="24" height="72"/>
+  <object type="enemy" x="264" y="96" width="48" height="48">
+   <properties>
+    <property name="enemytype" value="jellyfish-strawberry2"/>
+   </properties>
+  </object>
+  <object type="enemy" x="336" y="48" width="48" height="48">
+   <properties>
+    <property name="enemytype" value="jellyfish-strawberry2"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup color="#a46100" draworder="topdown" name="block" width="80" height="14">
+  <object x="120" y="24" width="72" height="72"/>
+  <object x="408" y="0" width="96" height="216"/>
+  <object x="48" y="312" width="360" height="24"/>
+  <object x="0" y="0" width="48" height="336"/>
+  <object x="648" y="168" width="288" height="168"/>
+  <object x="1896" y="0" width="24" height="312"/>
+  <object x="1704" y="0" width="96" height="192"/>
+  <object x="504" y="0" width="480" height="24"/>
+  <object x="120" y="0" width="288" height="24"/>
+  <object x="120" y="96" width="96" height="96"/>
+ </objectgroup>
+ <objectgroup color="#00a417" draworder="topdown" name="platform" width="80" height="14"/>
+ <layer name="foreground" width="80" height="14">
+  <properties>
+   <property name="foreground" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20KP6AAAAAAeBoRgAAB
+  </data>
+ </layer>
+ <layer name="fade" width="80" height="14">
+  <data encoding="base64" compression="zlib">
+   eJzt0FEGwEAMhOEcrUfpAWOt1QP0aE1piCiltTJlyv+wJYxPRXa1NpHV0+vfxJaXle6KRmdin98Oe3vVO1H9otFIft3eXvVOVL9o1JNfs7dXvRPVLxq15Ie0E9UvRz/60Y9+9Lu9hdn5E798D7UVcdeD3+yt9KMf/T76HVCaXfA=
+  </data>
+ </layer>
+</map>

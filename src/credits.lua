@@ -21,7 +21,6 @@ end
 
 function state:leave()
     fonts.reset()
-	camera:setPosition(0, 0)
 end
 
 function state:update(dt)
@@ -116,7 +115,6 @@ state.credits = {
     'creekee',
     'cyberpie118',
     'cynical_redditor',
-	'dakkjaniels',
     'dancingshadow',
     'daniwa',
     'dano1163',
@@ -127,7 +125,6 @@ state.credits = {
     'deckhipstername',
     'delicioussoma',
     'derferman',
-	'derynator',
     'didory123',
     'diegothegnome',
     'dont do',

@@ -54,10 +54,7 @@ end
 function Scroll:update(dt)
     if self.dropping then
         -- gravity
-        self.position = {x = self.position.x + self.velocity.x*dt,
-                         y = self.position.y + self.velocity.y*dt
-                        }
-        -- X velocity won't need to change
+        self.position.y = self.position.y + self.velocity.y*dt
         self.velocity.y = self.velocity.y + game.gravity*dt
         
         self.bb:moveTo(self.position.x + self.width / 2, self.position.y + self.height / 2)

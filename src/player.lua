@@ -11,7 +11,20 @@ local Gamestate = require 'vendor/gamestate'
 local InputController = require 'inputcontroller'
 local app = require 'app'
 
+local oxygenbar = love.graphics.newImage('images/hud/oxygenbar.png')
+oxygenbar:setFilter('nearest', 'nearest')
+
 local Inventory = require('inventory')
+
+local oxygenbarq = {}
+
+for i=20,0,-1 do
+    table.insert(oxygenbarq, love.graphics.newQuad(28 * i, 0, 28, 27,
+                             oxygenbar:getWidth(), oxygenbar:getHeight()))
+end
+
+--local health = love.graphics.newImage('images/damage.png')
+
 
 local Player = {}
 Player.__index = Player
@@ -62,6 +75,10 @@ function Player.new(collider)
     plyr.max_health = 100
     plyr.health = plyr.max_health
     
+    --oxygen
+    plyr.max_oxygen = 100
+    plyr.oxygen = plyr.max_oxygen
+    
     plyr.jumpDamage = 3
     plyr.punchDamage = 1
 
@@ -83,10 +100,16 @@ function Player:refillHealth()
   self.health = self.max_health
 end
 
+--not sure about this
+function Player:refillOxygen()
+  self.oxygen = self.max_oxygen
+end
+
 function Player:refreshPlayer(collider)
     --changes that are made if you're dead
     if self.dead then
         self.health = self.max_health
+        self.oxygen = self.max_oxygen
         --self.money = 0
         --self.inventory = Inventory.new( self )
     end
@@ -95,6 +118,7 @@ function Player:refreshPlayer(collider)
         self.character.changed = false
         self.money = 0
         self:refillHealth()
+        self:refillOxygen()
         self.inventory = Inventory.new( self )
         local gamesave = app.gamesaves:active()
         if gamesave then
@@ -102,6 +126,7 @@ function Player:refreshPlayer(collider)
         end
     end
 
+    self.oxygen = self.max_oxygen
     self.invulnerable = false
     self.events = queue.new()
     self.rebounding = false
@@ -570,7 +595,7 @@ function Player:hurt(damage)
     --Minimum damage is 5%
     --Prevents damage from falling off small heights.
     if damage < 5 then return end
-    if self.invulnerable or self.godmode or self.dead then
+    if self.invulnerable or self.godmode then
         return
     end
 
@@ -661,6 +686,22 @@ function Player:draw()
         self.character.animations.warp:draw(self.character.beam, self.position.x + 6, y)
         return
     end
+
+--if self.blink then
+  --      local arrayMax = table.getn(oxygenbarq)
+        -- a player can apparently be damaged by .5 (say from falling), so we need to ensure we're dealing with
+        -- integers when accessing the array
+        -- also ensure the index is in bounds. (1 to arrayMax)
+    --    local drawHealth = math.floor(self.health) + 1
+    --  if drawHealth > arrayMax then
+--       drawHealth = arrayMax
+--    elseif drawHealth < 1 then
+--        drawHealth = 1
+--    end
+--    love.graphics.drawq(oxygenbar, oxygenbarq[drawHealth],
+--                        math.floor(self.position.x) - 18,
+--                        math.floor(self.position.y) - 18)
+    --end
 
     if self.flash then
         love.graphics.setColor( 255, 0, 0, 255 )
@@ -1008,15 +1049,12 @@ end
 -- Saves necessary player data to the gamesave object
 -- @param gamesave the gamesave object to save to
 function Player:saveData( gamesave )
-  -- Save the inventory
-  self.inventory:save( gamesave )
-  -- Save our money
-  gamesave:set( 'coins', self.money )
-  -- Save visited levels
-  gamesave:set( 'visitedLevels', json.encode( self.visitedLevels ) )
-  -- saves character & costume
-  gamesave:set( 'characterName', self.character.name )
-  gamesave:set( 'costumeName', self.character.costume )
+    -- Save the inventory
+    self.inventory:save( gamesave )
+    -- Save our money
+    gamesave:set( 'coins', self.money )
+    -- Save visited levels
+    gamesave:set( 'visitedLevels', json.encode( self.visitedLevels ) )
 end
 
 -- Loads necessary player data from the gamesave object

@@ -31,6 +31,8 @@ function Spawn.new(node, collider, enemytype)
     -- set the isInteractive flag for interaction
     if spawn.spawnType == 'keypress' then
         spawn.isInteractive = true
+    if spawn.spawnType == 'continous' then
+        spawn.time = 1 --this sets the time between spawns
     end
     spawn.y_Proximity = node.properties.y_Proximity or 125
     spawn.nodeType = node.properties.nodeType
@@ -40,7 +42,8 @@ function Spawn.new(node, collider, enemytype)
     spawn.initialState = node.properties.initialState or 'default'
     assert(spawn.spawnType == 'proximity' or
            spawn.spawnType == 'keypress' or
-           spawn.spawnType == 'smart', "type must be proximity, keypress or smart")
+           spawn.spawnType == 'continous' or
+           spawn.spawnType == 'smart', "type must be proximity, keypress, continous or smart")
     assert(spawn.nodeType,"spawn node must have a nodeType")
     
     
@@ -81,6 +84,12 @@ function Spawn:update( dt, player )
             if self.lastspawn > 5 then
                 self.lastspawn = 0
                 self:createNode()
+            end
+        end
+    if self.spawnType == 'continous' then
+        if self.lastspawn > spawn.time then
+                local node = self:createNode()
+                node.node.floor = self.floor
             end
         end
     elseif self.spawnType == 'smart' and player.velocity.x ~= 0 then

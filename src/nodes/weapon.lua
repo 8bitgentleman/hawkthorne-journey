@@ -24,8 +24,7 @@ function Weapon.new(node, collider, plyr, weaponItem)
 
     weapon.item = weaponItem
 
-    -- Checks if for plyr and if plyr is a player
-    weapon.player = (plyr and plyr.isPlayer) and plyr or nil
+    weapon.player = plyr
     
     weapon.quantity = node.properties.quantity or props.quantity or 1
 
@@ -80,14 +79,6 @@ function Weapon.new(node, collider, plyr, weaponItem)
 
     --create the bounding box
     weapon:initializeBoundingBox(collider)
-    
-    -- Represents direction of the weapon when no longer in the players inventory
-    weapon.direction = node.properties.direction or 'right'
-    
-    -- Flipping an image moves it, this adjust for that image flip offset
-    if weapon.direction == 'left' then
-        weapon.position.x = weapon.position.x + weapon.boxWidth
-    end
 
     --audio clip when weapon is put away
     weapon.unuseAudioClip = node.properties.unuseAudioClip or
@@ -122,10 +113,8 @@ function Weapon:draw()
         if self.player.character.direction=='left' then
             scalex = -1
         end
-    elseif self.direction == 'left' then
-        scalex = -1
     end
-    
+
     local animation = self.animation
     if not animation then return end
     animation:draw(self.sheet, math.floor(self.position.x), self.position.y, 0, scalex, 1)
@@ -201,7 +190,7 @@ function Weapon:update(dt)
         if self.dropping then
             self.position = {x = self.position.x + self.velocity.x*dt,
                             y = self.position.y + self.velocity.y*dt}
-            self.velocity = {x = self.velocity.x,
+            self.velocity = {x = self.velocity.x*0.1*dt,
                             y = self.velocity.y + game.gravity*dt}
                             
             local offset_x = 0
@@ -304,7 +293,6 @@ end
 
 -- handles weapon being dropped in the real world
 function Weapon:drop(player)
-
     self.collider:remove(self.bb)
     self.bb = self.collider:addRectangle(self.position.x,self.position.y,self.dropWidth,self.dropHeight)
     self.bb.node = self
@@ -315,6 +303,9 @@ function Weapon:drop(player)
     end
     self.dropping = true
     self.dropped = true
+    self.velocity = {x=player.velocity.x,
+                     y=player.velocity.y,
+    }
 end
 
 -- handle weapon being dropped in a floorspace
