@@ -1,7 +1,7 @@
 local Timer = require 'vendor/timer'
 local sound = require 'vendor/TEsound'
 
-return{
+return {
   name = 'jellyfish-blueberry',
   die_sound = 'acorn_crush',
   position_offset = { x = 0, y = 0 },
@@ -91,7 +91,7 @@ return{
           end
         end
       end
-    end
+    
     if enemy.state == 'attack' then
       local rage_factor = 2
       if(math.abs(enemy.position.x - player.position.x) > 1) then
