@@ -32,7 +32,7 @@
    <property name="foreground" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJztlkEKgzAQRf9RPIrLbl3WlUfxKN6kabdZlYrrHqU/GEElmuBILXY+fAIzk8zkQSAdgBdQYSQLmI7rs89Fzbra1Ttf6AJo9jQO0vheNpC3Pr/EL7QnpKHeuRDM+2uyyk8k5SeTlB/ff9UCeUIf5TeNm7V9gXOU3zSu/LCdH99sY73btD5J/ErWXRNdzmY6Qp5D5hzisMRvY58ob/Z5D5xjZm0mmekb2otfqpSfTMpPpn/ld6MNfRf2Oys//pNzzmuW/EB/J671PJfyvx50Rn4f5BUNKQ==
+   eJztllEKgzAMhv+jeBSvsBt4FI/iTdbtYS99kDERHz3KUmxBpV2DkTlcfvgpJGmTflBoD+AFVJjJAqan9Tnlsqa62tU7P8gXoNnTOEjze9lI3vp8il9sT0yh3rkVzPtrsspPJOUnk5Qfvf+qA0pGH+W3jJtP+yLnKL9lXPlhOz96s4317nh9WPwGYGyZHlYzHSHPoXCOcUjx29gny5v6jIFzzlRbSGb6hvbix5Xyk0n5yfSv/K5kQ74J+52VH/2TS5rXpHzHdCda63WO878OOiO/N8wZGBE=
   </data>
  </layer>
  <objectgroup color="#001ca4" draworder="topdown" name="nodes" width="80" height="14">
@@ -60,7 +60,7 @@
    </properties>
   </object>
   <object name="exit" type="door" x="1800" y="0" width="96" height="48"/>
-  <object type="sprite" x="744" y="120" width="24" height="48">
+  <object type="sprite" x="768" y="120" width="24" height="48">
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="48"/>
@@ -93,14 +93,10 @@
   </object>
   <object type="killing_floor_underwater" x="48" y="72" width="24" height="240"/>
   <object type="healing_floor" x="240" y="240" width="24" height="72"/>
-  <object type="enemy" x="264" y="96" width="48" height="48">
+  <object type="killing_floor" x="168" y="-24" width="240" height="24"/>
+  <object type="enemy" x="312" y="144" width="48" height="48">
    <properties>
-    <property name="enemytype" value="jellyfish-strawberry2"/>
-   </properties>
-  </object>
-  <object type="enemy" x="336" y="48" width="48" height="48">
-   <properties>
-    <property name="enemytype" value="jellyfish-strawberry2"/>
+    <property name="enemytype" value="jellyfish-blueberry"/>
    </properties>
   </object>
  </objectgroup>

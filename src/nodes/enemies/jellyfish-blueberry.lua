@@ -2,7 +2,7 @@ local Timer = require 'vendor/timer'
 local sound = require 'vendor/TEsound'
 
 return{
-  name = 'humbug',
+  name = 'jellyfish-blueberry',
   die_sound = 'acorn_crush',
   position_offset = { x = 0, y = 0 },
   height = 48,
@@ -14,7 +14,7 @@ return{
   jumpkill = false,
   hp = 6,
   vulnerabilities = {'blunt'},
-  tokens = 5,
+  tokens = 3,
   tokenTypes = { -- p is probability ceiling and this list should be sorted by it, with the last being 1
     { item = 'coin', v = 1, p = 0.9 },
     { item = 'health', v = 1, p = 1 }
@@ -58,18 +58,37 @@ return{
         enemy.direction = 'right'
     end
     if enemy.state == 'default' then
-      if(math.abs(enemy.position.x - player.position.x) > 1) then
-        if enemy.direction == 'left' then
-          enemy.position.x = enemy.position.x - 30*dt
+      if enemy.position.x ~= enemy.start_x  and (math.abs(enemy.position.x - enemy.start_x) > 3) then
+        if enemy.position.x > enemy.start_x then
+          enemy.direction = 'left' 
+          enemy.position.x = enemy.position.x - 60*dt
         else
-          enemy.position.x = enemy.position.x + 30*dt
+          enemy.direction = 'right' 
+          enemy.position.x = enemy.position.x + 60*dt
         end
       end
-      if (math.abs(enemy.position.y - player.position.y) > 1) then
-        if enemy.position.y < player.position.y then
-          enemy.position.y = enemy.position.y + 30*dt
+      if enemy.position.y > enemy.start_y then
+        enemy.going_up = true
+      end
+      if enemy.position.y < enemy.end_y then
+        enemy.going_up = false
+      end
+      if enemy.going_up then
+        enemy.position.y = enemy.position.y - 30*dt
+      else
+        enemy.position.y = enemy.position.y + 30*dt
+      end
+      elseif enemy.state == 'default' and player.position.y <= enemy.position.y + 100 then
+        if player.position.x < enemy.position.x then
+          -- player is to the right
+          if player.position.x + player.width + 50 >= enemy.position.x then
+            enemy.state = 'attack'
+          end
         else
-          enemy.position.y = enemy.position.y - 30*dt
+          -- player is to the left
+          if player.position.x - 50 <= enemy.position.x + enemy.width then
+            enemy.state = 'attack'
+          end
         end
       end
     end

@@ -2,7 +2,6 @@ local tween = require 'vendor/tween'
 local sound = require 'vendor/TEsound'
 return {
   name = 'bubbles',
-  die_sound = 'acorn_squeak',
   spawn_sound = 'hippy_enter',
   height = 24,
   width = 24,

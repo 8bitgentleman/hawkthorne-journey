@@ -1,87 +1,95 @@
 local Timer = require 'vendor/timer'
 local sound = require 'vendor/TEsound'
 
-return {
-    name = 'kungpaochicken',
-    die_sound = 'acorn_crush',
-    position_offset = { x = 0, y = 0 },
-    height = 48,
-    width = 24,
-    damage = 15,
-    antigravity = true,
-    jumpkill = false,
-    hp = 10,
-    tokens = 5,
-    tokenTypes = { -- p is probability ceiling and this list should be sorted by it, with the last being 1
-        { item = 'coin', v = 1, p = 0.9 },
-        { item = 'health', v = 1, p = 1 }
+return{
+  name = 'jellyfish-strawberry',
+  die_sound = 'acorn_crush',
+  position_offset = { x = 0, y = 0 },
+  height = 48,
+  width = 48,
+  bb_width = 48,
+  bb_height = 48,
+  bb_offset = {x=0, y=0},
+  damage = 15,
+  jumpkill = false,
+  hp = 6,
+  vulnerabilities = {'blunt'},
+  tokens = 3,
+  tokenTypes = { -- p is probability ceiling and this list should be sorted by it, with the last being 1
+    { item = 'coin', v = 1, p = 0.9 },
+    { item = 'health', v = 1, p = 1 }
+  },
+  antigravity = true,
+  animations = {
+    dying = {
+      right = {'once', {'5,1'}, 0.25},
+      left = {'once', {'5,1'}, 0.25}
     },
-    animations = {
-        dying = {
-            right = {'once', {'5,1'}, 0.25},
-            left = {'once', {'5,1'}, 0.25}
-        },
-        default = {
-            right = {'loop', {'1-4,1'}, 0.25},
-            left = {'loop', {'1-4,1'}, 0.25}
-        },
-        hurt = {
-          right = {'loop', {'5,1'}, 0.25},
-             left = {'loop', {'5,1'}, 0.25}
-         },
-        enter = {
-            left = {'once', {'1,2'}, 0.25},
-            right = {'once', {'1,3'}, 0.25}
-        },
-        swimming = {
-            left = {'loop', {'1-4,2'}, 0.25},
-            right = {'loop', {'1-4,3'}, 0.25}
-        },
-        attack = {
-            right = {'loop', {'1-4,2'}, 0.25},
-             left = {'loop', {'1-4,3'}, 0.25}
-        },
-        still = {
-            left = {'loop', {'1-4,1'}, 0.25},
-            right = {'loop', {'1-4,1'}, 0.25}
-        }
+    default = {
+      right = {'loop', {'1-4,1'}, 0.25},
+      left = {'loop', {'1-4,1'}, 0.25}
     },
-    enter = function( enemy )
-        enemy.direction = math.random(2) == 1 and 'left' or 'right'
-    end,
-    update = function( dt, enemy, player, level )
-        if enemy.deadthen then return end
-        
-        local direction = player.position.x > enemy.position.x and -1 or 1
-
-        if enemy.velocity.y > 1 then
-            enemy.state = 'swimming'
-            enemy.jumpkill = false
-            enemy.velocity.y = math.random()
-        elseif math.abs(enemy.velocity.y) < 1 then
-            enemy.state = 'default'
-            enemy.jumpkill = true
-            enemy.velocity.y = 0
-            if enemy.state ~= 'still' then
-                enemy.velocity.x = 40 * direction
-            end
-        end
-     
-        if enemy.position.x - player.position.x < 2 then
-            enemy.direction = 'right'
-        else
-            enemy.direction = 'left'
-        end
-        if math.abs(enemy.position.x - player.position.x) < 2 then
-            enemy.state = 'still'
-            enemy.last_jump = enemy.last_jump + dt
-            if enemy.last_jump > 0.5 then
-                enemy.state = 'swimming'
-                enemy.jumpkill = false
-                enemy.last_jump = math.random()
-                enemy.velocity.y = -48
-                enemy.drop = true
-            end
-        end
+    hurt = {
+      right = {'loop', {'5,1'}, 0.25},
+      left = {'loop', {'5,1'}, 0.25}
+    },
+    attack = {
+      right = {'loop', {'1-4,1'}, 0.25},
+      left = {'loop', {'1-4,1'}, 0.25}
+    },
+  },
+  enter = function(enemy)
+    enemy.start_y = enemy.position.y
+    enemy.end_y = enemy.start_y - (enemy.height*2)
+    enemy.start_x = enemy.position.x
+  end,
+  attack = function(enemy)
+    enemy.state = 'attack'
+    Timer.add(30, function() 
+      if enemy.state ~= 'dying' then
+        enemy.state = 'default'
+      end
+    end)
+  end,
+  update = function( dt, enemy, player )
+    if enemy.position.x > player.position.x then
+    enemy.direction = 'left'
+    else
+        enemy.direction = 'right'
     end
+    if enemy.state == 'default' then
+      if(math.abs(enemy.position.x - player.position.x) > 1) then
+        if enemy.direction == 'left' then
+          enemy.position.x = enemy.position.x - 30*dt
+        else
+          enemy.position.x = enemy.position.x + 30*dt
+        end
+      end
+      if (math.abs(enemy.position.y - player.position.y) > 1) then
+        if enemy.position.y < player.position.y then
+          enemy.position.y = enemy.position.y + 30*dt
+        else
+          enemy.position.y = enemy.position.y - 30*dt
+        end
+      end
+    end
+    if enemy.state == 'attack' then
+      local rage_factor = 2
+      if(math.abs(enemy.position.x - player.position.x) > 1) then
+        if enemy.direction == 'left' then
+          enemy.position.x = enemy.position.x - 30*dt*rage_factor
+        else
+          enemy.position.x = enemy.position.x + 30*dt*rage_factor
+        end
+      end
+      if (math.abs(enemy.position.y - player.position.y) > 1) then
+        if enemy.position.y < player.position.y then
+          enemy.position.y = enemy.position.y + 30*dt*rage_factor
+        else
+          enemy.position.y = enemy.position.y - 30*dt*rage_factor
+        end
+      end
+    end
+  end,
+  floor_pushback = function() end,
 }
