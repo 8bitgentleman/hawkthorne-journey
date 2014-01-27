@@ -14,7 +14,7 @@
    eJztw0ENAAAMA6FTWP9ypmI/SFg1VVVVVd8eWyNVUA==
   </data>
  </layer>
- <layer name="background" width="80" height="14">
+ <layer name="background" width="80" height="14" visible="0">
   <data encoding="base64" compression="zlib">
    eJztzjENAAAIwDCkowxthCCCgzbZvwgAAAD4o7acrl/4owH3MQM7
   </data>
@@ -80,6 +80,8 @@
   <object type="liquid" x="0" y="-48" width="504" height="384">
    <properties>
     <property name="drag" value="true"/>
+    <property name="injure" value="50"/>
+    <property name="injure_damage" value="50"/>
     <property name="opacity" value="0.2"/>
     <property name="sprite" value="images/liquid/water.png"/>
    </properties>
@@ -91,7 +93,6 @@
     <property name="sprite" value="images/liquid/water.png"/>
    </properties>
   </object>
-  <object type="killing_floor_underwater" x="48" y="72" width="360" height="240"/>
   <object type="healing_floor" x="240" y="240" width="24" height="72"/>
   <object type="killing_floor" x="168" y="-24" width="240" height="24"/>
   <object type="enemy" x="312" y="144" width="48" height="48">
@@ -100,6 +101,7 @@
    </properties>
   </object>
   <object name="tacomeat" type="consumable" x="312" y="288" width="24" height="24"/>
+  <object type="healing_floor" x="504" y="192" width="144" height="24"/>
  </objectgroup>
  <objectgroup color="#a46100" draworder="topdown" name="block" width="80" height="14">
   <object x="120" y="24" width="72" height="72"/>
@@ -122,7 +124,7 @@
    eJztwTEBAAAAwqD1T20KP6AAAAAAeBoRgAAB
   </data>
  </layer>
- <layer name="fade" width="80" height="14">
+ <layer name="fade" width="80" height="14" visible="0">
   <data encoding="base64" compression="zlib">
    eJzt0FEGwEAMhOEcrUfpAWOt1QP0aE1piCiltTJlyv+wJYxPRXa1NpHV0+vfxJaXle6KRmdin98Oe3vVO1H9otFIft3eXvVOVL9o1JNfs7dXvRPVLxq15Ie0E9UvRz/60Y9+9Lu9hdn5E798D7UVcdeD3+yt9KMf/T76HVCaXfA=
   </data>

@@ -56,7 +56,9 @@ function Liquid.new(node, collider)
   liquid.position = {x=node.x, y=node.y}
 
   liquid.death = np.death == 'true'
-  liquid.injure = np.injure == 'true'
+  liquid.injure = np.injure == np.injure and tonumber(np.injure) or 10
+  --liquid.injure_damage = np.injure_damage and tonumber(np.injure_damage) or 10
+  --liquid.injure_timer = np.injure_timer and tonumber (np.injure_timer) or 5
   liquid.drown = np.drown == 'true'
   liquid.drag = np.drag == 'true'
   liquid.foreground = np.foreground ~= 'false'
@@ -99,7 +101,7 @@ function Liquid:collide(node, dt, mtv_x, mtv_y)
   end
 
   if self.injure then
-    player:hurt(10)
+    player:hurt(np.injure)
   end
 
   if self.drown and player.position.y >= self.position.y then
