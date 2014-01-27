@@ -7,24 +7,29 @@
   <property name="title" value="Forest"/>
  </properties>
  <tileset firstgid="1" name="forest" tilewidth="24" tileheight="24">
-  <image source="../images/tilesets/forest.png" width="216" height="576"/>
+  <image source="../images/tilesets/forest.png" width="216" height="624"/>
  </tileset>
  <layer name="caveBackground" width="80" height="14" opacity="0.4">
   <data encoding="base64" compression="zlib">
    eJztw0ENAAAMA6FTWP9ypmI/SFg1VVVVVd8eWyNVUA==
   </data>
  </layer>
- <layer name="background" width="80" height="14" visible="0">
+ <layer name="background" width="80" height="14">
   <data encoding="base64" compression="zlib">
    eJztzjENAAAIwDCkowxthCCCgzbZvwgAAAD4o7acrl/4owH3MQM7
   </data>
  </layer>
- <layer name="vegitation" width="80" height="14">
+ <layer name="vegitation" width="80" height="14" visible="0">
   <properties>
    <property name="foreground" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
    eJzt0tEJACAIRVFHc7RGE3KwpNwgSKR74KGfD1EEAAAAwEtTxCKaseo+3XjcLKIZq+7TTdxs+Jl7L67TDv935+f/WxVlF00=
+  </data>
+ </layer>
+ <layer name="Tile Layer 7" width="80" height="14">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20KP6AAAAAAeBoRgAAB
   </data>
  </layer>
  <layer name="platforms" width="80" height="14">

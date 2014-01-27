@@ -56,7 +56,7 @@ function Liquid.new(node, collider)
   liquid.position = {x=node.x, y=node.y}
 
   liquid.death = np.death == 'true'
-  liquid.injure = np.injure == np.injure and tonumber(np.injure) or 10
+  liquid.injure = np.injure = np.injure and tonumber(np.injure) or 10
   --liquid.injure_damage = np.injure_damage and tonumber(np.injure_damage) or 10
   --liquid.injure_timer = np.injure_timer and tonumber (np.injure_timer) or 5
   liquid.drown = np.drown == 'true'
