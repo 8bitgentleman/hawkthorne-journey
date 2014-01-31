@@ -7,7 +7,7 @@
   <property name="title" value="Forest"/>
  </properties>
  <tileset firstgid="1" name="forest" tilewidth="24" tileheight="24">
-  <image source="../images/tilesets/forest.png" width="216" height="624"/>
+  <image source="../images/tilesets/forest.png" width="216" height="576"/>
  </tileset>
  <layer name="caveBackground" width="80" height="14" opacity="0.4">
   <data encoding="base64" compression="zlib">
@@ -41,7 +41,7 @@
   </data>
  </layer>
  <objectgroup color="#001ca4" draworder="topdown" name="nodes" width="80" height="14">
-  <object name="main" type="door" x="72" y="24" width="24" height="48">
+  <object name="main" type="door" x="72" y="0" width="24" height="48">
    <properties>
     <property name="level" value="forest"/>
     <property name="to" value="waterworld"/>
@@ -65,7 +65,7 @@
    </properties>
   </object>
   <object name="exit" type="door" x="1800" y="0" width="96" height="48"/>
-  <object type="sprite" x="768" y="120" width="24" height="48">
+  <object type="sprite" x="912" y="120" width="24" height="48">
    <properties>
     <property name="animation" value="1-3,1"/>
     <property name="height" value="48"/>
@@ -85,8 +85,8 @@
   <object type="liquid" x="0" y="-48" width="504" height="384">
    <properties>
     <property name="drag" value="true"/>
-    <property name="injure" value="50"/>
-    <property name="injure_damage" value="50"/>
+    <property name="injure" value="10"/>
+    <property name="injure_timer" value="5"/>
     <property name="opacity" value="0.2"/>
     <property name="sprite" value="images/liquid/water.png"/>
    </properties>
@@ -100,25 +100,33 @@
   </object>
   <object type="healing_floor" x="240" y="240" width="24" height="72"/>
   <object type="killing_floor" x="168" y="-24" width="240" height="24"/>
-  <object type="enemy" x="312" y="144" width="48" height="48">
+  <object type="enemy" x="288" y="168" width="48" height="48">
    <properties>
     <property name="enemytype" value="jellyfish-blueberry"/>
    </properties>
   </object>
-  <object name="tacomeat" type="consumable" x="312" y="288" width="24" height="24"/>
   <object type="healing_floor" x="504" y="192" width="144" height="24"/>
+  <object type="enemy" x="336" y="96" width="48" height="48">
+   <properties>
+    <property name="enemytype" value="jellyfish-blueberry"/>
+   </properties>
+  </object>
+  <object type="enemy" x="240" y="72" width="48" height="48">
+   <properties>
+    <property name="enemytype" value="jellyfish-blueberry"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup color="#a46100" draworder="topdown" name="block" width="80" height="14">
   <object x="120" y="24" width="72" height="72"/>
-  <object x="408" y="0" width="96" height="216"/>
+  <object x="408" y="24" width="96" height="192"/>
   <object x="48" y="312" width="360" height="24"/>
   <object x="0" y="0" width="48" height="336"/>
   <object x="648" y="168" width="288" height="168"/>
   <object x="1896" y="0" width="24" height="312"/>
   <object x="1704" y="0" width="96" height="192"/>
-  <object x="504" y="0" width="480" height="24"/>
-  <object x="120" y="0" width="288" height="24"/>
   <object x="120" y="96" width="96" height="96"/>
+  <object x="120" y="0" width="864" height="24"/>
  </objectgroup>
  <objectgroup color="#00a417" draworder="topdown" name="platform" width="80" height="14"/>
  <layer name="foreground" width="80" height="14">

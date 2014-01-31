@@ -32,6 +32,9 @@ function Spawn.new(node, collider, enemytype)
     if spawn.spawnType == 'keypress' then
         spawn.isInteractive = true
     end
+        if spawn.spawnType =='proximity' then --this lets the proximity value be set by the user
+        spawn.proximity_distance = node.properties.proximity_distance and tonumber(node.properties.proximity_distance) or 10 
+    end    
     spawn.y_Proximity = node.properties.y_Proximity or 125
     spawn.nodeType = node.properties.nodeType
     spawn.offset_x = node.properties.offset_x or 0
