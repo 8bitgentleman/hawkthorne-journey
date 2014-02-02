@@ -39,6 +39,7 @@ return {
     },
   },
   enter = function(enemy)
+    enemy.delay = math.random(200)/100
     enemy.start_y = enemy.position.y
     enemy.end_y = enemy.start_y - (enemy.height*2)
     enemy.start_x = enemy.position.x
@@ -93,7 +94,7 @@ return {
       end
     
     if enemy.state == 'attack' then
-      local rage_factor = 2
+      local rage_factor = 1.5
       if(math.abs(enemy.position.x - player.position.x) > 1) then
         if enemy.direction == 'left' then
           enemy.position.x = enemy.position.x - 30*dt*rage_factor
