@@ -1,9 +1,10 @@
 local Timer = require 'vendor/timer'
 local sound = require 'vendor/TEsound'
+local tween = require 'vendor/tween'
 
 return {
   name = 'jellyfish-blueberry',
-  die_sound = 'acorn_crush',
+  die_sound = 'jellyfish_die',
   position_offset = { x = 0, y = 0 },
   height = 48,
   width = 48,
@@ -20,6 +21,10 @@ return {
     { item = 'health', v = 1, p = 1 }
   },
   antigravity = true,
+  easeup = 'outQuad',
+  easedown = 'inQuad',
+  movetime = 1,
+  speed = 1,
   animations = {
     dying = {
       right = {'once', {'5,1'}, 0.25},
@@ -39,11 +44,20 @@ return {
     },
   },
   enter = function(enemy)
-    enemy.delay = math.random(200)/100
-    enemy.start_y = enemy.position.y
+    enemy.delay = math.random(200)
+    enemy.startmove = function()
+      enemy.moving = true
+      tween.start( enemy.props.movetime, enemy.position, { y = enemy.node.y}, enemy.props.easeup, enemy.reversemove )
+    end
+    enemy.reversemove = function()
+      tween.start( enemy.props.movetime, enemy.position, { y = enemy.node.y + enemy.position_offset.y }, enemy.props.easedown, enemy.reversemove )
+    end
+    enemy.start_y = enemy.position.y + math.random(50)
     enemy.end_y = enemy.start_y - (enemy.height*2)
     enemy.start_x = enemy.position.x
+    
   end,
+
   attack = function(enemy)
     enemy.state = 'attack'
     Timer.add(30, function() 
@@ -53,13 +67,20 @@ return {
     end)
   end,
   update = function( dt, enemy, player )
+    if enemy.delay >= 0 then
+      enemy.delay = enemy.delay - dt
+      else
+      if not enemy.moving then
+        enemy.startmove()
+      end
+    end 
     if enemy.position.x > player.position.x then
     enemy.direction = 'left'
     else
         enemy.direction = 'right'
     end
     if enemy.state == 'default' then
-      if enemy.position.x ~= enemy.start_x  and (math.abs(enemy.position.x - enemy.start_x) > 3) then
+      if enemy.position.x ~= enemy.start_x  and (math.abs(enemy.position.x - enemy.start_x > 3)) then
         if enemy.position.x > enemy.start_x then
           enemy.direction = 'left' 
           enemy.position.x = enemy.position.x - 60*dt
