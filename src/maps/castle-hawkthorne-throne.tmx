@@ -41,12 +41,12 @@
    eJzt18ENgkAUhOG9c+PKSTvADqjHJmxArUCtQK1ALQatQL37iEtiTEiW7Orj6f8lE8FwmGQConMAACDUVLsAkphLFpKldhFEW0nWko12EUTbSnaSvXYRRDtIjpKTdhF81Ui7AJIptQsgSBZwTfXxFkih0C4AAMBAyX+MWei1Ie9G0FP22JJ3o2GremwJAMA/yzqOYU/RcQwAAGBFLTlLLpK7chfEu2kXQJTafzb3I1va1T5Xc3/Olva8/jY2+43992xpz9U9d8sdW/6CdkO2tO99y4ljS8CqB6JYJLs=
   </data>
  </layer>
- <objectgroup color="#3e51a4" name="block" width="115" height="37">
+ <objectgroup color="#3e51a4" draworder="topdown" name="block" width="115" height="37" visible="0">
   <object x="336" y="0" width="144" height="552"/>
   <object x="1248" y="0" width="168" height="624"/>
   <object x="2568" y="168" width="192" height="672"/>
  </objectgroup>
- <objectgroup color="#6ba415" name="platform" width="115" height="37">
+ <objectgroup color="#6ba415" draworder="topdown" name="platform" width="115" height="37">
   <object x="0" y="456">
    <properties>
     <property name="drop" value="false"/>
@@ -66,7 +66,7 @@
    <polygon points="0,0 72,0 168,-96 288,-96 288,-72 168,-72 72,24 0,24"/>
   </object>
  </objectgroup>
- <objectgroup name="nodes" width="115" height="37">
+ <objectgroup draworder="topdown" name="nodes" width="115" height="37">
   <object type="liquid" x="0" y="840" width="480" height="48">
    <properties>
     <property name="sprite" value="images/liquid/lava.png"/>
@@ -87,7 +87,7 @@
     <property name="sprite" value="images/liquid/lava.png"/>
    </properties>
   </object>
-  <object name="main" type="door" x="35" y="148" width="51" height="65">
+  <object name="main" type="door" x="1154" y="620" width="51" height="65">
    <properties>
     <property name="level" value="castle-hawkthorne"/>
     <property name="to" value="next"/>
@@ -139,5 +139,23 @@
     <property name="cutscene" value="throne"/>
    </properties>
   </object>
+  <object type="scenetrigger" x="2064" y="408" width="24" height="384">
+   <properties>
+    <property name="cutscene" value="welcome_winner"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup color="#a41a32" draworder="topdown" name="welcome_winner" width="115" height="37">
+  <object name="sparkle_3" type="sparkle" x="2232" y="624" width="24" height="24"/>
+  <object name="sparkle_5" type="sparkle" x="2304" y="624" width="24" height="24"/>
+  <object name="sparkle_1" type="sparkle" x="2232" y="504" width="24" height="24"/>
+  <object name="sparkle_8" type="sparkle" x="2304" y="480" width="24" height="24"/>
+  <object name="sparkle_9" type="sparkle" x="2256" y="456" width="24" height="24"/>
+  <object name="sparkle_4" type="sparkle" x="2256" y="576" width="24" height="24"/>
+  <object name="sparkle_7" type="sparkle" x="2304" y="552" width="24" height="24"/>
+  <object name="head" type="head" x="2208" y="480" width="144" height="192"/>
+  <object name="sparkle_2" type="sparkle" x="2208" y="552" width="24" height="24"/>
+  <object name="lightning" type="lightning" x="2256" y="360" width="48" height="384"/>
+  <object name="oval" type="oval" x="2184" y="432" width="192" height="288"/>
  </objectgroup>
 </map>

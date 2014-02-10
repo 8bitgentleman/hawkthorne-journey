@@ -44,7 +44,7 @@
    eJzt0jsKgEAMBNBcwNr/B/yUurXu4Ty6I1iJiyBmF3QeTBMITCAiREREROQSI0noEh61SBe6xAM10pxmIzLd7BmR1ag00pUjBVIi1TGbkeVmz+Jeq1lMSYpkoUu8zPWf+60RMvito+7qP796q0sv/7mV/NgA8o0Fug==
   </data>
  </layer>
- <objectgroup name="platform" width="60" height="19">
+ <objectgroup draworder="topdown" name="platform" width="60" height="19">
   <object x="864" y="312">
    <properties>
     <property name="drop" value="false"/>
@@ -59,7 +59,7 @@
   </object>
   <object x="672" y="192" width="96" height="24"/>
  </objectgroup>
- <objectgroup name="nodes" width="60" height="19">
+ <objectgroup draworder="topdown" name="nodes" width="60" height="19">
   <object type="sprite" x="696" y="192" width="24" height="48">
    <properties>
     <property name="animation" value="1-4,1"/>
@@ -68,27 +68,27 @@
     <property name="width" value="24"/>
    </properties>
   </object>
-  <object type="h_sprite" x="168" y="-24" width="48" height="504">
+  <object type="h_sprite" x="192" y="-24" width="48" height="504">
    <properties>
     <property name="animation" value="1-5,1"/>
-    <property name="height" value="50"/>
-    <property name="sheet" value="images/sprites/abedtown/cave_lift.png"/>
+    <property name="height" value="100"/>
+    <property name="sheet" value="images/sprites/abedtown/cave_lift1.png"/>
     <property name="width" value="63"/>
    </properties>
   </object>
-  <object type="h_sprite" x="72" y="-24" width="48" height="504">
+  <object type="h_sprite" x="120" y="-24" width="48" height="504">
    <properties>
     <property name="animation" value="5-1,1"/>
-    <property name="height" value="50"/>
-    <property name="sheet" value="images/sprites/abedtown/cave_lift.png"/>
+    <property name="height" value="100"/>
+    <property name="sheet" value="images/sprites/abedtown/cave_lift2.png"/>
     <property name="width" value="63"/>
    </properties>
   </object>
-  <object type="h_sprite" x="-24" y="-24" width="48" height="504">
+  <object type="h_sprite" x="48" y="-24" width="48" height="504">
    <properties>
     <property name="animation" value="1-5,1"/>
-    <property name="height" value="50"/>
-    <property name="sheet" value="images/sprites/abedtown/cave_lift.png"/>
+    <property name="height" value="100"/>
+    <property name="sheet" value="images/sprites/abedtown/cave_lift1.png"/>
     <property name="width" value="63"/>
    </properties>
   </object>
@@ -107,6 +107,14 @@
   <object type="info" x="918" y="264" width="36" height="48">
    <properties>
     <property name="info" value="This door is locked."/>
+   </properties>
+  </object>
+  <object type="h_sprite" x="-24" y="-24" width="48" height="504">
+   <properties>
+    <property name="animation" value="5-1,1"/>
+    <property name="height" value="100"/>
+    <property name="sheet" value="images/sprites/abedtown/cave_lift2.png"/>
+    <property name="width" value="63"/>
    </properties>
   </object>
  </objectgroup>

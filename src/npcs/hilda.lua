@@ -1,4 +1,19 @@
 -- inculdes
+local sound = require 'vendor/TEsound'
+local Timer = require 'vendor/timer'
+local tween = require 'vendor/tween'
+
+local function dance(npc, level, time)
+    npc.state = "dancing"
+    npc.walking = false
+    Timer.add(time, function()
+        npc.state = "default"
+        npc.walking = true
+        if level.music then
+          sound.playMusic( level.music )
+        end
+    end)
+end
 
 return {
     width = 32,
@@ -9,6 +24,9 @@ return {
         },
         walking = {
             'loop',{'1,1','2,1','3,1'},.2,
+        },
+        dancing = {
+            'loop',{'1,1','2,1'},.2,
         },
 
     },
@@ -436,9 +454,12 @@ return {
     tickImage = love.graphics.newImage('images/npc/hilda_heart.png'),
     command_items = { 
     { ['text']='back' },
+    { ['text']='dance' },     
+    { ['text']='rest' },     
+    { ['text']='heal' },     
     { ['text']='go home' },
     { ['text']='stay' }, 
-    { ['text']='follow' },  
+    { ['text']='follow' }, 
     },
     command_commands = {
     ['follow']=function(npc, player)
@@ -455,5 +476,18 @@ return {
         npc.stare = false
         npc.minx = npc.maxx - (npc.props.max_walk or 48)*2
     end,
+    ['heal']=function(consumable, player)
+    	player.health = player.max_health
+        sound.playSfx( "healing_quiet" )
+  	end,
+    ['rest']=function(npc, player)
+      
+     -- local fade = {0, 0, 0, 0}
+     -- tween(1, local fade, {0, 0, 200, 130}, 'outQuad')
+    end,
+    ['dance']=function(npc, player)
+        dance(npc, player.currentLevel, 5)
+    end,
+
     },
 }

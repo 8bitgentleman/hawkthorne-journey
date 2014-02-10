@@ -78,7 +78,7 @@
    eJztlmkKwjAQhWNzCZcbeRQP4O8cqi5ncKnLGVxuob4QAqFMwoCNre188Ah9aem8yVCqlCAMk12h1B46QMei7Wryc0PGO/SAngPI+0LGt82plRrptqvJzxgZJ9AUmgV5+zLnS6J2nzckNedUL7heF6Dypuac6gXX+wUl3rWC1tDGrQbXBr6x+1Te2JxbqF5wvRzU66vwzhN0hi5uNbg2VSJvyqd6wfVyUAazM9fuXFPyNdmz3wbPxvLG9rhe0xDnyZK99/qHeZuiT3kXjBr6lPdbfI6wb2E2fDdM3ROEGNR/oSAIgtBtPkv+WeA=
   </data>
  </layer>
- <objectgroup color="#a40d0d" name="platform" width="60" height="24">
+ <objectgroup color="#a40d0d" draworder="topdown" name="platform" width="60" height="24">
   <object x="1416" y="480">
    <properties>
     <property name="drop" value="false"/>
@@ -122,7 +122,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#000000" name="nodes" width="60" height="24">
+ <objectgroup color="#000000" draworder="topdown" name="nodes" width="60" height="24">
   <object type="liquid" x="1104" y="504" width="336" height="72">
    <properties>
     <property name="sprite" value="images/liquid/water.png"/>
@@ -148,7 +148,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#7ea318" name="block" width="60" height="24">
+ <objectgroup color="#7ea318" draworder="topdown" name="block" width="60" height="24">
   <object x="1416" y="0" width="24" height="576"/>
  </objectgroup>
 </map>

@@ -168,7 +168,7 @@ function state:enter(previous)
       end
   end
   
-  self:reset(player.currentLevel.overworldName)
+  --self:reset(player.currentLevel.overworldName)
 end
 
 
