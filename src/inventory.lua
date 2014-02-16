@@ -60,9 +60,8 @@ function Inventory.new( player )
         weapons = {'keys','scrolls'},
         keys = {'materials','weapons'},
         materials = {'consumables','keys'},
-        consumables = {'notes','materials'},
-        notes = {'scrolls','consumables'},
-        scrolls = {'weapons','notes'}
+        consumables = {'scrolls','materials'},
+        scrolls = {'weapons','consumables'}
     } --Each key's value is a table with this format: {nextpage, previouspage} 
 
     inventory.pages = {} --These are the pages in the inventory that hold items

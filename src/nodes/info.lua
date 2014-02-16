@@ -50,13 +50,36 @@ function Info:draw()
 end
 
 function Info:keypressed( button, player )
-    
+    if self.prompt then
+        return self.prompt:keypressed( button )
+    end
     if button == 'INTERACT' and self.dialog == nil and not player.freeze then
         player.freeze = true
-        Dialog.new(self.info, function()
+        local message = {'Would you like to..'}
+        local callback = function(result)
+            if result == 'Take' then
+                local itemNode = utils.require( 'items/materials/' .. self.name )
+                itemNode.type = 'note'
+                local item = Item.new(itemNode, self.quantity)
+                if player.inventory:addItem(item) then
+                    self.exists = false
+                    self.containerLevel:removeNode(self)
+                    self.collider:remove(self.bb)
+                    -- Key has been handled, halt further processing
+                    return true
+                end
+            end
+
+            if result == 'Read' then
+                Dialog.new(self.info, function()
+                    player.freeze = false
+                    Dialog.currentDialog = nil
+                end)
+            end
+            self.prompt = nil
             player.freeze = false
-            Dialog.currentDialog = nil
-        end)
+        end
+        self.prompt = prompt.new(message, callback, {'Read', 'Take', 'Cancel'})
         -- Key has been handled, halt further processing
         return true
     end
