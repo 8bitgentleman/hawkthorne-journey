@@ -19,11 +19,20 @@ function Info.new(node, collider)
     info.height = node.height
     info.width = node.width
     info.position = { x = node.x, y = node.y }
-
+    info.note = false
+    
     if node.properties.sprite ~= nil then
         info.sprite = love.graphics.newImage('images/info/'.. node.properties.sprite ..'.png')
     end
 
+    if info.note = true then
+        info.collider = collider
+        info.bb = collider:addRectangle(node.x, node.y, node.width, node.height)
+        material.bb.node = material
+        collider:setSolid(info.bb)
+        
+        info.exists = true
+    end    
     collider:setPassive(info.bb)
     
     info.current = nil
