@@ -91,7 +91,7 @@
    eJzt1UsOgjAUheGme3LUshEX4cx5N+Vr6GuujnUfjtRLKIoIoRhMVf4vOQHahlwC9CoFAACAvphIppKZZC5ZxC2n95aSlWQt2Ui2ccsBvsZVKXd5TjoGwNtJ9rGLwN1RcmqxfqSrz9GNgz8O9SNWK1e8rhsrz5uGNXmSwHXFjHn3+JBB9o25PLHr6Vr6byZ/+Fx9UbF/Bu+btmHeBN4Hv+8cuwAAqGFb9rZyn0t8n3qnnxl6HAC8uAHt9j8H
   </data>
  </layer>
- <objectgroup color="#000000" draworder="topdown" name="nodes" width="100" height="25">
+ <objectgroup color="#000000" draworder="topdown" name="nodes" width="100" height="25" visible="0">
   <object name="main" type="door" x="24" y="384" width="48" height="48"/>
   <object type="door" x="0" y="312" width="24" height="120">
    <properties>
@@ -170,7 +170,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#24a448" draworder="topdown" name="platform" width="100" height="25">
+ <objectgroup color="#24a448" draworder="topdown" name="platform" width="100" height="25" visible="0">
   <object x="480" y="288" width="120" height="24"/>
   <object x="0" y="288" width="144" height="24"/>
   <object x="600" y="336" width="144" height="24"/>
