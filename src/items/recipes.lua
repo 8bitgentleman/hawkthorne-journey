@@ -60,4 +60,9 @@ return {
         { type='material', name='keyshardtop' },
         { type='key', name='throneroom' }
     },
+    {
+        { type='material', name='blade' },
+        { type='material', name='boulder' },
+        { type='weapon', name='pickaxe' },
+    },
 }

@@ -95,8 +95,8 @@
    eJzt2CEOgDAQBMBDtB5eXMW7aXKi9YiDZMas3WTdRgAAwNIjRsvko6650ZnJj91HdQMAAAAAgPcqvk7/KgC7B3yGAtw=
   </data>
  </layer>
- <objectgroup name="block" width="105" height="25"/>
- <objectgroup color="#aa00ff" name="platform" width="105" height="25">
+ <objectgroup draworder="topdown" name="block" width="105" height="25" visible="0"/>
+ <objectgroup color="#aa00ff" draworder="topdown" name="platform" width="105" height="25" visible="0">
   <object x="1344" y="264" width="48" height="24"/>
   <object x="1368" y="384" width="48" height="24"/>
   <object x="1236" y="408" width="24" height="24"/>
@@ -132,12 +132,12 @@
    <polygon points="0,0 48,0 312,-72 576,-72 576,-48 312,-48 48,24 0,24"/>
   </object>
  </objectgroup>
- <objectgroup color="#0000ff" name="nodes" width="105" height="25">
+ <objectgroup color="#0000ff" draworder="topdown" name="nodes" width="105" height="25">
   <object name="main" type="door" x="96" y="480" width="48" height="48"/>
   <object type="door" x="2472" y="0" width="48" height="168">
    <properties>
     <property name="instant" value="true"/>
-    <property name="level" value="village-forest"/>
+    <property name="level" value="village-labyrinth-2"/>
     <property name="to" value="main"/>
    </properties>
   </object>

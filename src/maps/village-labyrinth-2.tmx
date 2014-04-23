@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="75" height="31" tilewidth="24" tileheight="24">
+ <properties>
+  <property name="offset" value="26"/>
+  <property name="overworldName" value="vforest_2"/>
+  <property name="soundtrack" value="forest"/>
+ </properties>
+ <tileset firstgid="1" name="treeline" tilewidth="24" tileheight="24">
+  <image source="../images/tilesets/treeline.png" width="288" height="720"/>
+ </tileset>
+ <layer name="sky" width="75" height="31">
+  <data encoding="base64" compression="zlib">
+   eJztw0ENAAAMA6Hz76Fe95kMSFg1VVVVVVVVVVXVf/eEki0=
+  </data>
+ </layer>
+ <layer name="clouds" width="75" height="31">
+  <data encoding="base64" compression="zlib">
+   eJzt1lEKgCAMANCO1nHyFh7NoyVI/2qE1d6DwX4EGWPbtsGco0ZqkWueF3/n1Wp99tSi1LxMvFfnTletZ+rMeuZKv7tzBeAJkW+W0R0W+Wb56w6L3P+jIvc/AAAAAHzJCVO6IOM=
+  </data>
+ </layer>
+ <layer name="background" width="75" height="31">
+  <data encoding="base64" compression="zlib">
+   eJzt08ENgCAMQNEmDMAAXByVURzFURxFOHADNKnYxvwm76SR+FOCiAQnokgWx2Pdh1a0opUftKIVrWg1G+s+tOpLpUVx0up2Z452Zhq/k9f9qX4+3qutnRs7z2nV3y1aPeq1V9xBdce89m91Y93n7VZ1Z7XfGI11n9Ed9ci6DQAAAAAA+I8LVKo8aQ==
+  </data>
+ </layer>
+ <layer name="leaves" width="75" height="31">
+  <data encoding="base64" compression="zlib">
+   eJzt1kEKgzAQRuEpuA0UXHkMC97Ho3iUHKVH6wjd9684GYPvg9nFGB6imgH9mMxqEcbXvbPPms072EOYQita/YFWOn8P7R3WX+PrtuyzAgAAALiXJXj/p1kNvkUz0a2G4P1bopWOVjpa6Wilo5WOVtdBKx2tdP7fvmafoRdj9gE6clar+eB1r+9Ef8POkP1cqa0+Wg4TYA==
+  </data>
+ </layer>
+ <layer name="ground" width="75" height="31">
+  <data encoding="base64" compression="zlib">
+   eJzt2EsOgjAQBuCyM2GprCUhaDBhgUbXXsO9XgM4ikd1mkjSEKlTZsqj7SR/6kbofLQEEIJWGyHaLYxdNsTjUSuG+cQzz2GoghW+ghW+TK1Ky/OZyqrfN6b/JVvZPBeHVQ15RuL9L4mlHjKYT/b9vXSrue9Xj0i0BYxdTpbO44LVC6yuMHa5WTpPCn3vYewn1fzHJ6tiRNR1vXQrGa792D8uJuq1WoMV1xqjWDXgVAer0etKPjM0xDlRSmdF3Y8+7UHqGgtW+PLVSt2P2FCscsiBIUcuKGFmNUUUq/sZRmoubFJ2rbDXfWgPcnitxQrbi+5+RfXyyUre0ylevllRvHy0Guvlq5V8vjL18tlKVoU89tqsqM+UueLlupVJX79SBatJrUy/83NZlY5Y7SBJsGJfVxzv8f13OVetqD1089BZfQBJCgD1
+  </data>
+ </layer>
+ <layer name="foreground" width="75" height="31">
+  <data encoding="base64" compression="zlib">
+   eJztmUEKgzAQRUfoVnBbcOFRvEW3OUq3PUAX3eUS7brn8DSOVKiVUpM6ZkzyH3yyCcPwkhFRIuDDkciWDuF9T+1etWEPVDikFHB1W1tAmZCuYodna/BglsL7jHavIG5if66E5KLdQERctRsAwTkVdNbuAQDwAvMIwH7APO4bPp9Wok5FZKepE/2mIeHrMEuVqCsJ5q5GX8nesTX365uraeDrzZKrVGfyH1+5uhrw9ZWzK1/gyh24ckfD1Z3fRx5cl9dGuvaWsAvzK/UG/9vYkx3XRrp2SnT04cp0uu2AjOkBnlwxjQ==
+  </data>
+ </layer>
+ <layer name="Arrows" width="75" height="31">
+  <data encoding="base64" compression="zlib">
+   eJzt2UENAAAIxLDz7wC3qAAS0irYfwnAjLoOAAAAAAAAgAW+GPBRAyXuATM=
+  </data>
+ </layer>
+ <objectgroup draworder="topdown" name="nodes" width="75" height="31">
+  <properties>
+   <property name="dbval" value="1450"/>
+  </properties>
+  <object type="enemy" x="696" y="144" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="bat"/>
+   </properties>
+  </object>
+  <object type="enemy" x="648" y="144" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="bat"/>
+   </properties>
+  </object>
+  <object type="enemy" x="600" y="144" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="bat"/>
+   </properties>
+  </object>
+  <object type="enemy" x="96" y="192" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object name="stick" type="material" x="216" y="48" width="24" height="24"/>
+  <object name="leaf" type="material" x="96" y="48" width="24" height="24"/>
+  <object type="enemy" x="168" y="192" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object type="enemy" x="240" y="192" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object name="rock" type="material" x="96" y="408" width="24" height="24"/>
+  <object name="rock" type="material" x="192" y="408" width="24" height="24"/>
+  <object name="stick" type="material" x="624" y="72" width="24" height="24"/>
+  <object name="rock" type="material" x="720" y="360" width="24" height="24"/>
+  <object type="enemy" x="1272" y="672" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object type="enemy" x="1344" y="672" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object type="enemy" x="1416" y="672" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="acorn"/>
+   </properties>
+  </object>
+  <object name="stick" type="material" x="384" y="336" width="24" height="24"/>
+  <object type="door" x="1753" y="48" width="48" height="312">
+   <properties>
+    <property name="instant" value="true"/>
+    <property name="level" value="village-forest-3"/>
+    <property name="sound" value="false"/>
+    <property name="to" value="main"/>
+   </properties>
+  </object>
+  <object name="village-forest-3" type="door" x="1704" y="312" width="24" height="48"/>
+  <object name="village-forest-2" type="door" x="1536" y="648" width="24" height="48">
+   <properties>
+    <property name="level" value="village-forest-2"/>
+    <property name="to" value="main"/>
+   </properties>
+  </object>
+  <object name="main" type="door" x="48" y="384" width="24" height="48"/>
+  <object type="door" x="0" y="288" width="24" height="144">
+   <properties>
+    <property name="instant" value="true"/>
+    <property name="level" value="treeline"/>
+    <property name="to" value="next"/>
+   </properties>
+  </object>
+  <object type="breakable_block" x="1248" y="96" width="48" height="48">
+   <properties>
+    <property name="crack" value="false"/>
+    <property name="dying_animation" value="boulder-crumble.png"/>
+    <property name="hp" value="3"/>
+    <property name="sound" value="boulder-crumble"/>
+    <property name="sprite" value="boulder.png"/>
+   </properties>
+  </object>
+  <object type="breakable_block" x="1248" y="48" width="48" height="48">
+   <properties>
+    <property name="crack" value="false"/>
+    <property name="dying_animation" value="boulder-crumble.png"/>
+    <property name="hp" value="3"/>
+    <property name="sound" value="boulder-crumble"/>
+    <property name="sprite" value="boulder.png"/>
+   </properties>
+  </object>
+  <object name="village-labyrinth" type="door" x="144" y="168" width="24" height="48">
+   <properties>
+    <property name="level" value="village-labyrinth"/>
+    <property name="to" value="main"/>
+   </properties>
+  </object>
+  <object type="sprite" x="1488" y="648" width="24" height="24">
+   <properties>
+    <property name="animation" value="1-3,1"/>
+    <property name="height" value="24"/>
+    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="width" value="24"/>
+   </properties>
+  </object>
+  <object type="sprite" x="1584" y="648" width="24" height="24">
+   <properties>
+    <property name="animation" value="1-3,1"/>
+    <property name="height" value="24"/>
+    <property name="sheet" value="images/sprites/castle/flame.png"/>
+    <property name="width" value="24"/>
+   </properties>
+  </object>
+  <object name="secret" type="door" x="672" y="72" width="24" height="48">
+   <properties>
+    <property name="level" value="village-treeline"/>
+    <property name="to" value="main"/>
+   </properties>
+  </object>
+  <object type="enemy" x="600" y="360" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="squirrel"/>
+   </properties>
+  </object>
+  <object type="enemy" x="312" y="576" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="squirrel"/>
+   </properties>
+  </object>
+  <object type="enemy" x="696" y="360" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="squirrel"/>
+   </properties>
+  </object>
+  <object type="enemy" x="480" y="360" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="squirrel"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup color="#11a41b" draworder="topdown" name="platform" width="75" height="31">
+  <object x="0" y="432" width="240" height="24"/>
+  <object x="0" y="216" width="336" height="24"/>
+  <object x="480" y="120" width="264" height="24"/>
+  <object x="936" y="672" width="48" height="24"/>
+  <object x="480" y="288" width="48" height="24"/>
+  <object x="360" y="264" width="48" height="24"/>
+ </objectgroup>
+ <objectgroup color="#a40400" draworder="topdown" name="block" width="75" height="31">
+  <object x="408" y="432" width="24" height="48"/>
+  <object x="1440" y="288" width="72" height="24"/>
+  <object x="1248" y="144" width="120" height="24"/>
+  <object x="1488" y="312" width="24" height="72"/>
+  <object x="360" y="384" width="456" height="24"/>
+  <object x="1368" y="216" width="72" height="24"/>
+  <object x="360" y="408" width="24" height="24"/>
+  <object x="792" y="408" width="24" height="336"/>
+  <object x="24" y="600" width="408" height="144"/>
+  <object x="504" y="528" width="24" height="48"/>
+  <object x="456" y="480" width="24" height="48"/>
+  <object x="1200" y="696" width="432" height="48"/>
+  <object x="480" y="504" width="24" height="48"/>
+  <object x="528" y="552" width="24" height="192"/>
+  <object x="384" y="408" width="24" height="48"/>
+  <object x="1512" y="360" width="288" height="24"/>
+  <object x="1344" y="168" width="24" height="72"/>
+  <object x="432" y="456" width="24" height="48"/>
+  <object x="1416" y="240" width="24" height="72"/>
+  <object x="480" y="0" width="24" height="120"/>
+ </objectgroup>
+ <objectgroup color="#a48d21" draworder="topdown" name="movement" width="75" height="31"/>
+</map>

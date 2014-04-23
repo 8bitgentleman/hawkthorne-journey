@@ -25,6 +25,7 @@ local utils = require 'utils'
 local anim8 = require 'vendor/anim8'
 local cheat = require 'cheat'
 local window = require 'window'
+local Timer = require 'vendor/timer'
 
 local Liquid = {}
 Liquid.__index = Liquid
@@ -56,7 +57,8 @@ function Liquid.new(node, collider)
   liquid.position = {x=node.x, y=node.y}
 
   liquid.death = np.death == 'true'
-  liquid.injure = np.injure == 'true'
+  liquid.injure = np.injure and tonumber(np.injure) or 0
+  liquid.injure_timer = np.injure_timer and tonumber (np.injure_timer) or 0
   liquid.drown = np.drown == 'true'
   liquid.drag = np.drag == 'true'
   liquid.foreground = np.foreground ~= 'false'
@@ -98,8 +100,12 @@ function Liquid:collide(node, dt, mtv_x, mtv_y)
     self.died = true
   end
 
-  if self.injure then
-    player:hurt(10)
+  if self.injure and self.injure_timer then
+        Timer.add(self.injure_timer, function()
+        player:hurt(self.injure)
+        end)
+  elseif self.injure then
+    player:hurt(self.injure)
   end
 
   if self.drown and player.position.y >= self.position.y then
