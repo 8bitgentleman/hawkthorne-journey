@@ -8,7 +8,7 @@
  <tileset firstgid="1" name="treeline" tilewidth="24" tileheight="24">
   <image source="../images/tilesets/treeline.png" width="288" height="720"/>
  </tileset>
- <layer name="sky" width="75" height="31">
+ <layer name="sky" width="75" height="31" visible="0">
   <data encoding="base64" compression="zlib">
    eJztw0ENAAAMA6Hz76Fe95kMSFg1VVVVVVVVVVXVf/eEki0=
   </data>
@@ -23,7 +23,7 @@
    eJzt08ENgCAMQNEmDMAAXByVURzFURxFOHADNKnYxvwm76SR+FOCiAQnokgWx2Pdh1a0opUftKIVrWg1G+s+tOpLpUVx0up2Z452Zhq/k9f9qX4+3qutnRs7z2nV3y1aPeq1V9xBdce89m91Y93n7VZ1Z7XfGI11n9Ed9ci6DQAAAAAA+I8LVKo8aQ==
   </data>
  </layer>
- <layer name="leaves" width="75" height="31">
+ <layer name="leaves" width="75" height="31" visible="0">
   <data encoding="base64" compression="zlib">
    eJzt1kEKgzAQRuEpuA0UXHkMC97Ho3iUHKVH6wjd9684GYPvg9nFGB6imgH9mMxqEcbXvbPPms072EOYQita/YFWOn8P7R3WX+PrtuyzAgAAALiXJXj/p1kNvkUz0a2G4P1bopWOVjpa6Wilo5WOVtdBKx2tdP7fvmafoRdj9gE6clar+eB1r+9Ef8POkP1cqa0+Wg4TYA==
   </data>
@@ -40,7 +40,7 @@
  </layer>
  <layer name="Arrows" width="75" height="31">
   <data encoding="base64" compression="zlib">
-   eJzt2UENAAAIxLDz7wC3qAAS0irYfwnAjLoOAAAAAAAAgAW+GPBRAyXuATM=
+   eJzt2TEOACAIA0B+5Vv9LYurowrmLulOmnQiAuCM+foAAAAAgEbGClCXne7pBuqyzzv8xYAfJRrsAus=
   </data>
  </layer>
  <objectgroup draworder="topdown" name="nodes" width="75" height="31">
@@ -197,8 +197,12 @@
   <object x="936" y="672" width="48" height="24"/>
   <object x="480" y="288" width="48" height="24"/>
   <object x="360" y="264" width="48" height="24"/>
+  <object x="888" y="432" width="48" height="24"/>
+  <object x="1008" y="528" width="48" height="24"/>
+  <object x="1104" y="504" width="48" height="24"/>
+  <object x="1176" y="600" width="48" height="24"/>
  </objectgroup>
- <objectgroup color="#a40400" draworder="topdown" name="block" width="75" height="31" visible="0">
+ <objectgroup color="#a40400" draworder="topdown" name="block" width="75" height="31">
   <object x="408" y="432" width="24" height="48"/>
   <object x="1440" y="288" width="72" height="24"/>
   <object x="1248" y="144" width="120" height="24"/>
