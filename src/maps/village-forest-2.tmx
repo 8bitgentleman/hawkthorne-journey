@@ -428,9 +428,9 @@
   <object type="door" x="5952" y="720" width="48" height="312">
    <properties>
     <property name="instant" value="true"/>
-    <property name="level" value="village-forest"/>
+    <property name="level" value="village-labyrinth-2"/>
     <property name="sound" value="false"/>
-    <property name="to" value="main"/>
+    <property name="to" value="for2"/>
    </properties>
   </object>
   <object name="next" type="door" x="5879" y="953" width="24" height="48"/>

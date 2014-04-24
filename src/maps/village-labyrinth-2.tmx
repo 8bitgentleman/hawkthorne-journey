@@ -107,7 +107,7 @@
     <property name="to" value="main"/>
    </properties>
   </object>
-  <object name="village-forest-3" type="door" x="1704" y="312" width="24" height="48"/>
+  <object name="next" type="door" x="1704" y="312" width="24" height="48"/>
   <object name="village-forest-2" type="door" x="1536" y="648" width="24" height="48">
    <properties>
     <property name="level" value="village-forest-2"/>
@@ -188,6 +188,7 @@
     <property name="enemytype" value="squirrel"/>
    </properties>
   </object>
+  <object name="for4" type="door" x="1320" y="96" width="24" height="48"/>
  </objectgroup>
  <objectgroup color="#11a41b" draworder="topdown" name="platform" width="75" height="31">
   <object x="0" y="432" width="240" height="24"/>
@@ -197,7 +198,7 @@
   <object x="480" y="288" width="48" height="24"/>
   <object x="360" y="264" width="48" height="24"/>
  </objectgroup>
- <objectgroup color="#a40400" draworder="topdown" name="block" width="75" height="31">
+ <objectgroup color="#a40400" draworder="topdown" name="block" width="75" height="31" visible="0">
   <object x="408" y="432" width="24" height="48"/>
   <object x="1440" y="288" width="72" height="24"/>
   <object x="1248" y="144" width="120" height="24"/>
