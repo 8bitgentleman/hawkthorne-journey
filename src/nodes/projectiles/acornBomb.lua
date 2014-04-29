@@ -21,7 +21,7 @@ return{
   damage = 10,
   idletime = 0,
   horizontalLimit = 300,
-  throw_sound = 'manicorn_beam',
+  throw_sound = 'acorn_bomb',
   animations = {
     default = {'loop', {'1,1'}, 0.2},
     thrown = {'once', {'2,1','3,1','4,1','5,1','6,1'}, 0.1},

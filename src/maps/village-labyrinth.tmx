@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="95" height="65" tilewidth="24" tileheight="24">
  <properties>
-  <property name="offset" value="55"/>
+  <property name="offset" value="50"/>
   <property name="overworldName" value="vforest_2"/>
   <property name="soundtrack" value="forest"/>
  </properties>
  <tileset firstgid="1" name="treeline" tilewidth="24" tileheight="24">
-  <image source="../images/tilesets/treeline.png" width="288" height="720"/>
+  <image source="../images/tilesets/treeline.png" width="288" height="816"/>
  </tileset>
  <layer name="sky" width="95" height="65">
   <data encoding="base64" compression="zlib">
@@ -136,9 +136,9 @@
    <properties>
     <property name="drag" value="true"/>
     <property name="foreground" value="true"/>
-    <property name="injure" value="10"/>
+    <property name="opacity" value=".5"/>
     <property name="speed" value="0.2"/>
-    <property name="sprite" value="images/liquid/grapedrink.png"/>
+    <property name="sprite" value="images/liquid/water.png"/>
     <property name="uniform" value="true"/>
    </properties>
   </object>
@@ -316,18 +316,28 @@
    <properties>
     <property name="drag" value="true"/>
     <property name="foreground" value="true"/>
-    <property name="injure" value="10"/>
+    <property name="opacity" value=".5"/>
     <property name="speed" value="0.2"/>
-    <property name="sprite" value="images/liquid/grapedrink.png"/>
+    <property name="sprite" value="images/liquid/water.png"/>
     <property name="uniform" value="true"/>
    </properties>
   </object>
-  <object name="dSword" type="spawn" x="1920" y="1368" width="24" height="24">
+  <object name="Sword_of_Duquesne" type="spawn" x="1920" y="1368" width="24" height="24">
    <properties>
     <property name="nodeType" value="weapon"/>
-    <property name="offset_x" value="20"/>
-    <property name="offset_y" value="-40"/>
+    <property name="offset_x" value="0"/>
+    <property name="offset_y" value="-50"/>
     <property name="spawnType" value="keypress"/>
+   </properties>
+  </object>
+  <object type="enemy" x="1896" y="1488" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="fish_horizontal"/>
+   </properties>
+  </object>
+  <object type="enemy" x="1905" y="1512" width="24" height="24">
+   <properties>
+    <property name="enemytype" value="fish_horizontal"/>
    </properties>
   </object>
  </objectgroup>

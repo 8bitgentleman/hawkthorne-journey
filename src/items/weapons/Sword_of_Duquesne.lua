@@ -5,7 +5,7 @@
 -----------------------------------------------
 
 return{
-    name = 'dsword',
+    name = 'Sword_of_Duquesne',
     description = 'Sword of Duquesnes',
     type = 'weapon',
     subtype = 'melee',
