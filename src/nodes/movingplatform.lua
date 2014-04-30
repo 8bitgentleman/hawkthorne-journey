@@ -21,6 +21,7 @@
 --      'touchstart' ( true / false ) - doesn't start moving until the player collides ( defaults to false )
 --      'singleuse' ( true / false ) - falls off the level when it reaches the end of the line ( defaults to false )
 --      'chain' ( int >= 1 ) - defines the number of 'links' in the chain ( defaults to 1 )
+--      'injure' ( int >= 1 ) - the amount of damage the platform inflicts ( defaults to 0 )
 
 -- 'line' object
 --      Must be setup in the 'movement' object layer
@@ -68,6 +69,9 @@ function MovingPlatform.new(node, collider)
     mp.moving = node.properties.touchstart ~= 'true'
     mp.singleuse = node.properties.singleuse == 'true'
     mp.chain = tonumber(node.properties.chain) or 1
+    mp.injure = node.properties.injure and tonumber(node.properties.injure) or 0
+    mp.foreground = node.properties.foreground == 'true'
+    mp.wait = node.properties.wait and tonumber(node.properties.injure) or 0
 
     mp.velocity = {x=0, y=0}
 
@@ -101,6 +105,10 @@ function MovingPlatform:collide(node, dt, mtv_x, mtv_y)
     end
     if not self.moving and self.pos <= 1 then
         self.moving = true
+    end
+    if self.injure and node.hurt then
+        --player:hurt(self.injure)
+        node:hurt(self.injure)
     end
 end
 
