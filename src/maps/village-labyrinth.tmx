@@ -340,6 +340,7 @@
     <property name="enemytype" value="fish_horizontal"/>
    </properties>
   </object>
+  <object name="feral_woman" type="npc" x="144" y="1248" width="48" height="48"/>
  </objectgroup>
  <objectgroup color="#11a41b" draworder="topdown" name="platform" width="95" height="65">
   <object x="504" y="960" width="48" height="24"/>
