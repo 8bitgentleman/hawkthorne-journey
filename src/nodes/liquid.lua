@@ -10,7 +10,7 @@
 -- 'tile_height' ( integer ) - Height of the sprite tiles ( deafults to 24 )
 -- 'tile_width' ( integer ) - Width of the sprite tiles ( deafults to 24 )
 -- 'death' ( true / false ) - Player dies immediaetly on contact with liquid
--- 'injure' ( true / false ) - Player is injured for as long as they are touching the liquid
+-- 'injure' ( true / false ) - Player loses oxygen for as long as they are touching the liquid
 -- 'drown' ( true / false ) - Player dies when his head is submersed in the liquid
 -- 'drag' ( true / false ) - Player is slowly dragged down by the liquid ( like quicksand )
 -- 'speed' ( 0 => 1 ) - Speed at which the animation is played ( defaults to 0.2 )
@@ -102,10 +102,10 @@ function Liquid:collide(node, dt, mtv_x, mtv_y)
 
   if self.injure and self.injure_timer then
         Timer.add(self.injure_timer, function()
-        player:hurt(self.injure)
+        player:suffocate(self.injure)
         end)
   elseif self.injure then
-    player:hurt(self.injure)
+    player:suffocate(self.injure)
   end
 
   if self.drown and player.position.y >= self.position.y then

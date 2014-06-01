@@ -637,6 +637,47 @@ function Player:hurt(damage)
     self:startBlink()
 end
 
+function Player:suffocate(damage)
+
+    if self.invulnerable or self.godmode then
+        return
+    end
+
+    damage = math.floor(damage)
+    if damage == 0 then
+        return
+    end
+
+    sound.playSfx( "damage" )
+    self.rebounding = false
+    self.invulnerable = true
+
+    if damage ~= nil then
+        self.damageTaken = damage
+        self.oxygen = math.max(self.oxygen - damage, 0)
+    end
+
+    if self.oxygen <= 0 then
+        self.health = 0
+        self.dead = true
+        self.character.state = 'dead'
+    else
+        self.attacked = true
+        self.character.state = 'hurt'
+    end
+    
+    Timer.add(0.4, function()
+        self.attacked = false
+    end)
+
+    Timer.add(1.5, function() 
+        self.invulnerable = false
+        self.flash = false
+        self.rebounding = false
+    end)
+
+    self:startBlink()
+end
 ---
 -- Call to take falling damage, and reset self.fall_damage to 0
 -- @return nil
@@ -687,21 +728,21 @@ function Player:draw()
         return
     end
 
---if self.blink then
-  --      local arrayMax = table.getn(oxygenbarq)
+	if self.blink and self.oxygen<100 then
+        local arrayMax = table.getn(oxygenbarq)
         -- a player can apparently be damaged by .5 (say from falling), so we need to ensure we're dealing with
         -- integers when accessing the array
         -- also ensure the index is in bounds. (1 to arrayMax)
-    --    local drawHealth = math.floor(self.health) + 1
-    --  if drawHealth > arrayMax then
---       drawHealth = arrayMax
---    elseif drawHealth < 1 then
---        drawHealth = 1
---    end
---    love.graphics.drawq(oxygenbar, oxygenbarq[drawHealth],
---                        math.floor(self.position.x) - 18,
---                        math.floor(self.position.y) - 18)
-    --end
+       local drawOxygen = math.floor(self.oxygen) + 1
+      if drawOxygen > arrayMax then
+       drawOxygen = arrayMax
+    elseif drawOxygen < 1 then
+        drawOxygen = 1
+    end
+    love.graphics.drawq(oxygenbar, oxygenbarq[drawOxygen],
+                        math.floor(self.position.x) - 18,
+                        math.floor(self.position.y) - 18)
+    end
 
     if self.flash then
         love.graphics.setColor( 255, 0, 0, 255 )
