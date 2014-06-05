@@ -55,9 +55,4 @@ return {
         { type='material', name='leaf' },
         { type='weapon', name='arrow' }
     },
-    {
-        { type='material', name='bone' },
-        { type='material', name='ember' },
-        { type='weapon', name='bomb' }
-    },
 }
