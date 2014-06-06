@@ -18,7 +18,7 @@ local Inventory = require('inventory')
 
 local oxygenbarq = {}
 
-for i=20,0,-1 do
+for i=5,0,-1 do
     table.insert(oxygenbarq, love.graphics.newQuad(28 * i, 0, 28, 27,
                              oxygenbar:getWidth(), oxygenbar:getHeight()))
 end
@@ -639,7 +639,7 @@ end
 
 function Player:suffocate(damage)
 
-    if self.invulnerable or self.godmode then
+    if self.invulnerable or self.godmode or self.dead then
         return
     end
 
@@ -716,6 +716,9 @@ end
 -- Draws the player to the screen
 -- @return nil
 function Player:draw()
+        -- get rid of these
+    love.graphics.print(self.oxygen, self.position.x + 80, 50)
+
     if self.stencil then
         love.graphics.setStencil( self.stencil )
     else

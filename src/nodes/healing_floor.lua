@@ -18,7 +18,7 @@ end
 
 function Wall:collide_end( node )
     if node and node.isPlayer then
-        node.health = node.max_health
+        node.oxygen = node.max_oxygen
         sound.playSfx( "healing_quiet" )
     end
 
