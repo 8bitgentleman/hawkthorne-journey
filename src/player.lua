@@ -12,12 +12,14 @@ local InputController = require 'inputcontroller'
 local app = require 'app'
 local camera = require 'camera'
 
-local Inventory = require('inventory')
-
 local oxygenbar = love.graphics.newImage('images/hud/oxygenbar.png')
 oxygenbar:setFilter('nearest', 'nearest')
 
-for i=5,0,-1 do
+local Inventory = require('inventory')
+
+local oxygenbarq = {}
+
+for i=60,0,-1 do
     table.insert(oxygenbarq, love.graphics.newQuad(28 * i, 0, 28, 27,
                              oxygenbar:getWidth(), oxygenbar:getHeight()))
 end
@@ -652,6 +654,10 @@ function Player:suffocate(damage)
     sound.playSfx( "damage" )
     self.rebounding = false
     self.invulnerable = true
+    
+    local color = self.color
+    self.color = {255, 0, 0, 255}
+    if not color then color = self.color end
 
     if damage ~= nil then
         self.damageTaken = damage
@@ -731,6 +737,8 @@ end
 -- Draws the player to the screen
 -- @return nil
 function Player:draw()
+        -- get rid of these
+    love.graphics.print(self.oxygen, self.position.x + 10, 140)
 
     if self.currently_held and self.currently_held.type == 'vehicle' then return end
 
@@ -752,12 +760,12 @@ function Player:draw()
         -- integers when accessing the array
         -- also ensure the index is in bounds. (1 to arrayMax)
        local drawOxygen = math.floor(self.oxygen) + 1
-      if drawOxygen > arrayMax then
+    if drawOxygen > arrayMax then
        drawOxygen = arrayMax
     elseif drawOxygen < 1 then
         drawOxygen = 1
     end
-    love.graphics.drawq(oxygenbar, oxygenbarq[drawOxygen],
+    love.graphics.draw(oxygenbar, oxygenbarq[drawOxygen],
                         math.floor(self.position.x) - 18,
                         math.floor(self.position.y) - 18)
     end

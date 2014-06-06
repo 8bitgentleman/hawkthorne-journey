@@ -26,6 +26,7 @@ local utils = require 'utils'
 local anim8 = require 'vendor/anim8'
 local cheat = require 'cheat'
 local window = require 'window'
+local Timer = require 'vendor/timer'
 
 local Liquid = {}
 Liquid.__index = Liquid
