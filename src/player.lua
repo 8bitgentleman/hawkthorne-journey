@@ -14,6 +14,14 @@ local camera = require 'camera'
 
 local Inventory = require('inventory')
 
+local oxygenbar = love.graphics.newImage('images/hud/oxygenbar.png')
+oxygenbar:setFilter('nearest', 'nearest')
+
+for i=5,0,-1 do
+    table.insert(oxygenbarq, love.graphics.newQuad(28 * i, 0, 28, 27,
+                             oxygenbar:getWidth(), oxygenbar:getHeight()))
+end
+
 local Player = {}
 Player.__index = Player
 Player.isPlayer = true
@@ -67,6 +75,9 @@ function Player.new(collider)
     plyr.healthVel = {x=0, y=0}
     plyr.max_health = 100
     plyr.health = plyr.max_health
+    --oxygen
+    plyr.max_oxygen = 100
+    plyr.oxygen = plyr.max_oxygen
     
     plyr.jumpDamage = 3
     plyr.punchDamage = 1
@@ -89,14 +100,21 @@ function Player:refillHealth()
   self.health = self.max_health
 end
 
+--not sure about this
+function Player:refillOxygen()
+  self.oxygen = self.max_oxygen
+end
+
 function Player:refreshPlayer(collider)
     if app.config.hardcore and self.dead then
       self.health = self.max_health
+      self.oxygen = self.max_oxygen
     else
       if self.character.changed or self.dead then
           self.character.changed = false
           self.money = 0
           self:refillHealth()
+          self:refillOxygen()
           self.inventory = Inventory.new( self )
           local gamesave = app.gamesaves:active()
           if gamesave then
@@ -620,6 +638,48 @@ function Player:hurt(damage)
     self:startBlink()
 end
 
+function Player:suffocate(damage)
+
+    if self.invulnerable or self.godmode or self.dead then
+        return
+    end
+
+    damage = math.floor(damage)
+    if damage == 0 then
+        return
+    end
+
+    sound.playSfx( "damage" )
+    self.rebounding = false
+    self.invulnerable = true
+
+    if damage ~= nil then
+        self.damageTaken = damage
+        self.oxygen = math.max(self.oxygen - damage, 0)
+    end
+
+    if self.oxygen <= 0 then
+        self.health = 0
+        self.dead = true
+        self.character.state = 'dead'
+    else
+        self.attacked = true
+        self.character.state = 'hurt'
+    end
+    
+    Timer.add(0.4, function()
+        self.attacked = false
+    end)
+
+    Timer.add(1.5, function() 
+        self.invulnerable = false
+        self.flash = false
+        self.rebounding = false
+    end)
+
+    self:startBlink()
+end
+
 function Player:potionFlash(duration,color)
     self:stopBlink()
     self.color = color
@@ -684,6 +744,22 @@ function Player:draw()
         local y = self.position.y - self.character.beam:getHeight() + self.height + 4
         self.character.animations.warp:draw(self.character.beam, self.position.x + 6, y)
         return
+    end
+    
+    if self.blink and self.oxygen<100 then
+        local arrayMax = table.getn(oxygenbarq)
+        -- a player can apparently be damaged by .5 (say from falling), so we need to ensure we're dealing with
+        -- integers when accessing the array
+        -- also ensure the index is in bounds. (1 to arrayMax)
+       local drawOxygen = math.floor(self.oxygen) + 1
+      if drawOxygen > arrayMax then
+       drawOxygen = arrayMax
+    elseif drawOxygen < 1 then
+        drawOxygen = 1
+    end
+    love.graphics.drawq(oxygenbar, oxygenbarq[drawOxygen],
+                        math.floor(self.position.x) - 18,
+                        math.floor(self.position.y) - 18)
     end
 
     if self.flash then

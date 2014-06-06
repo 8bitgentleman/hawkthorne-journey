@@ -11,6 +11,7 @@
 -- 'tile_width' ( integer ) - Width of the sprite tiles ( deafults to 24 )
 -- 'death' ( true / false ) - Player dies immediaetly on contact with liquid
 -- 'injure' ( true / false ) - Player is injured for as long as they are touching the liquid
+-- 'oxygen' ( true / false ) - Player loses oxygen for as long as they are touching the liquid
 -- 'drown' ( true / false ) - Player dies when his head is submersed in the liquid
 -- 'drag' ( true / false ) - Player is slowly dragged down by the liquid ( like quicksand )
 -- 'speed' ( 0 => 1 ) - Speed at which the animation is played ( defaults to 0.2 )
@@ -57,6 +58,8 @@ function Liquid.new(node, collider)
 
   liquid.death = np.death == 'true'
   liquid.injure = np.injure == 'true'
+  liquid.oxygen = np.oxygen and tonumber(np.injure) or 10
+  liquid.injure_timer = np.injure_timer and tonumber (np.injure_timer) or 0
   liquid.drown = np.drown == 'true'
   liquid.drag = np.drag == 'true'
   liquid.foreground = np.foreground ~= 'false'
@@ -101,6 +104,16 @@ function Liquid:collide(node, dt, mtv_x, mtv_y)
   if self.injure then
     player:hurt(10)
   end
+  if self.oxygen and self.injure_timer then
+        Timer.add(self.injure_timer, function()
+        player:suffocate(self.oxygen)
+        end)
+  elseif self.oxygen then
+    player:suffocate(self.oxygen)  if self.injure then
+    player.oxygen = 100
+  end
+   end
+
 
   if self.drown and player.position.y >= self.position.y then
     player.health = 0
@@ -133,6 +146,10 @@ function Liquid:collide_end(node, dt, mtv_x, mtv_y)
   -- unmask
   if self.mask then player.stencil = nil end
   
+  if self.oxygen then
+    player.oxygen = 100
+  end
+
   if self.drag and player.liquid_drag then
     player.liquid_drag = false
     if player.velocity.y < 0 then
