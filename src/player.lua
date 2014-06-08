@@ -78,6 +78,8 @@ function Player.new(collider)
     plyr.canSlideAttack = false
     
     plyr.on_ice = false
+    plyr.deaths = 0
+    plyr.time = 0
 
     plyr.visitedLevels = {}
 
@@ -103,6 +105,9 @@ function Player:refreshPlayer(collider)
               self:loadSaveData( gamesave )
           end
       end
+    end
+    if self.dead then
+    	self.deaths = self.deaths + 1
     end
 
     self.invulnerable = false
@@ -336,8 +341,15 @@ end
 -- This is the main update loop for the player, handling position updates.
 -- @param dt The time delta
 -- @return nil
+
+function Player:round(num, idp)
+  local mult = 10^(idp or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
 function Player:update( dt )
 
+	self.time = self.time + dt
     self.inventory:update( dt )
     self.attack_box:update()
     
@@ -671,7 +683,7 @@ end
 -- Draws the player to the screen
 -- @return nil
 function Player:draw()
-
+	love.graphics.print(string.format("%5.0f", self.time), self.position.x + 80, 200)
     if self.currently_held and self.currently_held.type == 'vehicle' then return end
 
     if self.stencil then
