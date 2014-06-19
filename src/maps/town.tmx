@@ -131,6 +131,16 @@
     <property name="width" value="24"/>
    </properties>
   </object>
+  <object type="liquid" x="120" y="168" width="120" height="96">
+   <properties>
+    <property name="foreground" value="false"/>
+    <property name="opacity" value=".2"/>
+    <property name="oxygen" value="1"/>
+    <property name="speed" value="0.2"/>
+    <property name="sprite" value="images/liquid/waterfall.png"/>
+    <property name="uniform" value="true"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup color="#12a460" draworder="topdown" name="block" width="80" height="14">
   <object x="0" y="264" width="1920" height="72"/>

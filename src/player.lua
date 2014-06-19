@@ -19,7 +19,7 @@ local Inventory = require('inventory')
 
 local oxygenbarq = {}
 
-for i=60,0,-1 do
+for i=20,0,-1 do
     table.insert(oxygenbarq, love.graphics.newQuad(28 * i, 0, 28, 27,
                              oxygenbar:getWidth(), oxygenbar:getHeight()))
 end
@@ -78,7 +78,7 @@ function Player.new(collider)
     plyr.max_health = 100
     plyr.health = plyr.max_health
     --oxygen
-    plyr.max_oxygen = 100
+    plyr.max_oxygen = 20
     plyr.oxygen = plyr.max_oxygen
     
     plyr.jumpDamage = 3
@@ -668,9 +668,7 @@ function Player:suffocate(damage)
         self.health = 0
         self.dead = true
         self.character.state = 'dead'
-    else
-        self.attacked = true
-        self.character.state = 'hurt'
+
     end
     
     Timer.add(0.4, function()
@@ -683,7 +681,6 @@ function Player:suffocate(damage)
         self.rebounding = false
     end)
 
-    self:startBlink()
 end
 
 function Player:potionFlash(duration,color)
@@ -754,7 +751,13 @@ function Player:draw()
         return
     end
     
-    if self.blink and self.oxygen<100 then
+    if self.oxygen<self.max_oxygen then
+        love.graphics.draw(oxygenbar, oxygenbarq[self.oxygen + 1],
+                            math.floor(self.position.x) - 18,
+                            math.floor(self.position.y) - 18)
+    end
+    
+    --[[if self.blink and self.oxygen<100 then
         local arrayMax = table.getn(oxygenbarq)
         -- a player can apparently be damaged by .5 (say from falling), so we need to ensure we're dealing with
         -- integers when accessing the array
@@ -768,7 +771,7 @@ function Player:draw()
     love.graphics.draw(oxygenbar, oxygenbarq[drawOxygen],
                         math.floor(self.position.x) - 18,
                         math.floor(self.position.y) - 18)
-    end
+    end--]]
 
     if self.flash then
         love.graphics.setColor(self.color)

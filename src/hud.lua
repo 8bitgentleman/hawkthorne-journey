@@ -66,6 +66,21 @@ function HUD:update(dt)
     end
 end
 
+--[[function HUD:oxygenBar( player )
+  local oxygenbar = love.graphics.newImage('images/hud/oxygenbar.png')
+  oxygenbar:setFilter('nearest', 'nearest')
+
+  local Inventory = require('inventory')
+
+  local oxygenbarq = {}
+
+  for i=20,0,-1 do
+      table.insert(oxygenbarq, love.graphics.newQuad(28 * i, 0, 28, 27,
+                             oxygenbar:getWidth(), oxygenbar:getHeight()))
+  end
+
+end]]
+
 function HUD:draw( player )
   if not window.dressing_visible then
     return
@@ -123,6 +138,10 @@ function HUD:draw( player )
   end
 
   fonts.revert()
+
+  --[[if player.oxygen < 100 then
+    self:oxygenBar( player )
+  end]]
 end
 
 return HUD

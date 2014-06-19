@@ -111,7 +111,7 @@ function Liquid:collide(node, dt, mtv_x, mtv_y)
         end)
   elseif self.oxygen then
     player:suffocate(self.oxygen)  if self.injure then
-    player.oxygen = 100
+    player.oxygen = player.max_oxygen
   end
    end
 
@@ -148,7 +148,7 @@ function Liquid:collide_end(node, dt, mtv_x, mtv_y)
   if self.mask then player.stencil = nil end
   
   if self.oxygen then
-    player.oxygen = 100
+    player.oxygen = player.max_oxygen
   end
 
   if self.drag and player.liquid_drag then
