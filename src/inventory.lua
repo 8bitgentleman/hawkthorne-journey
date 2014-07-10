@@ -35,7 +35,7 @@ scrollSprite:setFilter('nearest','nearest')
 local animGrid = anim8.newGrid(100, 105, sprite:getWidth(), sprite:getHeight())
 local scrollGrid = anim8.newGrid(5,40, scrollSprite:getWidth(), scrollSprite:getHeight())
 local craftingGrid = anim8.newGrid(75, 29, craftingAnnexSprite:getWidth(), craftingAnnexSprite:getHeight())
-local tooltipGrid = anim8.newGrid(87, 130, tooltipAnnexSprite:getWidth(), tooltipAnnexSprite:getHeight())
+local tooltipGrid = anim8.newGrid(200, 109, tooltipAnnexSprite:getWidth(), tooltipAnnexSprite:getHeight())
 ---
 -- Creates a new inventory
 -- @return inventory
@@ -113,12 +113,12 @@ function Inventory.new( player )
     --This is all pretty much identical to the corresponding lines for the main inventory, but applies to the tooltip annex.
     inventory.tooltipState = 'closing'
     inventory.tooltipAnimations = {
-        opening = anim8.newAnimation('once', tooltipGrid('1-7,1'),0.04),
-        open = anim8.newAnimation('once', tooltipGrid('7,1'), 1),
-        closing = anim8.newAnimation('once', tooltipGrid('1-7,1'),0.06)
+        opening = anim8.newAnimation('once', tooltipGrid('1-5,1'),0.04),
+        open = anim8.newAnimation('once', tooltipGrid('5,1'), 1),
+        closing = anim8.newAnimation('once', tooltipGrid('1-5,1'),0.06)
     }
     inventory.tooltipAnimations['closing'].direction = -1
-    inventory.tooltipAnimations['closing'].position = 7
+    inventory.tooltipAnimations['closing'].position = 5
 
     return inventory
 end
@@ -171,7 +171,7 @@ function Inventory:animUpdate()
     end
     if self:tooltipAnimation().status == "finished" then
         if self.tooltipState == "closing" then
-            self:tooltipAnimation():gotoFrame(7)
+            self:tooltipAnimation():gotoFrame(5)
             self:tooltipAnimation():pause()
             self.tooltipVisible = false
         elseif self.tooltipState == "opening" then
@@ -257,11 +257,6 @@ function Inventory:draw( playerPosition )
         if self.craftingVisible then
             self:craftingAnimation():draw(craftingAnnexSprite, pos.x + 97, pos.y + 42)
         end
-        
-        --Draw the tooltip annex, if it's open
-        if self.tooltipVisible then
-            self:tooltipAnimation():draw(tooltipAnnexSprite, pos.x + -84, pos.y - 13 )
-        end
 
         --Draw the scroll bar
         self.scrollAnimations[self.scrollbar]:draw(scrollSprite, pos.x + 8, pos.y + 43)
@@ -314,12 +309,38 @@ function Inventory:draw( playerPosition )
                 end
             end
         end
+				
+				--If we're on the weapons screen, then draw a green border around the currently selected index, unless it's out of view.
+        if self.currentPageName == 'weapons' and self.selectedWeaponIndex <= self.pageLength then
+            local lowestVisibleIndex = (self.scrollbar - 1 )* 2 + 1
+            local weaponPosition = self.selectedWeaponIndex - lowestVisibleIndex
+            if self.selectedWeaponIndex >= lowestVisibleIndex and self.selectedWeaponIndex < lowestVisibleIndex + 8 then
+                love.graphics.draw(curWeaponSelect,
+                    love.graphics.newQuad(0,0, curWeaponSelect:getWidth(), curWeaponSelect:getHeight(), curWeaponSelect:getWidth(), curWeaponSelect:getHeight()),
+                    self:slotPosition(weaponPosition).x + ffPos.x - 2, self:slotPosition(weaponPosition).y + ffPos.y - 2)
+            end
+        end
+        if self.currentPageName == 'scrolls' and self.selectedWeaponIndex >= self.pageLength then
+            local lowestVisibleIndex = (self.scrollbar - 1 )* 2 + 1
+            local index = self.selectedWeaponIndex - self.pageLength
+            local scrollPosition = index - lowestVisibleIndex
+            if index >= lowestVisibleIndex and index < lowestVisibleIndex + 8 then
+                love.graphics.draw(curWeaponSelect,
+                    love.graphics.newQuad(0,0, curWeaponSelect:getWidth(), curWeaponSelect:getHeight(), curWeaponSelect:getWidth(), curWeaponSelect:getHeight()),
+                    self:slotPosition(scrollPosition).x + ffPos.x - 2, self:slotPosition(scrollPosition).y + ffPos.y - 2)
+            end
+        end
+				
+         --Draw the tooltip annex, if it's open
+        if self.tooltipVisible then
+            self:tooltipAnimation():draw(tooltipAnnexSprite, pos.x - 2, pos.y - 2)
+        end
 
         --Draw the tooltip window
         if self.tooltipState == 'open' then
             local tooltipText = {
-                x = pos.x - 76,
-                y = pos.y - 6
+                x = pos.x + 10,
+                y = pos.y + 10
             }
             local slotIndex = self:slotIndex(self.cursorPos)
             local item = nil
@@ -360,30 +381,6 @@ function Inventory:draw( playerPosition )
             end
             love.graphics.setColor(255, 255, 255)
         end
-
-
-        --If we're on the weapons screen, then draw a green border around the currently selected index, unless it's out of view.
-        if self.currentPageName == 'weapons' and self.selectedWeaponIndex <= self.pageLength then
-            local lowestVisibleIndex = (self.scrollbar - 1 )* 2 + 1
-            local weaponPosition = self.selectedWeaponIndex - lowestVisibleIndex
-            if self.selectedWeaponIndex >= lowestVisibleIndex and self.selectedWeaponIndex < lowestVisibleIndex + 8 then
-                love.graphics.draw(curWeaponSelect,
-                    love.graphics.newQuad(0,0, curWeaponSelect:getWidth(), curWeaponSelect:getHeight(), curWeaponSelect:getWidth(), curWeaponSelect:getHeight()),
-                    self:slotPosition(weaponPosition).x + ffPos.x - 2, self:slotPosition(weaponPosition).y + ffPos.y - 2)
-            end
-        end
-        if self.currentPageName == 'scrolls' and self.selectedWeaponIndex >= self.pageLength then
-            local lowestVisibleIndex = (self.scrollbar - 1 )* 2 + 1
-            local index = self.selectedWeaponIndex - self.pageLength
-            local scrollPosition = index - lowestVisibleIndex
-            if index >= lowestVisibleIndex and index < lowestVisibleIndex + 8 then
-                love.graphics.draw(curWeaponSelect,
-                    love.graphics.newQuad(0,0, curWeaponSelect:getWidth(), curWeaponSelect:getHeight(), curWeaponSelect:getWidth(), curWeaponSelect:getHeight()),
-                    self:slotPosition(scrollPosition).x + ffPos.x - 2, self:slotPosition(scrollPosition).y + ffPos.y - 2)
-            end
-        end
-
-
     end
     fonts.revert() -- Changes back to old font
 end
@@ -420,7 +417,11 @@ function Inventory:keypressed( button )
         ATTACK = self.select,
         JUMP = self.tooltip
     }
-    if self:isOpen() and keys[button] then keys[button](self) end
+    if self:isOpen() and keys[button] then
+		  if button == "JUMP" or self.tooltipVisible == false then
+		    keys[button](self)
+			end
+	  end
 end
 
 ---
