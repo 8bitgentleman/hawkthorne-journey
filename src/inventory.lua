@@ -336,7 +336,7 @@ function Inventory:draw( playerPosition )
                     x = pos.x - 76,
                     y = pos.y - 6
                 }           
-            if pos.y < hud_top or (pos.y < hud_top and pos.x < hud_right) then 
+            if pos.y <= hud_top then
                 tooltipText = {
                     x = pos.x + 18,
                     y = pos.y + 114
