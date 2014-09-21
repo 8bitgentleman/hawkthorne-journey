@@ -8,6 +8,7 @@ local utils = require 'utils'
 local Timer = require 'vendor/timer'
 local Player = require 'player'
 local Emotion = require 'nodes/emotion'
+local game = require 'game'
 
 local Menu = {}
 Menu.__index = Menu
@@ -256,7 +257,7 @@ function NPC.new(node, collider)
     npc.collider = collider
     npc.bb = collider:addRectangle(0,0,(npc.props.bb_width or npc.props.width),(npc.props.bb_height or npc.props.height))
     npc.bb.node = npc
-    npc.collider:setPassive(npc.bb)
+    --npc.collider:setPassive(npc.bb)
  
     --define some offsets for the bounding box that can be used each update cycle
     npc.bb_offset = {x = npc.props.bb_offset_x or 0,
@@ -360,6 +361,10 @@ function NPC.new(node, collider)
                         menuColor)
 
     npc.emotion = Emotion.new(npc)
+	npc.velocity = {
+        x = node.velocityX or (node.velocity and node.velocity.x) or 0,
+        y = node.velocityY or (node.velocity and node.velocity.y) or 0
+    }
 
     return npc
 end
@@ -437,6 +442,22 @@ function NPC:collide(node, dt, mtv_x, mtv_y)
     if self.props.collide then self.props.collide(self, node, dt, mtv_x, mtv_y) end
 end
 
+function NPC:ceiling_pushback(node, new_y)
+    if self.props.ceiling_pushback then
+        self.props.ceiling_pushback(self,node,new_y)
+    end
+end
+
+function NPC:floor_pushback(node, new_y)
+    if self.props.floor_pushback then
+        self.props.floor_pushback(self,node,new_y)
+    else
+        self.position.y = new_y
+        self.velocity.y = 0
+        self:update_bb()
+    end
+end
+
 function NPC:hurt(damage, special_damage, knockback)
     if self.props.hurt then
         self.props.hurt(self, special_damage, knockback)
@@ -496,6 +517,15 @@ function NPC:update(dt, player)
     else
 		self.affectionText.y = self.position.y
 	end
+
+	if not self.props.antigravity and not self.dead then
+        -- Gravity
+        self.velocity.y = self.velocity.y + game.gravity * dt
+        if self.velocity.y > game.max_y then
+            self.velocity.y = game.max_y
+        end
+    end
+    self.position.y = self.position.y + (self.velocity.y * dt)
 
     -- Moves the bb with the npc
     self:update_bb()
