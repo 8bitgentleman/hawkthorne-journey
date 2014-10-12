@@ -44,6 +44,8 @@ function Projectile.new(node, collider)
   proj.bb.node = proj
   proj.stayOnScreen = proj.props.stayOnScreen
   proj.start_x = node.x
+  proj.explosive = proj.props.explosive or false
+  proj.explodeTime = proj.props.explodeTime or 0 
 
   local animations = proj.props.animations
   local g = anim8.newGrid( proj.props.frameWidth,
@@ -63,6 +65,13 @@ function Projectile.new(node, collider)
                           animations.finish[1],
                           g(unpack(animations.finish[2])),
                           animations.finish[3])
+  if proj.explosive then
+    proj.explodeAnimation = anim8.newAnimation(
+              animations.explode[1],
+              g(unpack(animations.explode[2])),
+              animations.explode[3])
+  end
+
   proj.animation = proj.defaultAnimation
   proj.position = { x = node.x, y = node.y }
   proj.velocity = { x = proj.props.velocity.x,
@@ -118,7 +127,7 @@ function Projectile:draw()
   if self.velocity.x < 0 or self.defaultDirection == "left" then
     scalex = -1
   end
-  self.animation:draw(self.sheet, math.floor(self.position.x), self.position.y, 0, scalex, 1)
+  self.animation:draw(self.sheet, math.floor(self.position.x), self.position.y+self.offset.y, 0, scalex, 1)
 end
 
 function Projectile:update(dt, player, map)
@@ -257,6 +266,16 @@ function Projectile:collide_end(node, dt)
   end
   if self.props.collide_end then
     self.props.collide_end(node, dt, self)
+  end
+  if self.explosive and node.isEnemy then
+    self.velocity.x = self.velocity.x/2
+    self.animation = self.explodeAnimation
+    if self.props.explode_sound then
+      sound.playSfx( self.props.explode_sound )
+    end
+    Timer.add(self.explodeTime, function () 
+      self.dead = true
+    end)
   end
 end
 
