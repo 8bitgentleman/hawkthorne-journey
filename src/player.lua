@@ -1032,7 +1032,7 @@ function Player:attack()
     --do nothing if we have a nonwieldable
   elseif self.doBasicAttack then
     punch()
-  elseif currentWeapon and (currentWeapon.props.subtype=='melee' or currentWeapon.props.subtype == 'ranged') then
+  elseif currentWeapon and (currentWeapon.props.subtype=='melee' or currentWeapon.props.subtype == 'ranged' or currentWeapon.props.subtype == 'magic') then
     if self.character.state == "crouch" then
       -- still allow the player to dig
       punch()

@@ -20,6 +20,8 @@ return {
   dropWidth = 24,
   dropHeight = 44,
   damage = 15,
+  projectile = "waterSpout",
+  throwDelay = 0.24,
   special_damage = {water = 6},
   bbox_width = 18,
   bbox_height = 18,
@@ -34,9 +36,10 @@ return {
     wieldCharged = {'once', {'3,1', '7,1','11,1'},0.2}
   },
   action = "wieldaction3",
+  actionwalk = "wieldaction3",
+  actionjump = "wieldaction3",
 
   update = function(dt, player, map)
-
 
   end
 }

@@ -196,7 +196,7 @@ function Projectile:update(dt, player, map)
   if self.props.update then
     self.props.update(dt, self)
   end
-
+ 
   self:moveBoundingBox()
   self.animation:update(dt)
 end

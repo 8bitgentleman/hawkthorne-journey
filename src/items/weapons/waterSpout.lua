@@ -2,7 +2,7 @@ return{
   name = "waterSpout",
   description = "Water Spout",
   type = "weapon",
-  subtype = "projectile",
+  subtype = "ammo",
   damage = '5',
   special_damage = 'water= 6',
   info = 'a water spout',

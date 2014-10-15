@@ -63,7 +63,7 @@ function Weapon.new(node, collider, plyr, weaponItem)
   weapon.bbox_offset_y = props.bbox_offset_y
 
   weapon.isFlammable = node.properties.isFlammable or props.isFlammable or false
-  weapon.magical = props.magical or false
+
 
   weapon.wield_rate = props.animations.wield[3]
 
@@ -77,18 +77,6 @@ function Weapon.new(node, collider, plyr, weaponItem)
         props.animations.wield[1],
         g(unpack(props.animations.wield[2])),
         props.animations.wield[3])
-  if weapon.magical == true then
-    weapon.chargeUpTime = 0
-    weapon.charged = false
-    weapon.defaultChargedAnimation = anim8.newAnimation(
-        props.animations.defaultCharged[1],
-        g(unpack(props.animations.defaultCharged[2])),
-        props.animations.defaultCharged[3])
-    weapon.wieldChargedAnimation = anim8.newAnimation(
-        props.animations.wieldCharged[1],
-        g(unpack(props.animations.wieldCharged[2])),
-        props.animations.wieldCharged[3])
-  end
 
   weapon.animation = weapon.defaultAnimation
 
@@ -190,20 +178,7 @@ function Weapon:collide(node, dt, mtv_x, mtv_y)
   if self.isFlammable and node.burn then
     node:burn(self.position.x,self.position.y)
   end
-  if self.magical and self.charged then
-    local node = {
-    type = 'projectile',
-    name = 'waterSpout',
-    x = self.position.x,
-    y = self.position.y,
-    width = 24,
-    height = 72,
-    properties = {}
-    }
-    local waterSpout = Projectile.new( node, weapon.collider )
-    local level = Gamestate.currentState()
-    level:addNode(waterSpout)
-  end
+  
 end
 
 function Weapon:initializeBoundingBox(collider)
@@ -297,23 +272,11 @@ function Weapon:update(dt, player, map)
     end
 
 
-    if self.magical then
-      self.chargeUpTime = self.chargeUpTime + dt
-      if self.chargeUpTime >= 10 then
-        self.chargeUpTime = 0
-        self.charged = true
-        self.animation = self.defaultChargedAnimation
-      end
-    end
-
     if player.wielding and self.animation and self.animation.status == "finished" then
       if self.bb then
         self.collider:setGhost(self.bb)
       end
       player.wielding = false
-      if self.charged then
-        self.charged = false
-      end
       self.animation = self.defaultAnimation 
     end
   end
@@ -352,12 +315,7 @@ function Weapon:wield()
   self.player.wielding = true
 
   if self.animation then
-    if self.charged then
-      self.animation = self.wieldChargedAnimation
-      self.charged = false
-    else
-      self.animation = self.wieldAnimation
-    end
+    self.animation = self.wieldAnimation
     self.animation:gotoFrame(1)
     self.animation:resume()
   end
