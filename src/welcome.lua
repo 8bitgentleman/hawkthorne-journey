@@ -11,7 +11,7 @@ local Timer = require 'vendor/timer'
 local state = Gamestate.new()
 
 function state:init()
---
+
   self.menu = menu.new({ 'start', 'controls', 'options', 'credits', 'exit' })
   self.menu:onSelect(function(option)
     if option == 'exit' then
@@ -52,8 +52,7 @@ function state:enter(previous)
 end
 
 function state:keypressed( button )
-    self.code_loaded = true
-    --self.menu:keypressed(button)
+  self.code_loaded = true
   
   if self.menu_shown then
     self.menu:keypressed(button)
@@ -62,15 +61,14 @@ end
 
 function state:update(dt)
   
-   self.line_timer = self.line_timer + dt 
+   self.line_timer = self.line_timer + dt
    self.code_timer = self.code_timer + dt
-   if self.line_timer > 0.05 then
+   if self.line_timer > 0.03 then
     self.line_timer = 0
     self.line_short = self.line_short..self.line.sub(self.line, self.line_count, self.line_count)
     self.line_count = self.line_count + 1
-    if self.line_count >135 then
+    if self.line_count > 135 then
       if self.code_timer > 0.005 then
-        self.line_timer = self.line_timer + 4*dt
         self.code_timer = 0
         for i = 1, 7 do
           if self.code_count[1] > self.count_check[i] then
@@ -121,11 +119,9 @@ function state:draw()
       love.graphics.print(app.i18n(option), x + 23, y + 12 * n - 2, 0, 0.5, 0.5)
     end
     self.menu_shown = true
-    love.graphics.print(self.text, window.width/2-65, window.height - 24, 0, 0.5, 0.5)
+    -- control instructions
+    love.graphics.print(self.text, window.width/2 - 65, window.height - 24, 0, 0.5, 0.5)
   end
-
-  -- control instructions
-  
 
 end
 
