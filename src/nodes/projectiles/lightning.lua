@@ -16,7 +16,7 @@ return{
   velocity = { x = 0, y = 0 }, --initial velocity
   throwVelocityX = 600,
   throwVelocityY = 0,
-  offset = { x = 15, y = -15},
+  offset = { x = 0, y = 0},
   stayOnScreen = false,
   thrown = false,
   damage = 4,
