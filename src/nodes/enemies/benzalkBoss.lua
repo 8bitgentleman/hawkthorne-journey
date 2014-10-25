@@ -3,11 +3,16 @@ local gamestate = require 'vendor/gamestate'
 local sound = require 'vendor/TEsound'
 local Timer = require 'vendor/timer'
 local Projectile = require 'nodes/projectile'
+<<<<<<< HEAD
 local Sprite = require 'nodes/sprite'
 local sound = require 'vendor/TEsound'
 local utils = require 'utils'
 local game = require 'game'
 local collision  = require 'hawk/collision'
+=======
+local sound = require 'vendor/TEsound'
+local utils = require 'utils'
+>>>>>>> Start BenzalkBoss
 
 local window = require 'window'
 local camera = require 'camera'
@@ -24,7 +29,11 @@ return {
   knockback = 0,
   player_rebound = 200,
   bb_width = 60,
+<<<<<<< HEAD
   bb_height = 88,
+=======
+  bb_height = 90,
+>>>>>>> Start BenzalkBoss
   bb_offset = { x = 0, y = 0},
   attack_width = 15,
   attack_height = 20,
@@ -34,9 +43,12 @@ return {
   tokens = 15,
   hand_x = -40,
   hand_y = 70,
+<<<<<<< HEAD
   fall_on_death = true,
   speed = 150,
   dyingdelay = 1,
+=======
+>>>>>>> Start BenzalkBoss
   tokenTypes = { -- p is probability ceiling and this list should be sorted by it, with the last being 1
     { item = 'coin', v = 1, p = 0.9 },
     { item = 'health', v = 1, p = 1 }
@@ -69,6 +81,7 @@ return {
   enter = function( enemy )
     enemy.direction = 'left'
     enemy.state = 'default'
+<<<<<<< HEAD
     enemy.jump_speed = {x = -150,
                         y = -650,}
     enemy.fly_speed = 75
@@ -79,6 +92,16 @@ return {
   die = function( enemy )
     enemy.velocity.y = enemy.speed
     enemy.db:set('benzalk-dead', true)
+=======
+    enemy.swoop_speed = 150
+    enemy.fly_speed = 75
+    enemy.swoop_distance = 150
+    enemy.swoop_ratio = 0.5
+  end,
+
+  die = function( enemy )
+
+>>>>>>> Start BenzalkBoss
   end,
 
   draw = function( enemy )
@@ -102,7 +125,11 @@ return {
 
     love.graphics.setColor( 0, 0, 0, 255 )
     love.graphics.printf( "Benzalk", x + 15, y + 15, 52, 'center' )
+<<<<<<< HEAD
     love.graphics.printf( "GUARD", x + 15, y + 41, 52, 'center' )
+=======
+    love.graphics.printf( "BOSS", x + 15, y + 41, 52, 'center' )
+>>>>>>> Start BenzalkBoss
 
     energy_stencil = function( x, y )
       love.graphics.rectangle( 'fill', x + 11, y + 27, 59, 9 )
@@ -124,6 +151,7 @@ return {
   end,
 
   attackFire = function( enemy )
+<<<<<<< HEAD
     local node = {
       type = 'projectile',
       name = 'benzalkFire',
@@ -148,6 +176,31 @@ return {
   jump = function ( enemy, player, direction )
     local direction = player.position.x > enemy.position.x + 90 and -1 or 1
     sound.playSfx( 'benzalk_growl' )
+=======
+    --[[local node = {
+              type = 'projectile',
+              name = 'benzalkFire',
+              x = enemy.position.x,
+              y = enemy.position.y,
+              width = 16,
+              height = 16,
+              properties = {}
+            }
+            local benzalkFire = Projectile.new( node, enemy.collider )
+            benzalkFire.enemyCanPickUp = true
+            local level = enemy.containerLevel
+            level:addNode(benzalkFire)
+        
+            enemy:registerHoldable(benzalkFire)
+            enemy:pickup()
+        
+            enemy.currently_held:launch(enemy)
+        
+            benzalkFire.enemyCanPickUp = false]]
+  end,
+
+  jump = function ( enemy, player, direction )
+>>>>>>> Start BenzalkBoss
     enemy.state = 'jump'
     enemy.last_jump = 0
     enemy.fly_dir = direction
@@ -159,6 +212,7 @@ return {
     -- experimentally determined max and min swoop_ratio values
     enemy.swoop_ratio = math.min(1.4, math.max(0.7, enemy.swoop_ratio))
   end,
+<<<<<<< HEAD
   jumpWind = function ( enemy )
   --add left jump wind
         local node = {
@@ -251,6 +305,15 @@ return {
     else
       enemy.direction = 'left'
     end
+=======
+
+
+
+  update = function( dt, enemy, player, level )
+    if enemy.dead or enemy.state == 'attack' then return end
+
+    local direction = player.position.x > enemy.position.x + 40 and -1 or 1
+>>>>>>> Start BenzalkBoss
 
     enemy.last_jump = enemy.last_jump + dt
     enemy.last_attack = enemy.last_attack + dt
@@ -263,6 +326,7 @@ return {
       pause = 1
     end
     
+<<<<<<< HEAD
     --triggers the jump attack or the fire attack
     if enemy.last_jump > 4 and enemy.state ~= 'attack'  then
       enemy.props.jump( enemy, player, enemy.direction )
@@ -286,5 +350,28 @@ return {
         enemy.state = 'default'
       end)
     end
+=======
+    
+    if enemy.last_jump > 4 and enemy.state ~= 'attack'  then
+      enemy.state = 'jump'
+      enemy.props.jump( enemy, player, direction )
+      Timer.add(0.25, function() 
+        enemy.direction = direction 
+        enemy.state = 'default'
+
+      end)
+        
+    elseif enemy.last_attack > pause and enemy.state ~= 'jump' then
+      local rand = math.random()
+      if enemy.hp < 80 and rand > 0.9 then
+      else
+        enemy.props.attackFire(enemy)
+      end
+      enemy.last_attack = -0
+    end
+      --[[if enemy.velocity.y == 0 and enemy.state ~= 'attack' and enemy.state ~= 'jump' then
+                    enemy.state = 'default'
+                  end]]
+>>>>>>> Start BenzalkBoss
   end
 }

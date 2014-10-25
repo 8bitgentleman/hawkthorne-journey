@@ -19,14 +19,20 @@ return{
   damage = 10,
   special_damage = {fire = 10},
   horizontalLimit = 330,
+<<<<<<< HEAD
   throw_sound = 'fireball',
+=======
+>>>>>>> Start BenzalkBoss
   animations = {
     default = {'once', {'1,1'},1},
     thrown = {'once', {'2-3,1'}, .25},
     finish = {'once', {'4,1'}, 1},
   },
   collide = function(node, dt, mtv_x, mtv_y,projectile)
+<<<<<<< HEAD
   if node.isEnemy then return end
+=======
+>>>>>>> Start BenzalkBoss
     if node.hurt then
       node:hurt(projectile.damage, projectile.special_damage, 0)
       projectile:die()
