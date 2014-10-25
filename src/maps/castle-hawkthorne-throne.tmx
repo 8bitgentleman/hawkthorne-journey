@@ -188,6 +188,7 @@
     <property name="width" value="24"/>
    </properties>
   </object>
+<<<<<<< HEAD
   <object name="foreground" type="sprite" x="1248" y="528" width="168" height="96">
    <properties>
     <property name="foreground" value="true"/>
@@ -212,6 +213,11 @@
     <property name="trigger" value="benzalk-dead"/>
     <property name="triggerable" value="true"/>
     <property name="width" value="24"/>
+=======
+  <object type="enemy" x="1008" y="624" width="72" height="72">
+   <properties>
+    <property name="enemytype" value="benzalkBoss"/>
+>>>>>>> Start BenzalkBoss
    </properties>
   </object>
  </objectgroup>
