@@ -104,6 +104,7 @@ function Enemy.new(node, collider, enemytype)
   enemy.chargeUpTime = enemy.props.chargeUpTime
   enemy.player_rebound = enemy.props.player_rebound or 300
   enemy.vulnerabilities = enemy.props.vulnerabilities or {}
+
   enemy.attackingWorld = false
   enemy.cameraShake = enemy.props.cameraShake or false
   --if enemy.cameraShake then
