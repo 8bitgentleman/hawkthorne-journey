@@ -20,6 +20,8 @@ local token = require 'nodes/token'
 local game = require 'game'
 local utils = require 'utils'
 local window = require 'window'
+local camera = require 'camera'
+
 
 
 local Enemy = {}
@@ -102,6 +104,15 @@ function Enemy.new(node, collider, enemytype)
   enemy.player_rebound = enemy.props.player_rebound or 300
   enemy.vulnerabilities = enemy.props.vulnerabilities or {}
   enemy.attackingWorld = false
+  enemy.cameraShake = enemy.props.cameraShake or false
+  --if enemy.cameraShake then
+      enemy.camera = {
+        tx = 0,
+        ty = 0,
+        sx = 1,
+        sy = 1,
+      }
+  --end
 
   enemy.animations = {}
   
@@ -379,6 +390,9 @@ function Enemy:update( dt, player, map )
   end
   
   if self.dead then
+    if self.props.fall_on_death then
+      self:updatePosition(map, self.velocity.x * dt, self.velocity.y * dt)
+    end
     return
   end
 
