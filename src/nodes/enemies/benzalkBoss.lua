@@ -111,8 +111,6 @@ return {
     enemy.fly_speed = 75
     enemy.swoop_distance = 150
     enemy.swoop_ratio = 0.75
-    enemy.camera.tx = camera.x
-    enemy.camera.ty = camera.y
   end,
 
   die = function( enemy )
@@ -346,9 +344,21 @@ return {
 
   floor_pushback = function( enemy )
     enemy.velocity.x = 0
-    if enemy.state == 'jumping' then
+    if enemy.state == 'jump' then
       enemy.props.jumping = false
       enemy.state = 'default'
+
+      enemy.camera.tx = camera.x
+      enemy.camera.ty = camera.y
+      enemy.shake = true
+      local current = gamestate.currentState()
+      current.trackPlayer = false
+      current.player.freeze = true
+      Timer.add(1.25, function()
+        enemy.shake = false
+        current.trackPlayer = true
+        current.player.freeze = false
+      end)
     end
   end,
 
@@ -364,6 +374,14 @@ return {
   end,
 
   update = function( dt, enemy, player, level )
+    local current = gamestate.currentState()
+    local shake = 0
+
+    if enemy.shake and current.trackPlayer == false then
+      shake = (math.random() * 4) - 2
+      camera:setPosition(enemy.camera.tx + shake, enemy.camera.ty + shake)
+    end
+
     if enemy.dead or enemy.state == 'attack' then return end
     if enemy.state == 'dying' then return end
 
@@ -417,8 +435,6 @@ return {
 >>>>>>> more benzalk
     if enemy.last_jump > 4 and enemy.state ~= 'attack'  then
       enemy.props.jump( enemy, player, enemy.direction )
-      --shake the camera
-      enemy.cameraShake = true
       enemy.velocity.y = enemy.jump_speed.y
       -- swoop ratio used to center on target
       enemy.velocity.x = -( enemy.jump_speed.x * enemy.swoop_ratio ) * enemy.fly_dir
@@ -436,6 +452,7 @@ return {
       enemy.last_attack = -0
     end
 <<<<<<< HEAD
+<<<<<<< HEAD
       --[[if enemy.velocity.y == 0 and enemy.state ~= 'attack' and enemy.state ~= 'jump' then
                     enemy.state = 'default'
                   end]]
@@ -451,5 +468,7 @@ return {
     camera:setPosition(enemy.camera.tx + shake, enemy.camera.ty + shake)
 
 >>>>>>> more benzalk
+=======
+>>>>>>> Camera shake on landing jump
   end
 }
