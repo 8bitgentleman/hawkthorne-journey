@@ -4,6 +4,9 @@ local sound = require 'vendor/TEsound'
 local Timer = require 'vendor/timer'
 local Projectile = require 'nodes/projectile'
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> add wind
 local Sprite = require 'nodes/sprite'
 local sound = require 'vendor/TEsound'
 local utils = require 'utils'
@@ -33,10 +36,14 @@ return {
   player_rebound = 200,
   bb_width = 60,
 <<<<<<< HEAD
+<<<<<<< HEAD
   bb_height = 88,
 =======
   bb_height = 90,
 >>>>>>> Start BenzalkBoss
+=======
+  bb_height = 88,
+>>>>>>> add wind
   bb_offset = { x = 0, y = 0},
   attack_width = 15,
   attack_height = 20,
@@ -102,6 +109,7 @@ return {
   die = function( enemy )
     enemy.velocity.y = enemy.speed
     enemy.db:set('benzalk-dead', true)
+<<<<<<< HEAD
 =======
     enemy.swoop_speed = 150
 =======
@@ -120,6 +128,8 @@ return {
 =======
     enemy.velocity.y = enemy.speed
 >>>>>>> more benzalk
+=======
+>>>>>>> add wind
   end,
 
   draw = function( enemy )
@@ -248,6 +258,9 @@ return {
     enemy.swoop_ratio = math.min(1.4, math.max(0.7, enemy.swoop_ratio))
   end,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> add wind
   jumpWind = function ( enemy )
   --add left jump wind
         local node = {
@@ -268,7 +281,11 @@ return {
         local jumpL = Sprite.new( node, enemy.collider )
         local level = enemy.containerLevel
         level:addNode(jumpL)
+<<<<<<< HEAD
   --add right jump wind
+=======
+         --add right jump wind
+>>>>>>> add wind
         local node = {
           type = 'sprite',
           name = 'jump_wind',
@@ -289,6 +306,7 @@ return {
         level:addNode(jumpR)
   end,
   
+<<<<<<< HEAD
   floor_pushback = function( enemy )
     enemy.velocity.x = 0
     if enemy.state == 'jump' then
@@ -342,6 +360,8 @@ return {
     end
 =======
 
+=======
+>>>>>>> add wind
   floor_pushback = function( enemy )
     enemy.velocity.x = 0
     if enemy.state == 'jump' then
@@ -390,7 +410,16 @@ return {
 >>>>>>> Start BenzalkBoss
 =======
     local direction = player.position.x > enemy.position.x + 90 and -1 or 1
+<<<<<<< HEAD
 >>>>>>> more benzalk
+=======
+    
+    --[[if player.position.x > enemy.position.x + 50 then
+      enemy.direction = 'right'
+    else
+      enemy.direction = 'left'
+    end]]
+>>>>>>> add wind
 
     enemy.last_jump = enemy.last_jump + dt
     enemy.last_attack = enemy.last_attack + dt
@@ -415,6 +444,7 @@ return {
         enemy.state = 'default'
         enemy.velocity.x = 0
         enemy.props.jumpWind( enemy )
+<<<<<<< HEAD
       end)
         
     elseif enemy.last_attack > pause and enemy.state ~= 'jump' and enemy.shake == false then
@@ -441,6 +471,8 @@ return {
       Timer.add(0.6, function() 
         enemy.state = 'default'
         enemy.velocity.x = 0
+=======
+>>>>>>> add wind
       end)
         
     elseif enemy.last_attack > pause and enemy.state ~= 'jump' then
@@ -450,6 +482,9 @@ return {
         enemy.props.attackFire(enemy)
       end
       enemy.last_attack = -0
+      Timer.add(0.3, function() 
+        enemy.state = 'default'
+      end)
     end
 <<<<<<< HEAD
 <<<<<<< HEAD
