@@ -3,6 +3,7 @@ local gamestate = require 'vendor/gamestate'
 local sound = require 'vendor/TEsound'
 local Timer = require 'vendor/timer'
 local Projectile = require 'nodes/projectile'
+local Sprite = require 'nodes/sprite'
 local sound = require 'vendor/TEsound'
 local utils = require 'utils'
 local game = require 'game'
@@ -22,7 +23,7 @@ return {
   knockback = 0,
   player_rebound = 200,
   bb_width = 60,
-  bb_height = 90,
+  bb_height = 88,
   bb_offset = { x = 0, y = 0},
   attack_width = 15,
   attack_height = 20,
@@ -76,6 +77,7 @@ return {
 
   die = function( enemy )
     enemy.velocity.y = enemy.speed
+    enemy.db:set('benzalk-dead', true)
   end,
 
   draw = function( enemy )
@@ -156,7 +158,47 @@ return {
     -- experimentally determined max and min swoop_ratio values
     enemy.swoop_ratio = math.min(1.4, math.max(0.7, enemy.swoop_ratio))
   end,
-
+  jumpWind = function ( enemy )
+  --add left jump wind
+        local node = {
+          type = 'sprite',
+          name = 'jump_wind',
+          x = enemy.position.x-5,
+          y = enemy.position.y+72,
+          width = 30,
+          height = 20,
+          properties = {sheet = 'images/sprites/castle/jump_wind.png', 
+                        speed = .07, 
+                        animation = '1-7,1',
+                        width = 30,
+                        height = 20,
+                        mode = 'once',
+                        foreground = false}
+        }
+        local jumpL = Sprite.new( node, enemy.collider )
+        local level = enemy.containerLevel
+        level:addNode(jumpL)
+         --add right jump wind
+        local node = {
+          type = 'sprite',
+          name = 'jump_wind',
+          x = enemy.position.x+70,
+          y = enemy.position.y+72,
+          width = 30,
+          height = 20,
+          properties = {sheet = 'images/sprites/castle/jump_wind.png', 
+                        speed = .07, 
+                        animation = '1-7,2',
+                        width = 30,
+                        height = 20,
+                        mode = 'once',
+                        foreground = false}
+        }
+        local jumpR = Sprite.new( node, enemy.collider )
+        local level = enemy.containerLevel
+        level:addNode(jumpR)
+  end,
+  
   floor_pushback = function( enemy )
     enemy.velocity.x = 0
     if enemy.state == 'jump' then
@@ -201,6 +243,12 @@ return {
     if enemy.state == 'dying' then return end
 
     local direction = player.position.x > enemy.position.x + 90 and -1 or 1
+    
+    --[[if player.position.x > enemy.position.x + 50 then
+      enemy.direction = 'right'
+    else
+      enemy.direction = 'left'
+    end]]
 
     enemy.last_jump = enemy.last_jump + dt
     enemy.last_attack = enemy.last_attack + dt
@@ -222,6 +270,7 @@ return {
       Timer.add(0.6, function() 
         enemy.state = 'default'
         enemy.velocity.x = 0
+        enemy.props.jumpWind( enemy )
       end)
         
     elseif enemy.last_attack > pause and enemy.state ~= 'jump' then
@@ -231,6 +280,9 @@ return {
         enemy.props.attackFire(enemy)
       end
       enemy.last_attack = -0
+      Timer.add(0.3, function() 
+        enemy.state = 'default'
+      end)
     end
   end
 }
