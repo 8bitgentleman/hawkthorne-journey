@@ -44,9 +44,9 @@
    eJzt18ENgkAUhOG9c+PKSTvADqjDZmxArUCtQK1ALQatQL37iEtiTEiW7Orj6f8lE8FwmGQConMAACDUVLsAkphLFpKldhFEW0nWko12EUTbSnaSvXYRRDtIjpKTdhF81Ui7AJIptQsgSBZwTfXxFkih0C4AAMBAyX+MWei1Ie9G0FP22JJ3o2GremwJAMA/yzqOYU/RcQwAAGBFLTlLLpK7chfEu2kXQJTafzb3I1va1T5Xc3/Olva8/jY2+43992xpz9U9d8sdW/6CdkO2tO99y4ljS8CqB+3cJKs=
   </data>
  </layer>
- <layer name="collision" width="115" height="37" visible="0">
+ <layer name="collision" width="115" height="37">
   <data encoding="base64" compression="zlib">
-   eJztmX0OgjAMR0k4iXgMz2G8/00MMUbFrRvbGL/Ce0n/KaHQPsL4GIYyLmNerjexc1A4t1q26gGX/cGlnfcELu28J3Bp5z2BSzvvCVzaeU/g0s57Apd23hOpHubty7h/xWPFbBTmdWaXOdzGV6TqKswLl23qKswLl3GmwD34Ha2P1QJchpmMfXHZn9IeLI+xugrzwuUvKY+xugrzwuXnWXX5vLqmrsK8cNmmrsK8cNmmrsK8zuwy9K5xZb2UpLSHlE9c9qemB8snLvtT20PMZ+63oN7g0iZn/VQBl2m8+MRlHh58xu79uPzHg8+ZI7hbskVPHnx6dxn717gF6j49u8z5t9Eaa21SDPXrb2YPj15R9onH9Sj6xGM5Sj7xWM/e6/dR3nsBAM7AE9sCJys=
+   eJztmWsOgkAMBkk4iXgMz2G8/02MMUYFtrvsi68wk/RPCYV2CMtjGPK4jGm53oTOQeHcSmnVAy77g0s77wlc2nlP4NLOewKXdt4TuLTznsClnfcELu28J2I9vLbP4/4Tjw2zUZjXmV2mcBvfEaurMC9c1qmrMC9chplW7sGfqH2sGuByncnYF5f9ye3B8hiqqzAvXP4T8xiqqzAvXH6fVefPq1vqKswLl3XqKswLl3XqKszrzC7X3jWurJeS5PYQ84nL/pT0YPnEZX9Kewj5TP0W1Btc2qSsnyrgMo4Xn7hMw4PP0L0fl0s8+DwqLa5HfLYn9K+xBfhsR8q/jdpYa5NieLj+9vDoFWWfeNyOok885qPkE4/l7L1+H+W9FwDgDDwBoSImvw==
   </data>
  </layer>
  <objectgroup name="nodes">
@@ -72,7 +72,7 @@
   </object>
   <object name="main" type="door" x="35" y="132" width="51" height="84">
    <properties>
-    <property name="info" value="Only a coward runs from Cornelius!"/>
+    <property name="info" value="Only a coward runs from the mighty {{grey}}King Cornelius{{white}}!"/>
     <property name="key" value="greendale"/>
     <property name="level" value="castle-hawkthorne"/>
     <property name="to" value="next"/>
@@ -188,36 +188,29 @@
     <property name="width" value="24"/>
    </properties>
   </object>
-<<<<<<< HEAD
-  <object name="foreground" type="sprite" x="1248" y="528" width="168" height="96">
-   <properties>
-    <property name="foreground" value="true"/>
-    <property name="height" value="96"/>
-    <property name="sheet" value="images/sprites/castle/castle_foreground.png"/>
-    <property name="width" value="168"/>
-   </properties>
-  </object>
   <object type="spawn" x="1008" y="624" width="72" height="72">
    <properties>
     <property name="enemytype" value="benzalkBoss"/>
     <property name="nodeType" value="enemy"/>
     <property name="spawnMax" value="1"/>
     <property name="spawnType" value="proximity"/>
-    <property name="x_Proximity" value="648"/>
+    <property name="x_Proximity" value="350"/>
    </properties>
   </object>
-  <object name="door" type="sprite" x="1296" y="624" width="24" height="72">
+  <object name="throne_barrier" type="door" x="1296" y="624" width="24" height="72">
    <properties>
-    <property name="height" value="72"/>
-    <property name="sheet" value="images/sprites/castle/door.png"/>
-    <property name="trigger" value="benzalk-dead"/>
-    <property name="triggerable" value="true"/>
-    <property name="width" value="24"/>
-=======
-  <object type="enemy" x="1008" y="624" width="72" height="72">
-   <properties>
-    <property name="enemytype" value="benzalkBoss"/>
->>>>>>> Start BenzalkBoss
+    <property name="aniframes2" value="1-12,1"/>
+    <property name="anispeed2" value="0.05"/>
+    <property name="hideable" value="true"/>
+    <property name="info" value="Only the worthy few are granted an audience with {{grey}}King Cornelius{{white}}!"/>
+    <property name="obstruct" value="true"/>
+    <property name="offset_hidden_y" value="0"/>
+    <property name="show_sfx" value="throne_door"/>
+    <property name="sound" value="false"/>
+    <property name="sprite" value="throneroom_door"/>
+    <property name="sprite_height" value="72"/>
+    <property name="sprite_width" value="24"/>
+    <property name="trigger" value="bosstriggers.benzalk"/>
    </properties>
   </object>
  </objectgroup>

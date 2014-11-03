@@ -3,22 +3,11 @@ local gamestate = require 'vendor/gamestate'
 local sound = require 'vendor/TEsound'
 local Timer = require 'vendor/timer'
 local Projectile = require 'nodes/projectile'
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> add wind
 local Sprite = require 'nodes/sprite'
 local sound = require 'vendor/TEsound'
 local utils = require 'utils'
 local game = require 'game'
-<<<<<<< HEAD
 local collision  = require 'hawk/collision'
-=======
-local sound = require 'vendor/TEsound'
-local utils = require 'utils'
->>>>>>> Start BenzalkBoss
-=======
->>>>>>> more benzalk
 
 local window = require 'window'
 local camera = require 'camera'
@@ -35,36 +24,20 @@ return {
   knockback = 0,
   player_rebound = 200,
   bb_width = 60,
-<<<<<<< HEAD
-<<<<<<< HEAD
   bb_height = 88,
-=======
-  bb_height = 90,
->>>>>>> Start BenzalkBoss
-=======
-  bb_height = 88,
->>>>>>> add wind
   bb_offset = { x = 0, y = 0},
   attack_width = 15,
   attack_height = 20,
   attack_offset = { x = 15, y = -2},
   velocity = {x = 1, y = 0},
-  hp = 5,
+  hp = 100,
   tokens = 15,
   hand_x = -40,
   hand_y = 70,
-<<<<<<< HEAD
-<<<<<<< HEAD
   fall_on_death = true,
   speed = 150,
   dyingdelay = 1,
-=======
->>>>>>> Start BenzalkBoss
-=======
-  fall_on_death = true,
-  speed = 150,
-  dyingdelay = 1,
->>>>>>> more benzalk
+  vulnerabilities = {'epic'},
   tokenTypes = { -- p is probability ceiling and this list should be sorted by it, with the last being 1
     { item = 'coin', v = 1, p = 0.9 },
     { item = 'health', v = 1, p = 1 }
@@ -97,39 +70,19 @@ return {
   enter = function( enemy )
     enemy.direction = 'left'
     enemy.state = 'default'
-<<<<<<< HEAD
-<<<<<<< HEAD
     enemy.jump_speed = {x = -150,
                         y = -650,}
     enemy.fly_speed = 75
     enemy.swoop_distance = 150
     enemy.swoop_ratio = 0.75
+    enemy.props.attackFire(enemy)
+    enemy.maxx = enemy.position.x - 500
   end,
 
   die = function( enemy )
     enemy.velocity.y = enemy.speed
-    enemy.db:set('benzalk-dead', true)
-<<<<<<< HEAD
-=======
-    enemy.swoop_speed = 150
-=======
-    enemy.jump_speed = {x = -150,
-                        y = -650,}
->>>>>>> more benzalk
-    enemy.fly_speed = 75
-    enemy.swoop_distance = 150
-    enemy.swoop_ratio = 0.75
-  end,
+    enemy.db:set("bosstriggers.benzalk", true)
 
-  die = function( enemy )
-<<<<<<< HEAD
-
->>>>>>> Start BenzalkBoss
-=======
-    enemy.velocity.y = enemy.speed
->>>>>>> more benzalk
-=======
->>>>>>> add wind
   end,
 
   draw = function( enemy )
@@ -153,15 +106,7 @@ return {
 
     love.graphics.setColor( 0, 0, 0, 255 )
     love.graphics.printf( "Benzalk", x + 15, y + 15, 52, 'center' )
-<<<<<<< HEAD
-<<<<<<< HEAD
     love.graphics.printf( "GUARD", x + 15, y + 41, 52, 'center' )
-=======
-    love.graphics.printf( "BOSS", x + 15, y + 41, 52, 'center' )
->>>>>>> Start BenzalkBoss
-=======
-    love.graphics.printf( "GUARD", x + 15, y + 41, 52, 'center' )
->>>>>>> more benzalk
 
     energy_stencil = function( x, y )
       love.graphics.rectangle( 'fill', x + 11, y + 27, 59, 9 )
@@ -183,69 +128,32 @@ return {
   end,
 
   attackFire = function( enemy )
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> more benzalk
-    local node = {
-      type = 'projectile',
-      name = 'benzalkFire',
-      x = enemy.position.x,
-      y = enemy.position.y,
-      width = 16,
-      height = 16,
-      properties = {}
-    }
-    local benzalkFire = Projectile.new( node, enemy.collider )
-    benzalkFire.enemyCanPickUp = true
-    local level = enemy.containerLevel
-    level:addNode(benzalkFire)
-<<<<<<< HEAD
-        
-    enemy:registerHoldable(benzalkFire)
-    enemy:pickup()
-        
-    enemy.currently_held:launch(enemy)    
-    benzalkFire.enemyCanPickUp = false
+    if not enemy.dead then
+      local node = {
+        type = 'projectile',
+        name = 'benzalkFire',
+        x = enemy.position.x,
+        y = enemy.position.y,
+        width = 16,
+        height = 16,
+        properties = {}
+      }
+      local benzalkFire = Projectile.new( node, enemy.collider )
+      benzalkFire.enemyCanPickUp = true
+      local level = enemy.containerLevel
+      level:addNode(benzalkFire)
+          
+      enemy:registerHoldable(benzalkFire)
+      enemy:pickup()
+          
+      enemy.currently_held:launch(enemy)    
+      benzalkFire.enemyCanPickUp = false
+    end
   end,
 
   jump = function ( enemy, player, direction )
     local direction = player.position.x > enemy.position.x + 90 and -1 or 1
     sound.playSfx( 'benzalk_growl' )
-=======
-    --[[local node = {
-              type = 'projectile',
-              name = 'benzalkFire',
-              x = enemy.position.x,
-              y = enemy.position.y,
-              width = 16,
-              height = 16,
-              properties = {}
-            }
-            local benzalkFire = Projectile.new( node, enemy.collider )
-            benzalkFire.enemyCanPickUp = true
-            local level = enemy.containerLevel
-            level:addNode(benzalkFire)
-        
-            enemy:registerHoldable(benzalkFire)
-            enemy:pickup()
-=======
->>>>>>> more benzalk
-        
-    enemy:registerHoldable(benzalkFire)
-    enemy:pickup()
-        
-    enemy.currently_held:launch(enemy)    
-    benzalkFire.enemyCanPickUp = false
-  end,
-
-  jump = function ( enemy, player, direction )
-<<<<<<< HEAD
->>>>>>> Start BenzalkBoss
-=======
-    local direction = player.position.x > enemy.position.x + 90 and -1 or 1
-    sound.playSfx( 'benzalk_growl' )
->>>>>>> more benzalk
     enemy.state = 'jump'
     enemy.last_jump = 0
     enemy.fly_dir = direction
@@ -257,12 +165,9 @@ return {
     -- experimentally determined max and min swoop_ratio values
     enemy.swoop_ratio = math.min(1.4, math.max(0.7, enemy.swoop_ratio))
   end,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> add wind
   jumpWind = function ( enemy )
   --add left jump wind
+    if not enemy.dead then
         local node = {
           type = 'sprite',
           name = 'jump_wind',
@@ -281,11 +186,7 @@ return {
         local jumpL = Sprite.new( node, enemy.collider )
         local level = enemy.containerLevel
         level:addNode(jumpL)
-<<<<<<< HEAD
   --add right jump wind
-=======
-         --add right jump wind
->>>>>>> add wind
         local node = {
           type = 'sprite',
           name = 'jump_wind',
@@ -304,9 +205,9 @@ return {
         local jumpR = Sprite.new( node, enemy.collider )
         local level = enemy.containerLevel
         level:addNode(jumpR)
+    end
   end,
   
-<<<<<<< HEAD
   floor_pushback = function( enemy )
     enemy.velocity.x = 0
     if enemy.state == 'jump' then
@@ -320,10 +221,12 @@ return {
       local current = gamestate.currentState()
       current.trackPlayer = false
       current.player.freeze = true
-      Timer.add(1.25, function()
+      Timer.add(.5, function()
         enemy.shake = false
         current.trackPlayer = true
-        current.player.freeze = false
+        if current.player ~= dead then
+          current.player.freeze = false
+        end
       end)
     end
   end,
@@ -342,9 +245,28 @@ return {
   update = function( dt, enemy, player, level )
     local current = gamestate.currentState()
     local shake = 0
+    local player_dist= {x = 1, y = 1 }
+    local player_dir= {x = 'left', y = 'below' }
+    
+    --checks where the player is in relation to benzalk
+    if player.position.x < enemy.position.x then
+       player_dist.x = math.ceil((enemy.position.x - player.position.x))
+       player_dir.x = 'left'
+    else 
+       player_dist.x = math.ceil((player.position.x - enemy.position.x))
+       player_dir.x = 'right'
+    end
 
+    --checks if the player is above benzalk 
+    if player.position.y < enemy.position.y-55 then
+      player_dir.y = 'above'
+    else
+      player_dir.y = 'below'
+    end
+    print(player_dir.y)
     if enemy.shake and current.trackPlayer == false then
-      shake = (math.random() * 4) - 2
+      shake = (math.random() * 4)-2/player_dist.x
+      print(shake)
       camera:setPosition(enemy.camera.tx + shake, enemy.camera.ty + shake)
     end
 
@@ -358,68 +280,6 @@ return {
     else
       enemy.direction = 'left'
     end
-=======
-
-=======
->>>>>>> add wind
-  floor_pushback = function( enemy )
-    enemy.velocity.x = 0
-    if enemy.state == 'jump' then
-      enemy.props.jumping = false
-      enemy.state = 'default'
-
-      enemy.camera.tx = camera.x
-      enemy.camera.ty = camera.y
-      enemy.shake = true
-      local current = gamestate.currentState()
-      current.trackPlayer = false
-      current.player.freeze = true
-      Timer.add(1.25, function()
-        enemy.shake = false
-        current.trackPlayer = true
-        current.player.freeze = false
-      end)
-    end
-  end,
-
-  hurt = function( enemy )
-    if enemy.currently_held then
-      enemy.currently_held:die()
-    end
-  end,
-
-  dyingupdate = function ( dt, enemy, player )
-    enemy.velocity.y = enemy.velocity.y + game.gravity * dt * 0.4
-    enemy.position.y = enemy.position.y + enemy.velocity.y * dt
-  end,
-
-  update = function( dt, enemy, player, level )
-    local current = gamestate.currentState()
-    local shake = 0
-
-    if enemy.shake and current.trackPlayer == false then
-      shake = (math.random() * 4) - 2
-      camera:setPosition(enemy.camera.tx + shake, enemy.camera.ty + shake)
-    end
-
-    if enemy.dead or enemy.state == 'attack' then return end
-    if enemy.state == 'dying' then return end
-
-<<<<<<< HEAD
-    local direction = player.position.x > enemy.position.x + 40 and -1 or 1
->>>>>>> Start BenzalkBoss
-=======
-    local direction = player.position.x > enemy.position.x + 90 and -1 or 1
-<<<<<<< HEAD
->>>>>>> more benzalk
-=======
-    
-    --[[if player.position.x > enemy.position.x + 50 then
-      enemy.direction = 'right'
-    else
-      enemy.direction = 'left'
-    end]]
->>>>>>> add wind
 
     enemy.last_jump = enemy.last_jump + dt
     enemy.last_attack = enemy.last_attack + dt
@@ -432,52 +292,28 @@ return {
       pause = 1
     end
     
-<<<<<<< HEAD
-<<<<<<< HEAD
     --triggers the jump attack or the fire attack
-    if enemy.last_jump > 4 and enemy.state ~= 'attack'  then
-      enemy.props.jump( enemy, player, enemy.direction )
-      enemy.velocity.y = enemy.jump_speed.y
-      -- swoop ratio used to center on target
-      enemy.velocity.x = -( enemy.jump_speed.x * enemy.swoop_ratio ) * enemy.fly_dir
-      Timer.add(0.6, function() 
-        enemy.state = 'default'
-        enemy.velocity.x = 0
-        enemy.props.jumpWind( enemy )
-<<<<<<< HEAD
-      end)
+    if enemy.last_jump > 4 and enemy.state ~= 'attack' then
+      if  player_dir.x == 'left' and enemy.position.x < enemy.maxx or player_dir.y == 'above' then
+        print('no jump')
+      else
+        enemy.props.jump( enemy, player, enemy.direction )
+        enemy.velocity.y = enemy.jump_speed.y
+        -- swoop ratio used to center on target
+        enemy.velocity.x = -( enemy.jump_speed.x * enemy.swoop_ratio ) * enemy.fly_dir
+        Timer.add(0.6, function() 
+          enemy.state = 'default'
+          enemy.velocity.x = 0
+          enemy.props.jumpWind( enemy )
+        end)
+      end
         
     elseif enemy.last_attack > pause and enemy.state ~= 'jump' and enemy.shake == false then
       local rand = math.random()
       if enemy.hp < 80 and rand > 0.6 then
         enemy.state = 'attack'
         enemy.props.attackFire(enemy)
-      end
-      enemy.last_attack = -0
-      Timer.add(0.3, function() 
-        enemy.state = 'default'
-      end)
-    end
-=======
-    
-=======
-    --triggers the jump attack or the fire attack
->>>>>>> more benzalk
-    if enemy.last_jump > 4 and enemy.state ~= 'attack'  then
-      enemy.props.jump( enemy, player, enemy.direction )
-      enemy.velocity.y = enemy.jump_speed.y
-      -- swoop ratio used to center on target
-      enemy.velocity.x = -( enemy.jump_speed.x * enemy.swoop_ratio ) * enemy.fly_dir
-      Timer.add(0.6, function() 
-        enemy.state = 'default'
-        enemy.velocity.x = 0
-=======
->>>>>>> add wind
-      end)
-        
-    elseif enemy.last_attack > pause and enemy.state ~= 'jump' then
-      local rand = math.random()
-      if enemy.hp < 80 and rand > 0.9 then
+      elseif enemy.hp < 40 and rand > 0.4 then
         enemy.state = 'attack'
         enemy.props.attackFire(enemy)
       end
@@ -486,24 +322,5 @@ return {
         enemy.state = 'default'
       end)
     end
-<<<<<<< HEAD
-<<<<<<< HEAD
-      --[[if enemy.velocity.y == 0 and enemy.state ~= 'attack' and enemy.state ~= 'jump' then
-                    enemy.state = 'default'
-                  end]]
->>>>>>> Start BenzalkBoss
-=======
-    
-    local shake = 0
-    --shake the camera when he lands
-    if enemy.cameraShake then
-      shake = (math.random() * 4) - 2 
-    end
-    --create camera to shake
-    camera:setPosition(enemy.camera.tx + shake, enemy.camera.ty + shake)
-
->>>>>>> more benzalk
-=======
->>>>>>> Camera shake on landing jump
   end
 }

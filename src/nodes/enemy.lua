@@ -24,7 +24,6 @@ local camera = require 'camera'
 local app = require 'app'
 
 
-
 local Enemy = {}
 Enemy.__index = Enemy
 Enemy.isEnemy = true
