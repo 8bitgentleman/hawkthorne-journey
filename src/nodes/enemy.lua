@@ -21,6 +21,7 @@ local game = require 'game'
 local utils = require 'utils'
 local window = require 'window'
 local camera = require 'camera'
+local app = require 'app'
 
 
 
@@ -144,6 +145,7 @@ function Enemy.new(node, collider, enemytype)
   end
   
   enemy.foreground = node.properties.foreground or enemy.props.foreground or false
+  enemy.db = app.gamesaves:active()
   
   return enemy
 end

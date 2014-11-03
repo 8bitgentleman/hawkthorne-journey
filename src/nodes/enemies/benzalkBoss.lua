@@ -141,7 +141,7 @@ return {
     enemy:pickup()
         
     enemy.currently_held:launch(enemy)    
-    benzalkFire.enemyCanPickUp = false
+    --benzalkFire.enemyCanPickUp = false
   end,
 
   jump = function ( enemy, player, direction )
@@ -208,6 +208,7 @@ return {
       enemy.camera.tx = camera.x
       enemy.camera.ty = camera.y
       enemy.shake = true
+      sound.playSfx( 'jump_boom' )
       local current = gamestate.currentState()
       current.trackPlayer = false
       current.player.freeze = true
@@ -244,11 +245,11 @@ return {
 
     local direction = player.position.x > enemy.position.x + 90 and -1 or 1
     
-    --[[if player.position.x > enemy.position.x + 50 then
+    if player.position.x > enemy.position.x + 50 then
       enemy.direction = 'right'
     else
       enemy.direction = 'left'
-    end]]
+    end
 
     enemy.last_jump = enemy.last_jump + dt
     enemy.last_attack = enemy.last_attack + dt
@@ -273,9 +274,9 @@ return {
         enemy.props.jumpWind( enemy )
       end)
         
-    elseif enemy.last_attack > pause and enemy.state ~= 'jump' then
+    elseif enemy.last_attack > pause and enemy.state ~= 'jump' and enemy.shake == false then
       local rand = math.random()
-      if enemy.hp < 80 and rand > 0.9 then
+      if enemy.hp < 80 and rand > 0.6 then
         enemy.state = 'attack'
         enemy.props.attackFire(enemy)
       end
