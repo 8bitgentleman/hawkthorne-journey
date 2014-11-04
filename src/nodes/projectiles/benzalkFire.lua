@@ -19,6 +19,7 @@ return{
   damage = 10,
   special_damage = {fire = 10},
   horizontalLimit = 330,
+  throw_sound = 'fireball',
   animations = {
     default = {'once', {'1,1'},1},
     thrown = {'once', {'2-3,1'}, .25},

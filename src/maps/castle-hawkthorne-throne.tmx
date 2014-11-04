@@ -46,7 +46,7 @@
  </layer>
  <layer name="collision" width="115" height="37">
   <data encoding="base64" compression="zlib">
-   eJztmWsOgkAMBkk4iXgMz2G8/02MMUYFtrvsi68wk/RPCYV2CMtjGPK4jGm53oTOQeHcSmnVAy77g0s77wlc2nlP4NLOewKXdt4TuLTznsClnfcELu28J2I9vLbP4/4Tjw2zUZjXmV2mcBvfEaurMC9c1qmrMC9chplW7sGfqH2sGuByncnYF5f9ye3B8hiqqzAvXP4T8xiqqzAvXH6fVefPq1vqKswLl3XqKswLl3XqKszrzC7X3jWurJeS5PYQ84nL/pT0YPnEZX9Kewj5TP0W1Btc2qSsnyrgMo4Xn7hMw4PP0L0fl0s8+DwqLa5HfLYn9K+xBfhsR8q/jdpYa5NieLj+9vDoFWWfeNyOok885qPkE4/l7L1+H+W9FwDgDDwBoSImvw==
+   eJztmX0OgjAMR0k4iXgMz2G8/00MMUbFrRvbGL/Ce0n/KaHQPsL4GIYyLmNerjexc1A4t1q26gGX/cGlnfcELu28J3Bp5z2BSzvvCVzaeU/g0s57Apd23hOpHubty7h/xWPFbBTmdWaXOdzGV6TqKswLl23qKswLl3GmwD34Ha2P1QJchpmMfXHZn9IeLI+xugrzwuUvKY+xugrzwuXnWXX5vLqmrsK8cNmmrsK8cNmmrsK8zuwy9K5xZb2UpLSHlE9c9qemB8snLvtT20PMZ+63oN7g0iZn/VQBl2m8+MRlHh58xu79uPzHg8+ZI7hbskVPHnx6dxn717gF6j49u8z5t9Eaa21SDPXrb2YPj15R9onH9Sj6xGM5Sj7xWM/e6/dR3nsBAM7AE9sCJys=
   </data>
  </layer>
  <objectgroup name="nodes">
@@ -72,6 +72,8 @@
   </object>
   <object name="main" type="door" x="35" y="132" width="51" height="84">
    <properties>
+    <property name="info" value="Only a coward runs from Cornelius!"/>
+    <property name="key" value="greendale"/>
     <property name="level" value="castle-hawkthorne"/>
     <property name="to" value="next"/>
    </properties>
@@ -189,6 +191,20 @@
   <object type="enemy" x="1008" y="624" width="72" height="72">
    <properties>
     <property name="enemytype" value="benzalkBoss"/>
+   </properties>
+  </object>
+  <object name="door" type="sprite" x="1296" y="624" width="24" height="72">
+   <properties>
+    <property name="foreground" value="false"/>
+    <property name="height" value="72"/>
+    <property name="max_y" value="72"/>
+    <property name="min_y" value="-24"/>
+    <property name="moveable_y" value="true"/>
+    <property name="sheet" value="images/sprites/castle/door.png"/>
+    <property name="trigger" value="benzalk-dead"/>
+    <property name="triggerable" value="true"/>
+    <property name="velocity_y" value="10"/>
+    <property name="width" value="24"/>
    </properties>
   </object>
  </objectgroup>

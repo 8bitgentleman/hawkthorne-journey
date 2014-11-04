@@ -7,6 +7,7 @@ local Sprite = require 'nodes/sprite'
 local sound = require 'vendor/TEsound'
 local utils = require 'utils'
 local game = require 'game'
+local collision  = require 'hawk/collision'
 
 local window = require 'window'
 local camera = require 'camera'
@@ -29,7 +30,7 @@ return {
   attack_height = 20,
   attack_offset = { x = 15, y = -2},
   velocity = {x = 1, y = 0},
-  hp = 5,
+  hp = 100,
   tokens = 15,
   hand_x = -40,
   hand_y = 70,
@@ -76,8 +77,12 @@ return {
   end,
 
   die = function( enemy )
+    local level = enemy.containerLevel
     enemy.velocity.y = enemy.speed
     enemy.db:set('benzalk-dead', true)
+    collision.remove_tile(level.map, 1296, 624, 24, 24)
+    collision.remove_tile(level.map, 1296, 648, 24, 24)
+    collision.remove_tile(level.map, 1296, 672, 24, 24)
   end,
 
   draw = function( enemy )
@@ -141,7 +146,7 @@ return {
     enemy:pickup()
         
     enemy.currently_held:launch(enemy)    
-    --benzalkFire.enemyCanPickUp = false
+    benzalkFire.enemyCanPickUp = false
   end,
 
   jump = function ( enemy, player, direction )
