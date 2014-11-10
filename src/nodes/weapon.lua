@@ -61,6 +61,7 @@ function Weapon.new(node, collider, plyr, weaponItem)
   weapon.bbox_height = props.bbox_height
   weapon.bbox_offset_x = props.bbox_offset_x
   weapon.bbox_offset_y = props.bbox_offset_y
+  weapon.magical = props.magical or false
 
   weapon.isFlammable = node.properties.isFlammable or props.isFlammable or false
 
@@ -77,6 +78,18 @@ function Weapon.new(node, collider, plyr, weaponItem)
         props.animations.wield[1],
         g(unpack(props.animations.wield[2])),
         props.animations.wield[3])
+  if weapon.magical then
+  weapon.chargeUpTime = 0
+  weapon.charged = false
+  weapon.defaultChargedAnimation = anim8.newAnimation(
+        props.animations.defaultCharged[1],
+        g(unpack(props.animations.defaultCharged[2])),
+        props.animations.defaultCharged[3])
+  weapon.wieldChargedAnimation = anim8.newAnimation(
+        props.animations.wieldCharged[1],
+        g(unpack(props.animations.wieldCharged[2])),
+        props.animations.wieldCharged[3])
+  end
 
   weapon.animation = weapon.defaultAnimation
 
@@ -217,7 +230,6 @@ end
 --overload this in the specific weapon if this isn't well-suited for your weapon
 function Weapon:update(dt, player, map)
   if self.dead then return end
-
   --the weapon is in the level unclaimed
   if not self.player then
     if self.dropping then
@@ -270,13 +282,23 @@ function Weapon:update(dt, player, map)
     if player.offset_hand_right[1] == 0 or player.offset_hand_left[1] == 0 then
       --print(string.format("Need hand offset for %dx%d", player.frame[1], player.frame[2]))
     end
-
+    if self.magical then
+      self.chargeUpTime = self.chargeUpTime + dt
+      if self.chargeUpTime >= 3 then
+        self.chargeUpTime = 0
+        self.charged = true
+        self.animation = self.defaultChargedAnimation
+      end
+    end
 
     if player.wielding and self.animation and self.animation.status == "finished" then
       if self.bb then
         self.collider:setGhost(self.bb)
       end
       player.wielding = false
+      if self.charged then
+        self.charged = false
+      end
       self.animation = self.defaultAnimation 
     end
   end
@@ -310,6 +332,9 @@ end
 
 --handles a weapon being activated
 function Weapon:wield()
+  local props = utils.require( 'nodes/weapons/' .. self.name )
+  if props.wield then props:wield(self) end
+  
   self.collider:setSolid(self.bb)
 
   self.player.wielding = true

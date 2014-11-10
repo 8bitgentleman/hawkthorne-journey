@@ -8,7 +8,7 @@ return{
   name = 'epic',
   description = 'The Epic',
   type = 'weapon',
-  subtype = 'magic',
+  subtype = 'melee',
   ammo = 'waterSpout',
   damage = '10',
   special_damage = 'water= 6',
