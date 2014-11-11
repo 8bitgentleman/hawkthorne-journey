@@ -333,7 +333,7 @@ end
 --handles a weapon being activated
 function Weapon:wield()
   local props = utils.require( 'nodes/weapons/' .. self.name )
-  if props.wield then props:wield(self) end
+  if props.wield then props.wield(self) end
   
   self.collider:setSolid(self.bb)
 
