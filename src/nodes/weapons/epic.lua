@@ -48,8 +48,8 @@ return {
         end
       end]]
 
-  wield = function( node )
-    weapon.player.wielding = true
+  wield = function( weapon )
+    -- weapon.player.wielding = true
       --changes the animation is weapon is charged
     if weapon.animation then
       if weapon.charged then
@@ -74,7 +74,7 @@ return {
       weapon.player.character:animation():resume()
     else
       weapon.collider:setSolid(weapon.bb)
-      weapon.player.character.state = weapons.action
+      weapon.player.character.state = weapon.action
     end
     
     
@@ -82,7 +82,7 @@ return {
     weapon.player.character:animation():resume()
 
     if weapon.charged then
-      --weapon:throwProjectile()
+      weapon.props.throwProjectile(weapon)
     end
 
     if weapon.attackAudioClip then
@@ -90,7 +90,7 @@ return {
     end
   end,
 
-  throwProjectile = function( )
+  throwProjectile = function( wepapon )
     if not weapon.player then return end
     local ammo = require('items/weapons/'..weapon.projectile)
     local currentWeapon = nil
