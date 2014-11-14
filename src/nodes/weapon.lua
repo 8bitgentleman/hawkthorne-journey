@@ -11,7 +11,7 @@ local game = require 'game'
 local collision  = require 'hawk/collision'
 local utils = require 'utils'
 local gamestate = require 'vendor/gamestate'
---local Projectile = require 'nodes/projectile'
+local camera = require 'camera'
 
 local Weapon = {}
 Weapon.__index = Weapon
@@ -79,16 +79,26 @@ function Weapon.new(node, collider, plyr, weaponItem)
         g(unpack(props.animations.wield[2])),
         props.animations.wield[3])
   if weapon.magical then
-  weapon.chargeUpTime = 0
-  weapon.charged = false
-  weapon.defaultChargedAnimation = anim8.newAnimation(
-        props.animations.defaultCharged[1],
-        g(unpack(props.animations.defaultCharged[2])),
-        props.animations.defaultCharged[3])
-  weapon.wieldChargedAnimation = anim8.newAnimation(
-        props.animations.wieldCharged[1],
-        g(unpack(props.animations.wieldCharged[2])),
-        props.animations.wieldCharged[3])
+    weapon.projectile = node.properties.projectile
+    weapon.chargeUpTime = 0
+    weapon.charged = false
+    weapon.defaultChargedAnimation = anim8.newAnimation(
+          props.animations.defaultCharged[1],
+          g(unpack(props.animations.defaultCharged[2])),
+          props.animations.defaultCharged[3])
+    weapon.wieldChargedAnimation = anim8.newAnimation(
+          props.animations.wieldCharged[1],
+          g(unpack(props.animations.wieldCharged[2])),
+          props.animations.wieldCharged[3])
+    weapon.cameraShake = props.cameraShake or false
+  --if enemy.cameraShake then
+      weapon.camera = {
+        tx = 0,
+        ty = 0,
+        sx = 1,
+        sy = 1,
+      }
+  --end
   end
 
   weapon.animation = weapon.defaultAnimation
@@ -305,6 +315,14 @@ function Weapon:update(dt, player, map)
   if self.animation then
     self.animation:update(dt)
   end
+
+  local shake = 0
+  local current = gamestate.currentState()
+
+  if self.shake and current.trackPlayer == false then
+      shake = (math.random() * 4) - 2
+      camera:setPosition(self.camera.tx + shake, self.camera.ty + shake)
+  end
 end
 
 function Weapon:keypressed( button, player)
@@ -329,6 +347,7 @@ function Weapon:keypressed( button, player)
     player.inventory:addItem(item, false, callback)
   end
 end
+
 
 --handles a weapon being activated
 function Weapon:wield()
@@ -369,6 +388,16 @@ function Weapon:drop(player)
   end
   self.dropping = true
   self.dropped = true
+end
+
+function Weapon:throwProjectile( weapon )
+  local props = utils.require( 'nodes/weapons/' .. self.name )
+  if props.throwProjectile then props.throwProjectile(self) end
+end
+
+function Weapon:weaponShake( weapon )
+  local props = utils.require( 'nodes/weapons/' .. self.name )
+  if props.weaponShake then props.weaponShake(self) end
 end
 
 -- handle weapon being dropped in a floorspace

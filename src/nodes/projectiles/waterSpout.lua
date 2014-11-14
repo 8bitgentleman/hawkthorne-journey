@@ -14,8 +14,8 @@ return{
   playerCanPickUp = false,
   enemyCanPickUp = false,
   canPlayerStore = true,
-  usedAsAmmo = true,
-  velocity = { x = 0, y = 0 }, --initial velocity
+  --usedAsAmmo = true,
+  velocity = { x = 0, y = game.gravity }, --initial velocity
   throwVelocityX = 100,
   throwVelocityY = 0,
   offset = { x = 0, y = -50 },

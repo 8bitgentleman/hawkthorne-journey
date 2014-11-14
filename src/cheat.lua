@@ -24,7 +24,7 @@ local function setCheat(cheatName, turnOn)
       'tacomeat','baggle','brekwich','chickenfinger','deepfrieddud',
       'ironcrepe','keynana','alcohol','watermelon'}},
     give_weapons = {weapons = {
-      'epic','waterSpout','boneclub','switch','longsword',
+      'epic','sword','boneclub','switch','longsword',
       'mace','mallet','crimson_sword','torch','bow','icicle',
       'throwingaxe','throwingknife','arrow'}},
     give_scrolls = {misc = {'lightning'}},

@@ -9,7 +9,7 @@ return{
   description = 'The Epic',
   type = 'weapon',
   subtype = 'melee',
-  ammo = 'waterSpout',
+  --ammo = 'waterSpout',
   damage = '10',
   special_damage = 'water= 6',
   info = 'THE ultimate weapon',

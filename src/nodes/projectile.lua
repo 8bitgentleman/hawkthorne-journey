@@ -105,6 +105,7 @@ function Projectile.new(node, collider)
   proj.canPlayerStore = proj.props.canPlayerStore
 
   proj.usedAsAmmo = proj.props.usedAsAmmo
+  proj.magical = proj.props.magical or false
   
   return proj
 end
@@ -308,7 +309,7 @@ function Projectile:floor_pushback()
   if self.solid and self.thrown then self:die() end
 
   -- Pushback code for a dropped item
-  if self.dropped then
+  if self.dropped or self.magical then
     self.dropped = false
     self.velocity.y = 0
 

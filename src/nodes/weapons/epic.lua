@@ -10,6 +10,9 @@
 local Timer = require 'vendor/timer'
 local window = require 'window'
 local camera = require 'camera'
+local utils = require 'utils'
+local Projectile = require 'nodes/projectile'
+local gamestate = require 'vendor/gamestate'
 
 return {
   hand_x = 15,
@@ -26,35 +29,31 @@ return {
   bbox_width = 18,
   bbox_height = 18,
   bbox_offset_x = {4,19,25},
-  bbox_offset_y = {4,9,23},
+  bbox_offset_y = {4,9,0},
   hitAudioClip = 'mace_hit',
   magical = true,
   animations = {
     default = {'once', {'1,1'}, 1},
     defaultCharged = {'loop', {'2-7,1'}, 0.1},
-    wield = {'once', {'1,1','5,1','9,1','5,1',},0.2},
-    wieldCharged = {'once', {'1,1','5,1','9,1','5,1',},0.2}
+    wield = {'once', {'1,1','8,1','9,1','8,1'},0.2},
+    wieldCharged = {'once', {'1,1','8,1','9,1','8,1'},0.2}
   },
   action = "wieldaction3",
   actionwalk = "wieldaction3",
   actionjump = "wieldaction3",
 
-  --[[update = function(dt, player, map)
-        weapon.chargeUpTime = weapon.chargeUpTime + dt
-        if weapon.chargeUpTime >= 3 then
-          weapon.chargeUpTime = 0
-          weapon.charged = true
-          weapon.animation = weapon.defaultChargedAnimation
-        end
-      end]]
-
   wield = function( weapon )
-    -- weapon.player.wielding = true
+     weapon.player.wielding = true
       --changes the animation is weapon is charged
+    weapon.player.character:animation():gotoFrame(1)
+    weapon.player.character:animation():resume()
+
     if weapon.animation then
       if weapon.charged then
         weapon.animation = weapon.wieldChargedAnimation
         weapon.charged = false
+        weapon:weaponShake(weapon)
+        weapon:throwProjectile(weapon)
       else
         weapon.animation = weapon.wieldAnimation
       end
@@ -77,39 +76,52 @@ return {
       weapon.player.character.state = weapon.action
     end
     
-    
-    weapon.player.character:animation():gotoFrame(1)
-    weapon.player.character:animation():resume()
-
-    if weapon.charged then
-      weapon.props.throwProjectile(weapon)
-    end
 
     if weapon.attackAudioClip then
       sound.playSfx( weapon.attackAudioClip )
     end
   end,
 
-  throwProjectile = function( wepapon )
-    if not weapon.player then return end
-    local ammo = require('items/weapons/'..weapon.projectile)
-    local currentWeapon = nil
-    local page = nil
-    local index = nil
-    if not currentWeapon then
-      currentWeapon, page, index = weapon.player.inventory:search(ammo)
-    end
-    if not currentWeapon then
-      weapon.player.holdingAmmo = false
-      weapon:deselect()
-      weapon.player.doBasicAttack = true
-      return
-    end
-    weapon.player.inventory.selectedWeaponIndex = index
-    weapon.player.holdingAmmo = true
+  throwProjectile = function( weapon )
+    Timer.add(.5, function()
+      local node = {
+        type = 'projectile',
+        name = 'waterspout',
+        x = weapon.position.x+weapon.hand_x,
+        y = weapon.position.y+(weapon.bbox_height),
+        width = 24,
+        height = 16,
+        properties = {}
+      }
+      local water = Projectile.new( node, weapon.collider )
+      local level = weapon.containerLevel
+      level:addNode(water)
+    end)
+  end,
 
-    Timer.add(weapon.throwDelay, function()
-      currentWeapon:use(weapon.player, weapon)
-      end)
+  weaponShake = function (weapon)
+    
+    local current = gamestate.currentState()
+    Timer.add(.3, function()
+      weapon.shake = true
+      weapon.camera.tx = camera.x
+      weapon.camera.ty = camera.y
+      current.trackPlayer = false
+      current.player.freeze = true
+    end)
+    Timer.add(1.25, function()
+      weapon.shake = false
+      current.trackPlayer = true
+      current.player.freeze = false
+    end)
+  end,
+
+  update = function( dt, weapon, player, level )
+    local shake = 0
+
+    if weapon.shake and current.trackPlayer == false then
+      shake = (math.random() * 4) - 2
+      camera:setPosition(weapon.camera.tx + shake, weapon.camera.ty + shake)
+    end
   end,
 }
