@@ -148,6 +148,9 @@ function Weapon:draw()
   if self.player then
     if self.player.character.direction=='left' then
       scalex = -1
+      self.direction = 'left'
+    else
+      self.direction = 'right'
     end
   elseif self.direction == 'left' then
     scalex = -1
@@ -161,8 +164,9 @@ function Weapon:draw()
   end
 
   -- Flipping an image moves it, this adjust for that image flip offset
+  -- offset is only necessay when the player is not holding the weapon
   local offsetX = 0
-  if self.direction == 'left' then
+  if not self.player and self.direction == 'left' then
     offsetX = self.boxWidth or 0
   end
 

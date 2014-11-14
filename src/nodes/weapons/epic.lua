@@ -96,6 +96,8 @@ return {
       local water = Projectile.new( node, weapon.collider )
       local level = weapon.containerLevel
       level:addNode(water)
+      
+      water:throw(weapon)
     end)
   end,
 
