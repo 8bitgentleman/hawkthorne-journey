@@ -13,8 +13,8 @@ return {
   speed = 20,
   tokens = 1,
   tokenTypes = { -- p is probability ceiling and this list should be sorted by it, with the last being 1
-    { item = 'coin', v = 1, p = 0.9 },
-    { item = 'health', v = 1, p = 1 }
+    { item = 'coin', v = 1, p = 2 },
+    { item = 'health', v = 1, p = 3 }
   },
   animations = {
     dying = {

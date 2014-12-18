@@ -39,6 +39,7 @@ function Token.new( node, collider)
   token.blinklife = 2
   token.speed = 300
   token.delay = 0.1
+  token.rarity = token.item.height or 1
 
   token.bb = collider:addRectangle( token.position.x, token.position.y, token.width, token.height )
   token.bb.node = token

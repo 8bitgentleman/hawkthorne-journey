@@ -132,6 +132,11 @@ function Enemy.new(node, collider, enemytype)
   end
   
   enemy.foreground = node.properties.foreground or enemy.props.foreground or false
+  --all of this is used to determine the 'difficulty level' of the enemy which determines it's drop probability
+  enemy.speed = tonumber(enemy.props.speed) or 0
+  enemy.size = (math.ceil((enemy.height*enemy.width)/100))
+  enemy.level = (((enemy.speed + enemy.size)*enemy.hp*enemy.props.damage)/100)+1
+  
   
   return enemy
 end
@@ -154,7 +159,6 @@ end
 function Enemy:hurt( damage, special_damage, knockback )
   if self.dead then return end
   if self.props.die_sound then sound.playSfx( self.props.die_sound ) end
-
   if not damage then damage = 1 end
   self.state = 'hurt'
   
@@ -250,10 +254,15 @@ end
 function Enemy:dropTokens()
   if not self.props.tokens or self.props.tokens == 0 then return end
   
+  
+
   for i=1, self.props.tokens do
-    local r = math.random(100) / 100
+    local r = math.random(11)
     for _,d in ipairs( self.props.tokenTypes ) do
-      if r < d.p then
+      print(math.ceil((math.log(self.level)/math.log(d.p))+1))
+      print(r)
+      local p = math.ceil((math.log(self.level)/math.log(d.p))+1)
+      if r < p then
         local node = {
           type = "token",
           name = d.item,

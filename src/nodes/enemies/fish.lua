@@ -16,6 +16,7 @@ return {
   easeup = 'outQuad',
   easedown = 'inQuad',
   movetime = 1,
+  speed = 10,
   bounceheight = 140,
   dyingdelay = 3, 
   animations = {
