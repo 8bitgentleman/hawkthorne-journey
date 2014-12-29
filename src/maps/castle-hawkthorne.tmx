@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="98" height="40" tilewidth="24" tileheight="24">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="98" height="40" tilewidth="24" tileheight="24">
  <properties>
   <property name="blue" value="0"/>
   <property name="green" value="0"/>
@@ -10,31 +10,48 @@
  </properties>
  <tileset firstgid="1" name="castle-hawkthorne" tilewidth="24" tileheight="24">
   <image source="../images/tilesets/castle-hawkthorne.png" width="384" height="1200"/>
+  <terraintypes>
+   <terrain name="Background Bricks" tile="-1"/>
+  </terraintypes>
+  <tile id="16">
+   <objectgroup draworder="index">
+    <object x="0" y="0" width="24" height="24"/>
+   </objectgroup>
+  </tile>
+  <tile id="203" terrain="0,0,0,0"/>
+  <tile id="204" terrain="0,0,0,0"/>
+  <tile id="219" terrain="0,0,0,0"/>
+  <tile id="220" terrain="0,0,0,0"/>
  </tileset>
  <tileset firstgid="801" name="collisions" tilewidth="24" tileheight="24">
   <image source="../images/tilesets/collisions.png" width="632" height="512"/>
  </tileset>
  <layer name="pillar" width="98" height="40">
   <data encoding="base64" compression="zlib">
-   eJztmUsOgzAMRLNpD9gj9HCcs61UVIRCMY4dXrCflM1ItTNMPkWU8uNR6tB0DTQP/7zR5pQ5sHUNNA+Rcri9x924d+bQBs1D5sDWz+y9py/PFy1ne5DqPXuvn2vuB0bvzMGultV/E0kdDXs9WvcoJYeeugaah8zBTvd4P7GsFSUHD92jh9eZq4HmQZID5c4i5NBbP7N35sDofbUcWu5vrzl56BpGuvtodxY5B40ufUclzFWia6B5WOuE9Z05MHpnDozemQOjd9Qctr5vPTd+Q9M10DxYevswfUdkKP4jZ0HzPhXenLyheo2UBdXjVBlXhO6NnoPVfGi+1njlYFXLog5xfdXwyMLSd0utUTKYsczC2rumHvWclWCRhZf3o3Ma8fnP1HI44qfH+pPUH3UfLLmChyRJksi8AKuyqNE=
+   eJztmUEOgjAURLvRA3oED+c5ZachIs1vf/u07yVsJqHTYYDSUMqLW/kMTY9Ay/AtG21O9sDWI9AyrNTDZTuunb3toQ1aBntg6zO9z/T390uU2Rlq9ZHe++vq88Dwtod+Y/X6NqkZJ8KZR+szSulhpB6BlsEe+ukZ+5OeY63SQ4ae4ZH1zo1Ay1DTA2XNIvQwWp/pbQ8M73/roWX9zppThh7hl9Y+2ppF7iGi1+5RCXOt0SPQMux1wv1tDwxve2B42wPDe9Uejv5v3Q/OoekRaBl6ZhMRERERERERFo/ZExAREQHwBNeLclk=
+  </data>
+ </layer>
+ <layer name="Behind Floor" width="98" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztl4uR2zAQQ1maS2NpLkDswOwlZ0dYvoV0SSa2/LkhZjS2JVok9wOApUxMTExMTExMTExMTExMTExMHIlLKbV/Xfxcvq5WyvnrOi2/x5Run9cxL1z2j8I1xi1/Khe377rW+Ou+ruuziTuhOK71r1yoH1T76o1T+/38dk+/NeZVe/h0XLlFeehlcE1b495HLxTl6rKOQd5S37xmJ58L1H4hz/RxX/lR7Ouap1uviMcug7PqmsPTC7bzcvxJQ/+ivaGzimkvQyeQo4r+iDz18eyWK+rJBeuArsT7uZY1d+dnxOoorHuLfVM31/0m3u8jnklrL+O5xkQOlhGziKvyuJOTiviHzjTMhzF1zYvyW4+P2ONBbe25tsLzsLb7eHZi7PnJfPay5aqex0dvwTs5p0U9KO5L7oWNxhwYsoeDnMN+gO5W5xTFhv3B3kFdptiTUxRXxYw8iPdHLviOlsdRe2Je7evQ4D0IVpe173B0G/UWuqocrLGIGlauwBP0TdEj6rEl3zthztRX6D+uke+MXkC+wqMdG8V/w3fnKq2bta19NeNh/od9wpo37q5e9+wH/+6+Fv+LuDP25ovjzEHNokdmfqyn6zFR34L6qb1ZTVcbk+KJvarWN97UuZp85vzk/9c6LKapLlDzSaeg/3zHt5rl/urZeaAfabYf5oV7ZO7IR9yT8w40ItUj+8H1xOJdbWzqD+Q4eHHJ/4uzh8+BvlSPPT0P5OW+E1N6c+Ot5AVVa+irxB2MJXm+jfiQH/Z0PM1Lz0WtUh9Yr0TPXjULz2M93dbyzDxofn1HHFP9U2Oxr8Q/zuUdcfEeMC2gzww/pLOD1bzrGNdCTeI64rl5ANes+i4einVqfRD3wJ9+Dg5NQS1u4uh8YrpQe56vWn52PdNlzF28vqlNWF+6394oBwL5HOck7j/1NP2458X1klzD/9pce/oZ9bzntVgj5Bq8t6KPEo+pfo6K5z1ALUbP9rFmj3Ulz+AzdHEnVxFremDoRJxVqBv8Te5vJfOUn+tcR+j73jUHgsWwoh6135Sn9fmZPM6zr/tTf59yVMq2f8gz5C33UfBNm/eqP9Z3RY18AtTH7q29r5e81xT/NrS6WAwr6ptcfdZ8PCu4Nsuj+bvJXVwH+DB6+5NA7mijvpL3WcecTEfogRIX3bsW5dE1hx4c/sI9xe3eHct4GXY8TIqDeUr1wJleqOH6H0AXKuO5zlM9/vSl9BT9Q3Mg0Hv4GWLHl258+yO5mH2g2hCPIfdJx1QjPwHOOe5LUYcn8hm08eHrwZzJ24oT3/V8cA/gczb97vxLXT1yTQsu+ljxErzU4Wt5JRbU2k/e58TExMSn4hdHTMYH
   </data>
  </layer>
  <layer name="floor" width="98" height="40">
   <data encoding="base64" compression="zlib">
-   eJztmVsOgjAQRbt0gjsQlB3INq1ITMVCah/M657k/kmcmYPUFucAAAAAAAAAQCc3n3s8XRj/uY6wTPXMfr6PeFyYmbZM9cADHRc/53Hz3EnI8rwa39eDQl4Oep9r5J5Pib/O9Q4uSih1ABfl1HIAF/nUdmDdRcb6uuwDhgYOQheD++w39vYiX5G81re6pyki9XekyYFUFxodSHOh2QFHF9POGttyfeWUo7V+qjDfVHbOeMjnwyFnnmvBAzxwT66H1L3M0f6GunfqBPvV7FmWfH/434F6FpQOOPxHtOyCiwPLLrg5sOiCq4O1NhMuODto7SLz/fTPO2oLDsLUdFGj9xr1SHPAtfeSeqQ64Np7Tj3SHaw9sOv9n3o0ONj2vp4TJ6X1+XlqPVbO8REEQWJ5Atvztlk=
+   eJztmU0OgjAQhXv0Rne6E3SByFJWehQ9gldxCGlCCCTQzsC0fV/yEhb8zMyjM2iNAQAAAAAAAIA0uZJu07JD0Xl2xzCTp6X6Pqdlhmr3DTN54MN+fKnONelBx2tV99eDQD5U/xOp8uz3dJ059fcBnvwCPXA4L34sUeXFl8kDh/MCPWo5ob1ojlx7lO98vQt44Kj6+2cz66Xe6T2IdR1xzVdNxDbrueerJmKZ9Sn1ojk09ahmZvZKzldNDGa9HavZMI53BrX25b3ts+yGj4sK+KADXx9m9lQWqSQdg6JOA6qBLfv9J+9ajv+3X6ML6UA6y6eqls4DqoG9TOyBbCnnRY7rQosHOa8LbR7kuC60etDpZfLwQrMH0l4MvkfWivW7LgYPpnoUx7zgyJ3j3YjNA625h8QTqwcc60Iidx8vYvegk++8kMx9TTwpeDDOvTDLf+MXwrkvjUc6DgiCIM36Ax9QDKE=
   </data>
  </layer>
  <layer name="features" width="98" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt2ksOgjAQBuDuPYIrj8AROIeXce1z73Pvc+/zMB7BuHcWkgwJFIqUmeL/JRNNGsKEJmWG1hgAAKhbXzoBMBOKKcVMOpE/1DNmkPxfUawpNulxaEDE5uFAcaQ4pcehATGbhxvFneKRHgcAgEBprPk15uTTkGJEMZZOhNGYk29zigXFUjoRRmNOvm0pdhR76UQYjTn5dqa4UFylE2E05gQAAJDn33qaJrg+U409TUfo2rpUeaZZPQ3fe5HQFbr2F3w/qkqfmNXTRMLzECK+H1WlT8zqaWLMgzO+H6WpTyyzTje1lhfdR8M7xZcy63TVtdy1Fim6j9Q7JWQa67s2y6vZbLUIztDUL69ms9UitjM0zxpyCtHr+/t2HEvk1Wy2WsR2hsZ2T1seANAe0t9GXLT5/R7St5E2n5EN6dsIzsgCAIAGH3hBQys=
+   eJzt2r0OwiAQB3B2H8E4uKqLq7q4ap9AfRje1Ucw7t5gE5oUWihwB/x/yUUT0nBpEzg+lAIAgNg23AmA2lHsKQ7ciTRoq5Tu/58ozhSXYTtkcDS+w43iTtEN2yGDq/EdHhRPitewHQAACiWx5peYU0oSa36JOaU2VvNzk5hTamM1PzeJOaU2VvNzk5gTAACATWtrmhx836nENc2K6dlYQt6p5WxFR0zL25rp2SXM86iQdaLlbEUvz6wt5nlUyDrRcrail2fWFvM8StI6cc44nWssn+pHwpySypxxOnQs961FpvrhmlNKJrG+q5mtZnPVIrhDE5+tZnPVIq47NO8IOZXo8//9erb1bDWbqxZx3aFx9enKAwDqwb034qPm+b2kvZGa78iWtDeCO7IAACDBDwmtJpM=
   </data>
  </layer>
- <layer name="collision" width="98" height="40">
+ <layer name="collision" width="98" height="40" visible="0">
   <data encoding="base64" compression="zlib">
    eJzt2VsOgzAMRFGkrqR0Gd3/vlqpmv+QOHRs3yPx73ARj3AcAAAAAFDT+zF+AMAu5/ce81w4Xtyjlp1B55AW86IaCC2ui24gtBi3q4F0azH7fL1Dl2f97mv6H7K1qNhAsrSo3EDcW3RoIA4t2Ff74TwAqGxlHzPz902k1f3gqG/Xzi3c3hE7tnBrIJ1auDaQDi3cG0jlFlkaSGSLiPeRiHmyNRC3ta/Mk7WBuK19Zp7sDcRt7VfmqdJA3NY+Mk+1BuL0f3pkHgDo7APh2BwZ
   </data>
  </layer>
- <objectgroup color="#a41f05" name="nodes" width="98" height="40" visible="0">
+ <objectgroup color="#a41f05" name="nodes" visible="0">
   <object name="main" type="door" x="1189" y="672" width="49" height="72">
    <properties>
     <property name="level" value="castle-hawkthorne-entrance"/>

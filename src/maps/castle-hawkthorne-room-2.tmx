@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="100" height="14" tilewidth="24" tileheight="24">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="14" tilewidth="24" tileheight="24">
  <properties>
   <property name="autosave" value="false"/>
   <property name="blue" value="0"/>
@@ -17,7 +17,7 @@
  </tileset>
  <layer name="wall" width="100" height="14" opacity="0.38">
   <data encoding="base64" compression="zlib">
-   eJztzqERACAMBLDffwDYADbqPPQOj0ZExKeSFAAAAADAw2jzgwfXarsdqH2Rrw==
+   eJyF1e2N3jAMA+DsP0C7QbuMs4GzS98DLgDxHOX+CPJlyxJFUvu6rhXX832/v5+/7juu9/v7/nB/1+S1if2uz7MWezPuzd4VZy3OX+y546y77Mnac09739dPTN51mXdimbXmlXklbivi5/0m1ubdOp/rZx/y35u7fZEL9k8MJ54kDvb11Ovcm//etW8e1vKUNe9z9tf7xF1xudmX/JXLckDNZL6Nf8mp5FjjVcZc7BWvVb7Zk1wnv/wu/pMWMr+TBuRaaqL5ht/EI3W7eL7LmuRxnmMe+sbifLFomrLvjcv6mnrKs5q3ivsiXtOMPdM71bzxGpetwxzV0uQr8vWkf7Uy+d0usZoXiUXqU6yMKT/MQ8+Wqw0/+TV5puvU5jRzxHrqt71qM2vy/7YuMWiYGdOa9OZVzpNrEzfVWDvbtdbSvFw/bzOjzRb91bieL8cnH5Mvk1+LZ/PkCbfmzW3emmObCepQfumd5iYXTzNzmv35Tdytz9naPFR85Zran+Ztm4ctfuOmfLJ/vusVakAMmt4mP5VL9kkdikXrw+Trm73OCHvS/MA5lD7WetMwP/FJ3Fq+9s64J37Z06ZLuWCtjT8nH9XjmoaSt2Khr7RZqtYm7Yl547a16q3NvzfrxMn6mufrwy2nKWc59D/uTJqT4ydfla9tFrXZY2+dlVMdq+w1P/2iccBve4jjXEpdT94vl+WHNbee6HPOlcV50zwTx+ZL4t56pqYzbzE2t6fEl0vyJzF0rjzEsU+tv62+NpMfzvPbzVp7fPonVplzi9t89uY+caHNLf1cbjxlr/V/Pf/6XL+vzhX5nrxsntUwskd6jHVMHHC+irVzvGm1eYBefZoZ5tC4bQ8T84c4DaM/n+vv5/oHLlWJYA==
   </data>
  </layer>
  <layer name="pillar" width="100" height="14">
@@ -32,7 +32,7 @@
  </layer>
  <layer name="features" width="100" height="14">
   <data encoding="base64" compression="zlib">
-   eJztzkERQAAYROGtIoIIcmiEBEiABAhnx8H8DfbgfTPvsqeVAAAAAPTpA/gMbnRT+ghes1vcWrYm9AXS5nZ3lK0NfYF0usvdZetCXwD81wNDVgiT
+   eJztzrERQAAYQ+EsotCi0aLRYgLsP4ecwv0bpPC+u9ekigQAAACgSR/Ap3O9G9JH8Jrc7JaytaEvkDa3u6NsY+gLpNNd7i7bGvoC4L8etOgD1Q==
   </data>
  </layer>
  <layer name="collision" width="100" height="14">
@@ -40,7 +40,7 @@
    eJzt2LENACAMxMCXMkk2ZxRGgwIKJsCFT/oJnCpdSVeGQ2zuCcIeLPZgsQeLPVjswWIPFnuw2IPFHiz2YLk9AH8bd/5Xv29CrwVZAqN5
   </data>
  </layer>
- <objectgroup color="#a41f05" name="nodes" width="100" height="14" visible="0">
+ <objectgroup color="#a41f05" name="nodes" visible="0">
   <object type="sprite" x="336" y="192" width="24" height="24">
    <properties>
     <property name="animation" value="1-3,1"/>
