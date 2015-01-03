@@ -44,7 +44,7 @@
    eJzt18ENgkAUhOG9c+PKSTvADqjDZmxArUCtQK1ALQatQL37iEtiTEiW7Orj6f8lE8FwmGQConMAACDUVLsAkphLFpKldhFEW0nWko12EUTbSnaSvXYRRDtIjpKTdhF81Ui7AJIptQsgSBZwTfXxFkih0C4AAMBAyX+MWei1Ie9G0FP22JJ3o2GremwJAMA/yzqOYU/RcQwAAGBFLTlLLpK7chfEu2kXQJTafzb3I1va1T5Xc3/Olva8/jY2+43992xpz9U9d8sdW/6CdkO2tO99y4ljS8CqB+3cJKs=
   </data>
  </layer>
- <layer name="collision" width="115" height="37">
+ <layer name="collision" width="115" height="37" visible="0">
   <data encoding="base64" compression="zlib">
    eJztmX0OgjAMR0k4iXgMz2G8/00MMUbFrRvbGL/Ce0n/KaHQPsL4GIYyLmNerjexc1A4t1q26gGX/cGlnfcELu28J3Bp5z2BSzvvCVzaeU/g0s57Apd23hOpHubty7h/xWPFbBTmdWaXOdzGV6TqKswLl23qKswLl3GmwD34Ha2P1QJchpmMfXHZn9IeLI+xugrzwuUvKY+xugrzwuXnWXX5vLqmrsK8cNmmrsK8cNmmrsK8zuwy9K5xZb2UpLSHlE9c9qemB8snLvtT20PMZ+63oN7g0iZn/VQBl2m8+MRlHh58xu79uPzHg8+ZI7hbskVPHnx6dxn717gF6j49u8z5t9Eaa21SDPXrb2YPj15R9onH9Sj6xGM5Sj7xWM/e6/dR3nsBAM7AE9sCJys=
   </data>
@@ -188,22 +188,29 @@
     <property name="width" value="24"/>
    </properties>
   </object>
-  <object type="enemy" x="1008" y="624" width="72" height="72">
+  <object name="foreground" type="sprite" x="1248" y="528" width="168" height="96">
+   <properties>
+    <property name="foreground" value="true"/>
+    <property name="height" value="96"/>
+    <property name="sheet" value="images/sprites/castle/castle_foreground.png"/>
+    <property name="width" value="168"/>
+   </properties>
+  </object>
+  <object type="spawn" x="1008" y="624" width="72" height="72">
    <properties>
     <property name="enemytype" value="benzalkBoss"/>
+    <property name="nodeType" value="enemy"/>
+    <property name="spawnMax" value="1"/>
+    <property name="spawnType" value="proximity"/>
+    <property name="x_Proximity" value="648"/>
    </properties>
   </object>
   <object name="door" type="sprite" x="1296" y="624" width="24" height="72">
    <properties>
-    <property name="foreground" value="false"/>
     <property name="height" value="72"/>
-    <property name="max_y" value="72"/>
-    <property name="min_y" value="-24"/>
-    <property name="moveable_y" value="true"/>
     <property name="sheet" value="images/sprites/castle/door.png"/>
     <property name="trigger" value="benzalk-dead"/>
     <property name="triggerable" value="true"/>
-    <property name="velocity_y" value="10"/>
     <property name="width" value="24"/>
    </properties>
   </object>

@@ -1,5 +1,10 @@
 local anim8 = require 'vendor/anim8'
 local utils = require 'utils'
+local app = require 'app'
+local Tween = require 'vendor/tween'
+local Timer = require 'vendor/timer'
+local collision  = require 'hawk/collision'
+local game = require 'game'
 
 local Sprite = {}
 
@@ -79,11 +84,41 @@ function Sprite.new(node, collider, level)
     sprite.velocity_y = tonumber(p.velocity_y)
   end
 
+  sprite.triggerable = p.triggerable or false
+  if sprite.triggerable then
+    sprite.trigger = p.trigger or '' 
+    sprite.triggered = app.gamesaves:active():get(sprite.trigger, false)
+    sprite.movetime = p.movetime and tonumber(p.movetime) or 1
+    sprite.position_y = node.y
+    sprite.position_moved_y = node.y - ( p.offset_shown_x and tonumber( p.offset_shown_x ) or 72 )
+  end
+
   return sprite
+end
+
+function Sprite:collide(node)
+  if not self.triggered then return end
+  
 end
 
 function Sprite:update(dt)
   self.dt = self.dt + dt
+
+  local trg = app.gamesaves:active():get(self.trigger, false)
+
+  if trg ~= false then
+    if self.y > self.position_moved_y then
+      self.velocity_y = 60
+      self.y = self.y - (self.velocity_y * dt)
+    else
+      self.velocity = 0
+      local level = self.containerLevel
+      collision.remove_tile(level.map, self.x, 624, 24, 24)
+      collision.remove_tile(level.map, self.x, 648, 24, 24)
+      collision.remove_tile(level.map, self.x, 672, 24, 24)
+    end
+    
+  end
 
   if self.random and self.dt > self.interval then
     self.dt = 0
