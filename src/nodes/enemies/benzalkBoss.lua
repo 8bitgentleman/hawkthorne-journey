@@ -77,12 +77,8 @@ return {
   end,
 
   die = function( enemy )
-    local level = enemy.containerLevel
     enemy.velocity.y = enemy.speed
     enemy.db:set('benzalk-dead', true)
-    collision.remove_tile(level.map, 1296, 624, 24, 24)
-    collision.remove_tile(level.map, 1296, 648, 24, 24)
-    collision.remove_tile(level.map, 1296, 672, 24, 24)
   end,
 
   draw = function( enemy )
@@ -183,7 +179,7 @@ return {
         local jumpL = Sprite.new( node, enemy.collider )
         local level = enemy.containerLevel
         level:addNode(jumpL)
-         --add right jump wind
+  --add right jump wind
         local node = {
           type = 'sprite',
           name = 'jump_wind',
