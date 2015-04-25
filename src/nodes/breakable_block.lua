@@ -2,6 +2,7 @@ local collision  = require 'hawk/collision'
 local Timer = require 'vendor/timer'
 local anim8 = require 'vendor/anim8'
 local sound = require 'vendor/TEsound'
+local Dialog = require 'dialog'
 local Wall = {}
 Wall.__index = Wall
 Wall.isWall = true
@@ -47,6 +48,11 @@ function Wall.new(node, collider, level)
   wall.dyingdelay = node.properties.dyingdelay or 0
   wall.dead = false
   wall.sound = node.properties.sound
+  wall.brokenBy = node.properties.brokenBy
+	wall.warning = node.properties.warning or false
+	if wall.warning then
+	    wall.message = node.properties.message or 'This is to hard for that weapon to break!'
+	end
   wall.position = {x = node.x, y = node.y}
   wall.width = node.width
   wall.height = node.height
@@ -89,6 +95,11 @@ function Wall.new(node, collider, level)
   wall.hp = node.properties.hp or frames
   
   wall.destroyAnimation = anim8.newAnimation('once', g('1-'..frames..',1'), 0.9 / (frames / wall.hp))
+
+  wall.explode = node.properties.explode or false
+  wall.flipY = node.properties.flipY or false
+  wall.flipX = node.properties.flipX or false
+
   
   return wall
 end
@@ -104,15 +115,68 @@ function Wall:update(dt, player)
   self.dying_animation:update(dt)
 end
 
-function Wall:hurt( damage )
-  self.hp = self.hp - damage
+function Wall:explosion()
+	local rand = math.random(100)
+	local Sprite = require 'nodes/sprite'
+	if rand > 50 then
+		sound.playSfx('explosion_quiet')
+		local node = {
+		  type = 'sprite',
+		  name = 'explosion',
+		  x = self.position.x-63,
+		  y = self.position.y-63,
+		  width = 150,
+		  height = 150,
+		  properties = {sheet = 'images/blocks/explosion.png', 
+		                speed = .1, 
+		                animation = '1-7,1',
+		                width = 150,
+		                height = 150,
+		                mode = 'once',
+		                foreground = true}
+		}
+		local explosionSprite = Sprite.new( node, self.collider )
+		local level = self.containerLevel
+		level:addNode(explosionSprite)
+	end
+end
+
+function Wall:hurt( damage, special_damage )
+  self.hp = self.hp - self:calculateDamage(damage, special_damage)
   self.destroyAnimation:update(damage)
   self:draw()
   if self.hp <= 0 then
+  	if self.explode then self:explosion() end
     self.dead = true
     if self.sound then sound.playSfx(self.sound) end
     Timer.add(self.dyingdelay, function() self:die() end)
   end
+end
+
+-- Compares brokenBy to a weapons special damage and sums up total damage
+function Wall:calculateDamage(damage, special_damage, player)
+    if not self:specialDamageCheck(special_damage) then 
+            sound.playSfx( "dbl_beep" )
+            if self.warning==true then
+                Dialog.new(''..self.message..'', function()
+                end)
+            end
+        return 0 
+
+    end
+    return damage
+end
+-- compaired the block's broken by to the special damage of the weapon/enemy
+function Wall:specialDamageCheck( special_damage )
+    if not self.brokenBy or self.brokenBy == {} then 
+        return true 
+    end
+
+    if special_damage and special_damage[self.brokenBy] ~= nil then
+        return true
+    end
+
+    return false
 end
 
 function Wall:die()
@@ -132,10 +196,25 @@ function Wall:die()
   end
 end
 
-function Wall:draw()
+function Wall:draw( special_damage)
+	local scalex = 1
+	local scaley = 1
+	local offsetX = 0
+	local offsetY = 0
+	if self.flipX then
+		scalex = -1
+		offsetX = self.width
+	end
+	if self.flipY then
+		scaley = -1
+		offsetY = self.height
+	end
+
   if self.crack then
-    love.graphics.draw(self.sprite, self.node.x, self.node.y)
-    self.destroyAnimation:draw(crack, self.node.x, self.node.y)
+    love.graphics.draw(self.sprite, self.node.x + offsetX, self.node.y+ offsetY, 0, scalex, scaley)
+    if self:specialDamageCheck(special_damage) then
+    	self.destroyAnimation:draw(crack, self.node.x, self.node.y)
+    end
   elseif not self.dead then
     self.destroyAnimation:draw(self.sprite, self.node.x, self.node.y)
   else

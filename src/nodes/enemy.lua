@@ -20,6 +20,8 @@ local token = require 'nodes/token'
 local game = require 'game'
 local utils = require 'utils'
 local window = require 'window'
+local Dialog = require 'dialog'
+local camera = require 'camera'
 
 
 local Enemy = {}
@@ -59,6 +61,7 @@ function Enemy.new(node, collider, enemytype)
   enemy.idletime = 0
   
   assert( enemy.props.damage, "You must provide a 'damage' value for " .. type )
+  enemy.special_damage = enemy.props.special_damage or {}
 
   assert( enemy.props.hp, "You must provide a 'hp' ( hit point ) value for " .. type )
   assert( tonumber(enemy.props.hp),"Hp must be a number" )
@@ -102,7 +105,17 @@ function Enemy.new(node, collider, enemytype)
   enemy.player_rebound = enemy.props.player_rebound or 300
   enemy.vulnerabilities = enemy.props.vulnerabilities or {}
   enemy.attackingWorld = false
+  
+  enemy.cameraShake = enemy.props.cameraShake or false
+  enemy.camera = {
+    tx = 0,
+    ty = 0,
+    sx = 1,
+    sy = 1,
+  }
 
+  enemy.fadeIn = enemy.props.fadeIn or false
+  enemy.fade = {255, 255, 255, 0}
   enemy.animations = {}
   
   for state, data in pairs( enemy.props.animations ) do
@@ -131,15 +144,25 @@ function Enemy.new(node, collider, enemytype)
     collider:setGhost(enemy.attack_bb)
     enemy.last_attack = 0
   end
-  
+  enemy.enterScript = enemy.props.enterScript or false
+  enemy.deathScript = enemy.props.deathScript or false
+  enemy.rage = false
+
   enemy.foreground = node.properties.foreground or enemy.props.foreground or false
   
   return enemy
 end
 
-function Enemy:enter()
+function Enemy:enter( player )
   if self.props.enter then
-    self.props.enter(self)
+    self.props.enter(self, player)
+  end
+
+  if self.enterScript then
+    player.freeze = true
+    Dialog.new(self.enterScript, function()
+        player.freeze = false
+      end)
   end
 end
 
@@ -178,7 +201,8 @@ function Enemy:hurt( damage, special_damage, knockback )
       self.currently_held:die()
     end
     Timer.add(self.dyingdelay, function() 
-      self:die()
+      if self.props.die then self.props.die( self ) else self:die() end
+        
     end)
     if self.reviveTimer then Timer.cancel( self.reviveTimer ) end
     self:dropTokens()
@@ -199,6 +223,10 @@ end
 
 -- Compares vulnerabilities to a weapons special damage and sums up total damage
 function Enemy:calculateDamage(damage, special_damage)
+  if self.props.calculateDamage then
+    self.props.calculateDamage(self, damage, special_damage)
+  end
+  
   if not special_damage then
     return damage
   end
@@ -236,7 +264,7 @@ function Enemy:cancel_flash()
 end
 
 function Enemy:die()
-  if self.props.die then self.props.die( self ) end
+  --if self.props.die then self.props.die( self ) end
   self.dead = true
   self.collider:remove(self.bb)
   self.collider:remove(self.attack_bb)
@@ -291,9 +319,11 @@ function Enemy:collide(node, dt, mtv_x, mtv_y)
       self.props.attack(self,self.props.attackDelay)
     elseif self.animations['attack'] then
       self.state = 'attack'
-      Timer.add(1, function()
-        if self.state ~= 'dying' then self.state = 'default' end
-      end)
+      if not self.rage then
+        Timer.add(1, function()
+          if self.state ~= 'dying' then self.state = 'default' end
+        end)
+      end
     end
   end
 
@@ -303,7 +333,7 @@ function Enemy:collide(node, dt, mtv_x, mtv_y)
     if self.props.damage ~= 0 then
       if self.attackingWorld then return end
       self.attackingWorld = true
-      node:hurt(self.props.damage)
+      node:hurt(self.props.damage, self.props.special_damage)
       Timer.add(1.25, function()
         self.attackingWorld = false
       end)
@@ -355,11 +385,16 @@ function Enemy:collide(node, dt, mtv_x, mtv_y)
   attack()
 
   if self.props.damage ~= 0 then
-    player:hurt(self.props.damage)
-    player.top_bb:move(mtv_x, mtv_y)
-    player.bottom_bb:move(mtv_x, mtv_y)
-    player.velocity.y = -450
-    player.velocity.x = self.player_rebound * ( player.position.x < self.position.x + ( self.props.width / 2 ) + self.bb_offset.x and -1 or 1 )
+    if node.isPlayer then
+      player:hurt(self.props.damage)
+      player.top_bb:move(mtv_x, mtv_y)
+      player.bottom_bb:move(mtv_x, mtv_y)
+      player.velocity.y = -450
+      player.velocity.x = self.player_rebound * ( player.position.x < self.position.x + ( self.props.width / 2 ) + self.bb_offset.x and -1 or 1 )
+    elseif node.isWall then
+      node:hurt(self.props.damage)
+      print('enemy hurts wall')
+    end
   end
 end
 
@@ -440,6 +475,9 @@ function Enemy:draw()
 
   if self.flash then
     love.graphics.setColor(255, 0, 0, 255)
+  elseif self.fadeIn  then 
+    tween(2, self.fade, {255, 255, 255, 255}, 'outQuad', function() self.fadeIn = false end)
+    love.graphics.setColor(unpack(self.fade))  
   else
     love.graphics.setColor(255, 255, 255, 255)
   end
@@ -449,7 +487,6 @@ function Enemy:draw()
   end
 
   love.graphics.setColor(r, g, b, a)
-
   if self.props.draw then
     self.props.draw(self)
   end
@@ -477,7 +514,7 @@ function Enemy:wall_pushback()
   else
     if self.attackingWorld then return end
     self.direction = self.direction == 'left' and 'right' or 'left'
-    self.velocity.x = 0
+    --self.velocity.x = 0
     self:moveBoundingBox()
   end
 end
