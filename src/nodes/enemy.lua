@@ -209,6 +209,10 @@ end
 
 -- Compares vulnerabilities to a weapons special damage and sums up total damage
 function Enemy:calculateDamage(damage, special_damage)
+  if self.props.calculateDamage then
+    self.props.calculateDamage(self, damage, special_damage)
+  end
+  
   if not special_damage then
     return damage
   end

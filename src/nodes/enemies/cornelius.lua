@@ -27,7 +27,7 @@ return {
   bb_offset = { x = 0, y = -5},
   attack_width = 40,
   velocity = {x = 0, y = 10},
-  hp = 1,
+  hp = 20,
   tokens = 100,
   dyingdelay = 2,
   fadeIn = true,
@@ -81,8 +81,9 @@ return {
   enter = function( enemy )
     enemy.direction = math.random(2) == 1 and 'left' or 'right'
     enemy.directionY = math.random(2) == 1 and 'up' or 'down'
-    enemy.state = 'attack'
+    --enemy.state = 'attack'
     enemy.dropmax = enemy.position.y + 5--336
+    enemy.hatched = false
     enemy.last_teleport = 0
     enemy.last_attack = 0
     enemy.last_fireball = 0 
@@ -162,6 +163,32 @@ return {
 
   end,
 
+  -- Compares vulnerabilities to a weapons special damage and sums up total damage
+  calculateDamage = function(self, damage, special_damage)
+    if not special_damage then
+      if self.state =='teleport' then
+        print('double damage')
+        damage = 2*damage
+        return damage
+      else
+        print('regular damage')
+        return damage
+      end
+    end
+    for _, value in ipairs(self.vulnerabilities) do
+      if special_damage[value] ~= nil then
+        if enemy.state =='teleport' then
+          damage = (damage + special_damage[value])*2
+          print('double damage')
+        else
+          damage = damage + special_damage[value]
+          print('regular damage')
+        end
+      end
+    end
+
+    return damage
+  end,
 
   die = function( enemy )
     sound.playMusic("cornelius-forfeiting")
@@ -237,30 +264,31 @@ return {
 
   update = function( dt, enemy, player, level )
     if enemy.dead then return end
-
+    print(enemy.state)
     local direction = player.position.x > enemy.position.x + 70 and -1 or 1
     local offset = math.random(0,200)
     --print(direction)
 
-    if enemy.state == 'enter' then
-    elseif enemy.state == 'attack' or enemy.state =='teleport' then
-      if enemy.position.y < enemy.dropmax then enemy.velocity.y = 0 end
-    	enemy.rage = true
-    	enemy.glow = true
-    	enemy.lightning = true
-    	--enemy.props.fire(enemy)
-      enemy.last_teleport = enemy.last_teleport + dt
-      enemy.last_attack = enemy.last_attack + dt
-      enemy.last_fireball = enemy.last_fireball + dt 
-      enemy.props.targetDive( enemy, player, -direction )
+    if enemy.state == 'default' and not enemy.hatched then
+      enemy.hatched = true
+      enemy.state = 'attack'
+    elseif enemy.hatched then
+        if enemy.position.y < enemy.dropmax then enemy.velocity.y = 0 end
+      	enemy.rage = true
+      	enemy.glow = true
+      	enemy.lightning = true
+      	--enemy.props.fire(enemy)
+        enemy.last_teleport = enemy.last_teleport + dt
+        enemy.last_attack = enemy.last_attack + dt
+        enemy.last_fireball = enemy.last_fireball + dt 
+        enemy.props.targetDive( enemy, player, -direction )
+        
+        if enemy.last_attack > 2 and enemy.last_teleport > 3 then
+          --enemy.props.fireball( enemy, player )
+          enemy.props.teleport( enemy, player, dt )
+          --enemy.props.startDive ( enemy )
+        end
       
-      if enemy.last_attack > 2 and enemy.last_teleport > 3 then
-        enemy.props.fireball( enemy, player )
-        --enemy.props.teleport( enemy, player, dt )
-        --enemy.props.startDive ( enemy )
-
-
-      end
     end
 
   	--[[if enemy.position.y < enemy.miny then
