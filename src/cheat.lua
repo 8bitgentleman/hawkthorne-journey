@@ -6,6 +6,7 @@ local app = require 'app'
 local Cheat = {}
 
 local cheatList ={}
+local cheatEnabled = true
 
 --if turnOn is true the cheat is enabled
 -- if turnOn is false the cheat is disabled
@@ -93,7 +94,9 @@ function Cheat:is(cheatName)
 end
 
 function Cheat:on(cheatName)
-  setCheat(cheatName,true)
+  if cheatEnabled then
+    setCheat(cheatName,true)
+  end
 end
 
 function Cheat:off(cheatName)
@@ -101,6 +104,7 @@ function Cheat:off(cheatName)
 end
 
 function Cheat:fairfight()
+  cheatEnabled = false
   for cheat,_ in pairs(cheatList) do
     self:off(cheat)
   end
