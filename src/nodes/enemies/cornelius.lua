@@ -10,6 +10,7 @@ local anim8 = require 'vendor/anim8'
 local window = require 'window'
 local camera = require 'camera'
 local fonts = require 'fonts'
+local cheat = require 'cheat'
 
 return {
   name = 'cornelius',
@@ -92,7 +93,7 @@ return {
     enemy.swoop_distance = 150
     enemy.swoop_ratio = 0.25
     sound.playMusic("cornelius-attacks")
-    --player.cheatsEnabled = false
+    cheat:fairfight()
 
 		if enemy.enterScript then
 	    Dialog.new(enemy.enterScript, function() enemy.state = 'attack'

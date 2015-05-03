@@ -93,25 +93,21 @@ function Cheat:is(cheatName)
 end
 
 function Cheat:on(cheatName)
-  local player = Player.factory() -- Expects existing player object
-  --this allows cheats to be disabled
-  if player.cheatsEnabled then
-    setCheat(cheatName,true)
-  else
-    
-  end
+  setCheat(cheatName,true)
 end
 
 function Cheat:off(cheatName)
   setCheat(cheatName,false)
 end
 
-function Cheat:toggle(cheatName)
-  setCheat(cheatName,not cheatList[cheatName])
+function Cheat:fairfight()
+  for cheat,_ in pairs(cheatList) do
+    self:off(cheat)
+  end
 end
 
-function Cheat:allOff()
-  --used by cornelius to turn off all cheats
+function Cheat:toggle(cheatName)
+  setCheat(cheatName,not cheatList[cheatName])
 end
 
 return Cheat
