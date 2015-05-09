@@ -49,7 +49,6 @@ return{
   end,
 
   update = function(dt,projectile)
-    print(projectile.velocity.y)
     if not projectile.holder then
       projectile.props.idletime = projectile.props.idletime + dt
     else
