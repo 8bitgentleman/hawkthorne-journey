@@ -28,19 +28,18 @@ return{
     finish = {'once', {'5,1'}, 1},
   },
   
-  enter = function(dt,projectile)
+  new = function(projectile)
     local Player = require 'player'
     local player = Player.factory()
-    print('projectile')
     
     projectile.player = {x = player.position.x, y = player.position.y}
     
     local angle = math.atan2(((player.position.y+24) - projectile.position.y), (player.position.x+10 - projectile.position.x))
-    local dx = 100 * math.cos(angle)
-    local dy = 400 * math.sin(angle)
-
-    projectile.position.x = projectile.position.x + (dx)
-    projectile.position.y = projectile.position.y + (dy)
+    local dx = 200 * math.cos(angle) * (player.position.x < projectile.position.x and -1 or 1)
+    local dy = 200 * math.sin(angle) * (player.position.y < projectile.position.y and -1 or 1)
+    
+    projectile.throwVelocity.x = dx
+    projectile.throwVelocity.y = dy
   end,
   collide = function(node, dt, mtv_x, mtv_y,projectile)
     if not node.isPlayer then return end
@@ -50,6 +49,7 @@ return{
   end,
 
   update = function(dt,projectile)
+    print(projectile.velocity.y)
     if not projectile.holder then
       projectile.props.idletime = projectile.props.idletime + dt
     else
