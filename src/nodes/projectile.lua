@@ -112,6 +112,13 @@ function Projectile.new(node, collider)
   return proj
 end
 
+function Projectile:enter()
+  if self.props.enter() then
+    self.props.enter(self)
+  end
+  print('this works')
+end
+
 function Projectile:die()
   self.dead = true
   self.complete = true
