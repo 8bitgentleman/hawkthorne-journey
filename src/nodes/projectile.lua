@@ -106,14 +106,11 @@ function Projectile.new(node, collider)
 
   proj.usedAsAmmo = proj.props.usedAsAmmo
   
-  return proj
-end
-
-function Projectile:enter()
-  if self.props.enter() then
-    self.props.enter(self)
+  if proj.props.new then
+    proj.props.new(proj)
   end
-  print('this works')
+  
+  return proj
 end
 
 function Projectile:die()
