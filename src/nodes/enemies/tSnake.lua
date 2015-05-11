@@ -186,7 +186,7 @@ return {
   end,
 
 
-  positionChange = function(enemy)
+  positionChange = function(enemy, dt)
     local randOffest = math.random(-10,10)
     local position2 = enemy.original_pos.x + (144+randOffest)
     local position3 = enemy.original_pos.x + (288+randOffest)
