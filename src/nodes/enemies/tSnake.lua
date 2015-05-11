@@ -30,7 +30,7 @@ return {
   velocity = {x = 0, y = -1},
   hp = 70,
   tokens = 15,
-  hand_x = -40,
+  hand_x = 24,
   hand_y = 69,
   dyingdelay = 2,
   tokenTypes = { -- p is probability ceiling and this list should be sorted by it, with the last being 1
