@@ -37,6 +37,7 @@ return{
     local angle = math.atan2(((player.position.y) - projectile.position.y), (player.position.x - projectile.position.x))
     local dx = 300 * math.cos(angle) * (player.position.x < projectile.position.x and -1 or 1)
     local dy = 300 * math.sin(angle) * (player.position.y < projectile.position.y and -1 or 1)
+    projectile.angle = angle
     
     projectile.throwVelocity.x = dx
     projectile.throwVelocity.y = dy
