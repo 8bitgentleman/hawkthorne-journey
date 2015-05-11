@@ -63,7 +63,7 @@ return {
 
   enter = function( enemy )
     enemy.direction = math.random(2) == 1 and 'left' or 'right'
-    enemy.state = 'enter'
+    enemy.state = 'default'
     enemy.original_pos =  {
       x = enemy.position.x,
       y = enemy.position.y
@@ -187,7 +187,7 @@ return {
 
 
   positionChange = function(enemy)
-    local randOffest = math.random(-12,25)
+    local randOffest = math.random(-10,10)
     local position2 = enemy.original_pos.x + (144+randOffest)
     local position3 = enemy.original_pos.x + (288+randOffest)
     local positionChoice = math.random(1,3)
