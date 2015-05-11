@@ -92,6 +92,7 @@ function Projectile.new(node, collider)
   proj.width = proj.props.width
   proj.height = proj.props.height
   proj.offset = proj.props.offset or {x=0, y=0}
+  proj.angle = 0
   proj.complete = false --updated by finish()
   proj.damage = proj.props.damage or 0
   -- Damage that does not affect all enemies ie. stab, fire
@@ -106,14 +107,11 @@ function Projectile.new(node, collider)
 
   proj.usedAsAmmo = proj.props.usedAsAmmo
   
-  return proj
-end
-
-function Projectile:enter()
-  if self.props.enter() then
-    self.props.enter(self)
+  if proj.props.new then
+    proj.props.new(proj)
   end
-  print('this works')
+  
+  return proj
 end
 
 function Projectile:die()
@@ -131,10 +129,12 @@ end
 function Projectile:draw()
   if self.dead then return end
   local scalex = 1
+  local angle = self.angle
   if self.velocity.x < 0 or self.defaultDirection == "left" then
     scalex = -1
+    angle = angle - math.pi
   end
-  self.animation:draw(self.sheet, math.floor(self.position.x), self.position.y, 0, scalex, 1)
+  self.animation:draw(self.sheet, math.floor(self.position.x), self.position.y, angle, scalex, 1)
 end
 
 function Projectile:update(dt, player, map)
