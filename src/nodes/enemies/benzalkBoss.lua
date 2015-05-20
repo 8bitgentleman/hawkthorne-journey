@@ -263,10 +263,8 @@ return {
     else
       player_dir.y = 'below'
     end
-    print(player_dir.y)
     if enemy.shake and current.trackPlayer == false then
       shake = (math.random() * 4)-2/player_dist.x
-      print(shake)
       camera:setPosition(enemy.camera.tx + shake, enemy.camera.ty + shake)
     end
 
@@ -295,7 +293,6 @@ return {
     --triggers the jump attack or the fire attack
     if enemy.last_jump > 4 and enemy.state ~= 'attack' then
       if  player_dir.x == 'left' and enemy.position.x < enemy.maxx or player_dir.y == 'above' then
-        print('no jump')
       else
         enemy.props.jump( enemy, player, enemy.direction )
         enemy.velocity.y = enemy.jump_speed.y
