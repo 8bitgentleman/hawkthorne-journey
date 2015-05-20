@@ -224,7 +224,7 @@ return {
       Timer.add(.5, function()
         enemy.shake = false
         current.trackPlayer = true
-        if current.player ~= dead then
+        if current.player.dead ~= true then
           current.player.freeze = false
         end
       end)
