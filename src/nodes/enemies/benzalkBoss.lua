@@ -1,5 +1,4 @@
 local Enemy = require 'nodes/enemy'
-local gamestate = require 'vendor/gamestate'
 local sound = require 'vendor/TEsound'
 local Timer = require 'vendor/timer'
 local Projectile = require 'nodes/projectile'
@@ -82,7 +81,6 @@ return {
   die = function( enemy )
     enemy.velocity.y = enemy.speed
     enemy.db:set("bosstriggers.benzalk", true)
-
   end,
 
   draw = function( enemy )
@@ -148,6 +146,12 @@ return {
           
       enemy.currently_held:launch(enemy)    
       benzalkFire.enemyCanPickUp = false
+
+      enemy.last_attack = 0
+
+      Timer.add(0.25, function()
+        enemy.state = 'default'
+      end)
     end
   end,
 
@@ -166,9 +170,11 @@ return {
     enemy.swoop_ratio = math.min(1.4, math.max(0.7, enemy.swoop_ratio))
   end,
   jumpWind = function ( enemy )
-  --add left jump wind
+    local level = enemy.containerLevel
+
     if not enemy.dead then
-        local node = {
+        --add left jump wind
+        local windL = {
           type = 'sprite',
           name = 'jump_wind',
           x = enemy.position.x-5,
@@ -183,27 +189,15 @@ return {
                         mode = 'once',
                         foreground = false}
         }
-        local jumpL = Sprite.new( node, enemy.collider )
-        local level = enemy.containerLevel
+
+        --add right jump wind
+        local windR = windL
+        windR.x = enemy.position.x + 70
+        windR.properties.animation = '1-7,2'
+
+        local jumpL = Sprite.new( windL, enemy.collider )
+        local jumpR = Sprite.new( windL, enemy.collider )
         level:addNode(jumpL)
-  --add right jump wind
-        local node = {
-          type = 'sprite',
-          name = 'jump_wind',
-          x = enemy.position.x+70,
-          y = enemy.position.y+72,
-          width = 30,
-          height = 20,
-          properties = {sheet = 'images/sprites/castle/jump_wind.png', 
-                        speed = .07, 
-                        animation = '1-7,2',
-                        width = 30,
-                        height = 20,
-                        mode = 'once',
-                        foreground = false}
-        }
-        local jumpR = Sprite.new( node, enemy.collider )
-        local level = enemy.containerLevel
         level:addNode(jumpR)
     end
   end,
@@ -212,20 +206,21 @@ return {
     enemy.velocity.x = 0
     if enemy.state == 'jump' then
       enemy.props.jumping = false
+      enemy.props.jumpWind( enemy )
       enemy.state = 'default'
 
       enemy.camera.tx = camera.x
       enemy.camera.ty = camera.y
       enemy.shake = true
       sound.playSfx( 'jump_boom' )
-      local current = gamestate.currentState()
-      current.trackPlayer = false
-      current.player.freeze = true
-      Timer.add(.5, function()
+      local level = enemy.containerLevel
+      level.trackPlayer = false
+      level.player.freeze = true
+      Timer.add(0.5, function()
         enemy.shake = false
-        current.trackPlayer = true
-        if current.player.dead ~= true then
-          current.player.freeze = false
+        level.trackPlayer = true
+        if level.player and level.player.dead ~= true then
+          level.player.freeze = false
         end
       end)
     end
@@ -237,13 +232,13 @@ return {
     end
   end,
 
-  dyingupdate = function ( dt, enemy, player )
+  dyingupdate = function ( dt, enemy )
     enemy.velocity.y = enemy.velocity.y + game.gravity * dt * 0.4
     enemy.position.y = enemy.position.y + enemy.velocity.y * dt
   end,
 
-  update = function( dt, enemy, player, level )
-    local current = gamestate.currentState()
+  update = function( dt, enemy, player )
+    local level = enemy.containerLevel
     local shake = 0
     local player_dist= {x = 1, y = 1 }
     local player_dir= {x = 'left', y = 'below' }
@@ -263,7 +258,7 @@ return {
     else
       player_dir.y = 'below'
     end
-    if enemy.shake and current.trackPlayer == false then
+    if enemy.shake and level.trackPlayer == false then
       shake = (math.random() * 4)-2/player_dist.x
       camera:setPosition(enemy.camera.tx + shake, enemy.camera.ty + shake)
     end
@@ -292,20 +287,14 @@ return {
     
     --triggers the jump attack or the fire attack
     if enemy.last_jump > 4 and enemy.state ~= 'attack' then
-      if  player_dir.x == 'left' and enemy.position.x < enemy.maxx or player_dir.y == 'above' then
+      if player_dir.x == 'left' and enemy.position.x < enemy.maxx or player_dir.y == 'above' then
       else
         enemy.props.jump( enemy, player, enemy.direction )
         enemy.velocity.y = enemy.jump_speed.y
         -- swoop ratio used to center on target
         enemy.velocity.x = -( enemy.jump_speed.x * enemy.swoop_ratio ) * enemy.fly_dir
-        Timer.add(0.6, function() 
-          enemy.state = 'default'
-          enemy.velocity.x = 0
-          enemy.props.jumpWind( enemy )
-        end)
       end
-        
-    elseif enemy.last_attack > pause and enemy.state ~= 'jump' and enemy.shake == false then
+    elseif enemy.last_attack > pause and enemy.state ~= 'jump' and enemy.last_jump > 2 and enemy.shake == false then
       local rand = math.random()
       if enemy.hp < 80 and rand > 0.6 then
         enemy.state = 'attack'
@@ -314,10 +303,6 @@ return {
         enemy.state = 'attack'
         enemy.props.attackFire(enemy)
       end
-      enemy.last_attack = -0
-      Timer.add(0.3, function() 
-        enemy.state = 'default'
-      end)
     end
   end
 }
