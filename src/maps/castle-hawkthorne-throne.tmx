@@ -202,7 +202,6 @@
     <property name="aniframes2" value="1-12,1"/>
     <property name="anispeed2" value="0.05"/>
     <property name="hideable" value="true"/>
-    <property name="info" value="Only the worthy few are granted an audience with {{grey}}King Cornelius{{white}}!"/>
     <property name="obstruct" value="true"/>
     <property name="offset_hidden_y" value="0"/>
     <property name="show_sfx" value="throne_door"/>
