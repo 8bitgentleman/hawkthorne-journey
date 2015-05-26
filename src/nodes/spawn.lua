@@ -105,6 +105,11 @@ function Spawn:createNode()
   spawnedNode.state = self.initialState or 'default'
   level:addNode(spawnedNode)
   self.spawned = self.spawned + 1
+  if self.nodeType == 'enemy' then 
+    if spawnedNode.props.enter then
+      spawnedNode.props.enter(spawnedNode)
+    end
+  end
   -- If the node has a spawn sound defined, then play it
   if spawnedNode.props and spawnedNode.props.spawn_sound then
     sound.playSfx( spawnedNode.props.spawn_sound )
