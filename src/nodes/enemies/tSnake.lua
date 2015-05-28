@@ -157,18 +157,17 @@ return {
     rainbowbeam.enemyCanPickUp = true
     local level = enemy.containerLevel
     level:addNode(rainbowbeam)
-    --if enemy.currently_held then enemy.currently_held:throw(enemy) end
     rainbowbeam.velocity.x = math.random(10,100)--*direction
     enemy:registerHoldable(rainbowbeam)
     enemy:pickup()
     enemy.currently_held:launch(enemy)
-    --disallow any manicorn from picking it up after thrown
+    --disallow anything from picking it up after thrown
     rainbowbeam.enemyCanPickUp = false
 
     local rand = math.random(2,3)
     enemy.attackCount = enemy.attackCount + 1
     if enemy.attackCount >= rand then
-      Timer.add(1, function()
+      Timer.add(2, function()
         enemy.props.dive(enemy)
       end)
     end
@@ -232,7 +231,7 @@ return {
     if enemy.hp < 20 then
       pause = 1
     elseif enemy.hp < 50 then
-      pause = 1.5
+      pause = 2.5
     end
 
     if enemy.last_attack > pause and enemy.position.y == enemy.original_pos.y then
