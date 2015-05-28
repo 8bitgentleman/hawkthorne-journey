@@ -12,6 +12,7 @@ local fonts = require 'fonts'
 
 return {
   name = 'tSnake',
+  isBoss = true,
   die_sound = 'snake_hurt',
   attackDelay = 1,
   height = 144,
