@@ -62,17 +62,15 @@ return {
   },
 
   enter = function( enemy )
-    enemy.direction = math.random(2) == 1 and 'left' or 'right'
+    enemy.direction = 'left'
     enemy.state = 'default'
     enemy.original_pos =  {
       x = enemy.position.x,
       y = enemy.position.y
     }
-    enemy.maxx = enemy.position.x + 24
-    enemy.minx = enemy.position.x - 24
     enemy.diving = false
-    enemy.hideTime = 0
-    enemy.hidden = false
+    enemy.rising = false
+    enemy.attackCount = 0
   end,
 
   die = function( enemy, player )
@@ -137,9 +135,13 @@ return {
     fonts.revert()
   end,
 
-  attackRainbow = function( enemy, player, direction )
-  	local Player = require 'player'
-  	local player = Player.factory()
+  attackRainbow = function(enemy)
+    enemy.state = 'attack'
+    enemy.last_attack = 0
+    Timer.add(.5, function()
+      enemy.state = 'default'
+    end)
+
   	local node = {
       type = 'projectile',
       name = 'rainbowbeam_tsnake',
@@ -147,7 +149,7 @@ return {
       y = enemy.position.y,
       width = 24,
       height = 24,
-      properties = { }--velocity = (player.position.x - enemy.position.x), (player.position.y - enemy.position.y) }
+      properties = {}--velocity = (player.position.x - enemy.position.x), (player.position.y - enemy.position.y) }
     }
     
     local rainbowbeam = Projectile.new( node, enemy.collider )
@@ -156,35 +158,37 @@ return {
     level:addNode(rainbowbeam)
     --if enemy.currently_held then enemy.currently_held:throw(enemy) end
     rainbowbeam.velocity.x = math.random(10,100)--*direction
-    Projectile.velocity = {10,200}--player.position.y--math.random(200,400)
     enemy:registerHoldable(rainbowbeam)
     enemy:pickup()
     enemy.currently_held:launch(enemy)
     --disallow any manicorn from picking it up after thrown
     rainbowbeam.enemyCanPickUp = false
+
+    local rand = math.random(2,3)
+    enemy.attackCount = enemy.attackCount + 1
+    if enemy.attackCount >= rand then
+      Timer.add(1, function()
+        enemy.props.dive(enemy)
+      end)
+    end
   end,
 
-  dive = function(enemy, dt)
+  dive = function(enemy)
+    enemy.rising = false
+    enemy.diving = true
     enemy.velocity.y = 200
-    enemy.velocity.y = 200
-    enemy.hideTime = math.random(.8,2)
-    Timer.add(enemy.hideTime, function()
-        enemy.state = 'default'
-        enemy.velocity.y = 0
-        enemy.props.positionChange(enemy)
-   end)
+    enemy.attackCount = 0
   end,
 
   rise = function(enemy, dt)
-    enemy.velocity.y = -200
-
-    Timer.add(enemy.hideTime, function()
-        enemy.velocity.y = 0
-        enemy.diving = false
-        enemy.last_jump = 0
+    enemy.attackCount = 0
+    enemy.diving = false
+    Timer.add(2, function()
+      enemy.rising = true
+      enemy.props.positionChange(enemy, dt)
+      enemy.velocity.y = -200
     end)
   end,
-
 
   positionChange = function(enemy, dt)
     local randOffest = math.random(-10,10)
@@ -199,18 +203,10 @@ return {
     elseif positionChoice == 3 then
       enemy.position.x = position3
     end
-    enemy.props.rise(enemy, dt)
   end,
 
   update = function( dt, enemy, player, level )
     if enemy.dying then enemy.state = 'dying' end
-
-    local direction = player.position.x > enemy.position.x + 40 and -1 or 1
-    if enemy.position.y > player.position.y+24 then
-      enemy.hidden = true
-    else 
-      enemy.hidden = false
-    end
 
     if player.position.x > enemy.position.x + 24 then
       enemy.direction = 'right'
@@ -218,37 +214,28 @@ return {
       enemy.direction = 'left'
     end
 
-
-    enemy.last_jump = enemy.last_jump + dt
-    
-    local move_time = 2
-    if enemy.last_jump >= move_time and not enemy.diving then
-      enemy.diving = true
-      enemy.props.dive(enemy, dt)
+    if enemy.diving and enemy.position.y >= enemy.original_pos.y + enemy.height then
+      enemy.velocity.y = 0
+      enemy.props.rise(enemy, dt)
     end
 
-
-
+    if enemy.rising and enemy.position.y <= enemy.original_pos.y then
+      enemy.rising = false
+      enemy.velocity.y = 0
+      enemy.position.y = enemy.original_pos.y
+    end
 
     enemy.last_attack = enemy.last_attack + dt
     local pause = 2
     
     if enemy.hp < 20 then
-        pause = 1
+      pause = 1
     elseif enemy.hp < 50 then
-        pause = 1.5
-    end
-        
-    if enemy.last_attack > pause and not enemy.hidden then
-        local rand = math.random()
-        enemy.state = 'attack'
-        enemy.props.attackRainbow(enemy)
-        enemy.last_attack = 0
-        Timer.add(.5, function()
-            enemy.state = 'default'
-       end)
+      pause = 1.5
     end
 
-
+    if enemy.last_attack > pause and enemy.position.y == enemy.original_pos.y then
+      enemy.props.attackRainbow(enemy)
+    end
   end
 }
