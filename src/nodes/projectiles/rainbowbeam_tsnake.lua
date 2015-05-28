@@ -32,9 +32,7 @@ return{
     local Player = require 'player'
     local player = Player.factory()
     
-    projectile.player = {x = player.position.x, y = player.position.y}
-    
-    local angle = math.atan2(((player.position.y) - projectile.position.y), (player.position.x - projectile.position.x))
+    local angle = math.atan2(((player.position.y - (player.height - 10)) - projectile.position.y), (player.position.x - projectile.position.x))
     local dx = 300 * math.cos(angle) * (player.position.x < projectile.position.x and -1 or 1)
     local dy = 300 * math.sin(angle) * (player.position.y < projectile.position.y and -1 or 1)
     projectile.angle = angle
