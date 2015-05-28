@@ -39,6 +39,10 @@ return {
     { item = 'health', v = 1, p = 1 }
   },
 
+  diving = false,
+  rising = false,
+  attackCount = 0,
+
   animations = {
     default = {
       right = {'loop', {'1-4,2',}, 0.15},
@@ -65,13 +69,13 @@ return {
   enter = function( enemy )
     enemy.direction = 'left'
     enemy.state = 'default'
-    enemy.original_pos =  {
-      x = enemy.position.x,
-      y = enemy.position.y
-    }
-    enemy.diving = false
-    enemy.rising = false
-    enemy.attackCount = 0
+
+    if not enemy.props.original_pos then
+      enemy.props.original_pos = {
+        x = enemy.position.x,
+        y = enemy.position.y
+      }
+    end
   end,
 
   die = function( enemy, player )
@@ -165,8 +169,9 @@ return {
     rainbowbeam.enemyCanPickUp = false
 
     local rand = math.random(2,3)
-    enemy.attackCount = enemy.attackCount + 1
-    if enemy.attackCount >= rand then
+    enemy.props.attackCount = enemy.props.attackCount + 1
+    if enemy.props.attackCount >= rand then
+      enemy.props.diving = true
       Timer.add(2, function()
         enemy.props.dive(enemy)
       end)
@@ -174,35 +179,30 @@ return {
   end,
 
   dive = function(enemy)
-    enemy.rising = false
-    enemy.diving = true
+    enemy.props.rising = false
+    enemy.props.diving = true
     enemy.velocity.y = 200
-    enemy.attackCount = 0
+    enemy.props.attackCount = 0
   end,
 
   rise = function(enemy, dt)
-    enemy.attackCount = 0
-    enemy.diving = false
+    enemy.props.attackCount = 0
+    enemy.props.diving = false
     Timer.add(2, function()
-      enemy.rising = true
+      enemy.props.rising = true
       enemy.props.positionChange(enemy, dt)
       enemy.velocity.y = -200
     end)
   end,
 
   positionChange = function(enemy, dt)
-    local randOffest = math.random(-10,10)
-    local position2 = enemy.original_pos.x + (144+randOffest)
-    local position3 = enemy.original_pos.x + (288+randOffest)
-    local positionChoice = math.random(1,3)
-
-    if positionChoice == 1 then
-      enemy.position.x = enemy.original_pos.x
-    elseif positionChoice ==2 then
-      enemy.position.x = position2
-    elseif positionChoice == 3 then
-      enemy.position.x = position3
-    end
+    local pos = {
+      x1 = enemy.props.original_pos.x,
+      x2 = enemy.props.original_pos.x + 144,
+      x3 = enemy.props.original_pos.x + 288
+    }
+    local i = math.random(1,3)
+    enemy.position.x = pos["x" .. i]
   end,
 
   update = function( dt, enemy, player, level )
@@ -214,19 +214,19 @@ return {
       enemy.direction = 'left'
     end
 
-    if enemy.diving and enemy.position.y >= enemy.original_pos.y + enemy.height then
+    if enemy.props.diving and enemy.position.y >= enemy.props.original_pos.y + enemy.height then
       enemy.velocity.y = 0
       enemy.props.rise(enemy, dt)
     end
 
-    if enemy.rising and enemy.position.y <= enemy.original_pos.y then
-      enemy.rising = false
+    if enemy.props.rising and enemy.position.y <= enemy.props.original_pos.y then
+      enemy.props.rising = false
       enemy.velocity.y = 0
-      enemy.position.y = enemy.original_pos.y
+      enemy.position.y = enemy.props.original_pos.y
     end
 
     enemy.last_attack = enemy.last_attack + dt
-    local pause = 2
+    local pause = 3
     
     if enemy.hp < 20 then
       pause = 1
@@ -234,7 +234,8 @@ return {
       pause = 2.5
     end
 
-    if enemy.last_attack > pause and enemy.position.y == enemy.original_pos.y then
+    if enemy.last_attack > pause and enemy.position.y == enemy.props.original_pos.y
+       and not enemy.props.diving and not enemy.props.diving then
       enemy.props.attackRainbow(enemy)
     end
   end
