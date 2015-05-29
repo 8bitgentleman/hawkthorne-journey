@@ -12,13 +12,13 @@ return{
   playerCanPickUp = false,
   enemyCanPickUp = false,
   canPlayerStore = true,
-  velocity = { x = -50, y = 0 }, --initial velocity
-  throwVelocityX = 760, 
+  velocity = { x = 0, y = 0 }, --initial velocity
+  throwVelocityX = 400,
   throwVelocityY = 0,
   thrown = false,
   damage = 10,
   special_damage = {fire = 10},
-  horizontalLimit = 500,
+  horizontalLimit = 600,
   throw_sound = 'fireball',
   animations = {
     default = {'once', {'1,1'},1},

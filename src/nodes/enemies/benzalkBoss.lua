@@ -14,13 +14,16 @@ local fonts = require 'fonts'
 
 return {
   name = 'benzalkBoss',
+  isBoss = true,
   attackDelay = 1,
   height = 90,
   width = 90,
   damage = 40,
   attack_bb = true,
   jumpkill = false,
+  guarding = true,
   knockback = 0,
+  chargeUpTime = 0.25,
   player_rebound = 200,
   bb_width = 60,
   bb_height = 88,
@@ -76,6 +79,13 @@ return {
     enemy.swoop_ratio = 0.75
     enemy.props.attackFire(enemy)
     enemy.maxx = enemy.position.x - 500
+
+    if not enemy.props.original_pos then
+      enemy.props.original_pos = {
+        x = enemy.position.x,
+        y = enemy.position.y
+      }
+    end
   end,
 
   die = function( enemy )
@@ -125,38 +135,63 @@ return {
     fonts.revert()
   end,
 
+  guard = function( enemy )
+    enemy.props.guarding = true
+    enemy.direction = enemy.props.original_pos.x < enemy.position.x and "left" or "right"
+  end,
+
+  recoil = function( enemy )
+    enemy.props.recoiling = true
+    local direction = enemy.direction == "left" and -1 or 1
+    enemy.velocity.x = 200 * direction
+    Timer.add(0.10, function()
+      enemy.props.recoiling = false
+    end)
+  end,
+
   attackFire = function( enemy )
-    if not enemy.dead then
-      local node = {
-        type = 'projectile',
-        name = 'benzalkFire',
-        x = enemy.position.x,
-        y = enemy.position.y,
-        width = 16,
-        height = 16,
-        properties = {}
-      }
+    if enemy.dead or enemy.props.guarding then return end
+
+    enemy.state = 'attack'
+    local node = {
+      type = 'projectile',
+      name = 'benzalkFire',
+      x = enemy.position.x + (enemy.width / 2),
+      y = enemy.position.y + (enemy.height / 2),
+      width = 16,
+      height = 16,
+      properties = {}
+    }
+
+    Timer.add(enemy.props.chargeUpTime, function()
+      if enemy.props.guarding then return end
       local benzalkFire = Projectile.new( node, enemy.collider )
       benzalkFire.enemyCanPickUp = true
-      local level = enemy.containerLevel
-      level:addNode(benzalkFire)
-          
+
+      enemy.containerLevel:addNode(benzalkFire)
       enemy:registerHoldable(benzalkFire)
       enemy:pickup()
-          
-      enemy.currently_held:launch(enemy)    
+      enemy.currently_held:throw(enemy)
+
       benzalkFire.enemyCanPickUp = false
 
       enemy.last_attack = 0
 
+      enemy.props.recoil(enemy)
+
       Timer.add(0.25, function()
         enemy.state = 'default'
       end)
-    end
+    end)
   end,
 
   jump = function ( enemy, player, direction )
     local direction = player.position.x > enemy.position.x + 90 and -1 or 1
+
+    if enemy.props.guarding then
+      direction = enemy.props.original_pos.x > enemy.position.x and -1 or 1
+    end
+
     sound.playSfx( 'benzalk_growl' )
     enemy.state = 'jump'
     enemy.last_jump = 0
@@ -169,41 +204,45 @@ return {
     -- experimentally determined max and min swoop_ratio values
     enemy.swoop_ratio = math.min(1.4, math.max(0.7, enemy.swoop_ratio))
   end,
+
   jumpWind = function ( enemy )
     local level = enemy.containerLevel
 
     if not enemy.dead then
-        --add left jump wind
-        local windL = {
-          type = 'sprite',
-          name = 'jump_wind',
-          x = enemy.position.x-5,
-          y = enemy.position.y+72,
-          width = 30,
-          height = 20,
-          properties = {sheet = 'images/sprites/castle/jump_wind.png', 
-                        speed = .07, 
-                        animation = '1-7,1',
-                        width = 30,
-                        height = 20,
-                        mode = 'once',
-                        foreground = false}
-        }
+      --add left jump wind
+      local windL = {
+        type = 'sprite',
+        name = 'jump_wind',
+        x = enemy.position.x-5,
+        y = enemy.position.y+72,
+        width = 30,
+        height = 20,
+        properties = {sheet = 'images/sprites/castle/jump_wind.png',
+                      speed = .07,
+                      animation = '1-7,1',
+                      width = 30,
+                      height = 20,
+                      mode = 'once',
+                      foreground = false}
+      }
 
-        --add right jump wind
-        local windR = windL
-        windR.x = enemy.position.x + 70
-        windR.properties.animation = '1-7,2'
+      --add right jump wind
+      local windR = windL
+      windR.x = enemy.position.x + 70
+      windR.properties.animation = '1-7,2'
 
-        local jumpL = Sprite.new( windL, enemy.collider )
-        local jumpR = Sprite.new( windL, enemy.collider )
-        level:addNode(jumpL)
-        level:addNode(jumpR)
+      local jumpL = Sprite.new( windL, enemy.collider )
+      local jumpR = Sprite.new( windL, enemy.collider )
+      level:addNode(jumpL)
+      level:addNode(jumpR)
     end
   end,
   
   floor_pushback = function( enemy )
-    enemy.velocity.x = 0
+    local level = enemy.containerLevel
+    if not enemy.props.recoiling then
+      enemy.velocity.x = 0
+    end
     if enemy.state == 'jump' then
       enemy.props.jumping = false
       enemy.props.jumpWind( enemy )
@@ -211,12 +250,15 @@ return {
 
       enemy.camera.tx = camera.x
       enemy.camera.ty = camera.y
-      enemy.shake = true
+
       sound.playSfx( 'jump_boom' )
-      local level = enemy.containerLevel
+
+      if level.player.jumping then return end
+      enemy.shake = true
       level.trackPlayer = false
       level.player.freeze = true
       Timer.add(0.5, function()
+        enemy.props.attackFire(enemy)
         enemy.shake = false
         level.trackPlayer = true
         if level.player and level.player.dead ~= true then
@@ -252,6 +294,12 @@ return {
        player_dir.x = 'right'
     end
 
+    if player.position.x < 350 then
+      enemy.props.guard( enemy )
+    else
+      enemy.props.guarding = false
+    end
+
     --checks if the player is above benzalk 
     if player.position.y < enemy.position.y-55 then
       player_dir.y = 'above'
@@ -266,12 +314,12 @@ return {
     if enemy.dead or enemy.state == 'attack' then return end
     if enemy.state == 'dying' then return end
 
-    local direction = player.position.x > enemy.position.x + 90 and -1 or 1
-    
     if player.position.x > enemy.position.x + 50 then
       enemy.direction = 'right'
     else
-      enemy.direction = 'left'
+      if not enemy.props.guarding then
+        enemy.direction = 'left'
+      end
     end
 
     enemy.last_jump = enemy.last_jump + dt
@@ -287,20 +335,15 @@ return {
     
     --triggers the jump attack or the fire attack
     if enemy.last_jump > 4 and enemy.state ~= 'attack' then
-      if player_dir.x == 'left' and enemy.position.x < enemy.maxx or player_dir.y == 'above' then
-      else
-        enemy.props.jump( enemy, player, enemy.direction )
-        enemy.velocity.y = enemy.jump_speed.y
-        -- swoop ratio used to center on target
-        enemy.velocity.x = -( enemy.jump_speed.x * enemy.swoop_ratio ) * enemy.fly_dir
-      end
-    elseif enemy.last_attack > pause and enemy.state ~= 'jump' and enemy.last_jump > 2 and enemy.shake == false then
+      enemy.props.jump( enemy, player, enemy.direction )
+      enemy.velocity.y = enemy.jump_speed.y
+      -- swoop ratio used to center on target
+      enemy.velocity.x = -( enemy.jump_speed.x * enemy.swoop_ratio ) * enemy.fly_dir
+    elseif not enemy.props.guarding and enemy.last_attack > pause and enemy.state ~= 'jump' and enemy.last_jump > 1 and enemy.shake == false then
       local rand = math.random()
-      if enemy.hp < 80 and rand > 0.6 then
-        enemy.state = 'attack'
+      if enemy.hp < 80 and rand > 0.4 then
         enemy.props.attackFire(enemy)
-      elseif enemy.hp < 40 and rand > 0.4 then
-        enemy.state = 'attack'
+      elseif enemy.hp < 40 and rand > 0.2 then
         enemy.props.attackFire(enemy)
       end
     end
