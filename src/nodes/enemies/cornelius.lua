@@ -6,10 +6,7 @@ local Fireball = require 'nodes/fire_cornelius_big'
 local utils = require 'utils'
 local Dialog = require 'dialog'
 local anim8 = require 'vendor/anim8'
-<<<<<<< HEAD
-=======
 local player = require 'player'
->>>>>>> e12c47f760d268065b1ceb03101fc3ea5a4376b5
 
 local window = require 'window'
 local camera = require 'camera'
@@ -18,12 +15,9 @@ local cheat = require 'cheat'
 local Sprite = require 'nodes/sprite'
 local Insults = require 'nodes/insults'
 
-<<<<<<< HEAD
-=======
 local Player = player.factory()
 local playersinsult = Insults[Player.character.name]
 playersinsult = playersinsult[math.random(#playersinsult)]
->>>>>>> e12c47f760d268065b1ceb03101fc3ea5a4376b5
 return {
   name = 'cornelius',
   attackDelay = 1,
@@ -48,16 +42,6 @@ return {
   enterScript ={
         "{{grey}}Welcome{{white}}, you are the first to make it to the {{orange}}Throne of Hawkthorne{{white}}.",
         "Let me take a look at you...",
-<<<<<<< HEAD
-        "According to your {{olive}}complexion{{white}}, I think you might be...{{purple}} .. enemy.containerLevel.player .. {{white}}.",
-        "You don't deserve my fortune!",
-      }, 
-  deathScript ={
-  		"{{grey}}*heavy breathing*{{white}} I suppose you're wondering,{{purple}} player{{white}}. ",
-  		"Why record myself breathing weird and letting you destroy me?",
-			"Because I am a man of {{red}}Honor!{{white}}",
-			"So you've earned the pleasure of my death!",
-=======
         "According to your {{olive}}complexion{{white}}, I think you might be...{{purple}} ".. Player.character.name:gsub("^%l", string.upper) .. "{{white}}.",   
   }, 
   
@@ -66,7 +50,6 @@ return {
     "Why record myself breathing weird and letting you destroy me?",
     "Because I am a man of {{red}}Honor!{{white}}",
     "So you've earned the pleasure of my death!",
->>>>>>> e12c47f760d268065b1ceb03101fc3ea5a4376b5
   },
  
   tokenTypes = { -- p is probability ceiling and this list should be sorted by it, with the last being 1
@@ -149,17 +132,6 @@ return {
     end)
 
     --enter dialog
-<<<<<<< HEAD
-		if enemy.enterScript then
-      enemy.state = 'talking'
-	    Dialog.new(enemy.enterScript, function() 
-        enemy.state = 'attack'
-        enemy.rage = true
-	      end, nil, 'small')
-	  end
-     
-  end,
-=======
     if enemy.enterScript then
       for i= 0, #playersinsult do
         table.insert(enemy.enterScript, playersinsult[i])
@@ -172,7 +144,6 @@ return {
         end, nil, 'small')
       end
     end,
->>>>>>> e12c47f760d268065b1ceb03101fc3ea5a4376b5
 
   sparkleRotated = function(enemy, offsetX, offestY)
     local node = {
@@ -235,25 +206,6 @@ return {
 
   --throws a fireball that will spawn fire to the right and left as well as eat away the floor.
   fireball = function( enemy, player )
-<<<<<<< HEAD
-    if not enemy.dead then
-      enemy.last_fireball = 0 
-      enemy.last_attack = 0
-      local Fireball = require('nodes/fire_cornelius_big')
-      local node = {
-            type = 'fire_cornelius_big',
-            name = 'fireball',
-            x = player.position.x,
-            y = enemy.position.y,
-            width = 34,
-            height = 110,
-            properties = {}
-          }
-          local fireball = Fireball.new( node, enemy.collider )
-          local level = enemy.containerLevel
-          level:addNode(fireball)
-    end
-=======
     enemy.last_fireball = 0 
     enemy.last_attack = 0
     local Fireball = require('nodes/fire_cornelius_big')
@@ -269,7 +221,6 @@ return {
         local fireball = Fireball.new( node, enemy.collider )
         local level = enemy.containerLevel
         level:addNode(fireball)
->>>>>>> e12c47f760d268065b1ceb03101fc3ea5a4376b5
   end,
 
   --cornelius teleports to behind the player
@@ -280,19 +231,10 @@ return {
     sound.playSfx("teleport")
     Timer.add(.5, function()  
       if enemy.position.x >= player.position.x then
-<<<<<<< HEAD
-        print('right')
-        enemy.position.x = player.position.x - enemy.width
-        enemy.state = 'attack'
-      elseif enemy.position.x < player.position.x then
-        print('left')
-        enemy.position.x = player.position.x 
-=======
         enemy.position.x = player.position.x - (math.abs((enemy.position.x+(enemy.width/2))-player.position.x))
         enemy.state = 'attack'
       elseif enemy.position.x < player.position.x then
         enemy.position.x = player.position.x - (math.abs((enemy.position.x+(enemy.width/2))-player.position.x))
->>>>>>> e12c47f760d268065b1ceb03101fc3ea5a4376b5
         enemy.state = 'attack'
       end
       enemy.props.fireball( enemy, player )
@@ -341,11 +283,7 @@ return {
     end
     for _, value in ipairs(self.vulnerabilities) do
       if special_damage[value] ~= nil then
-<<<<<<< HEAD
-        if self.state =='teleport' then
-=======
         if enemy.state =='teleport' then
->>>>>>> e12c47f760d268065b1ceb03101fc3ea5a4376b5
           damage = (damage + special_damage[value])*2
           print('double damage')
         else
@@ -419,11 +357,7 @@ return {
       enemy.props.fireball( enemy, player )
       print('hatch')
     elseif enemy.hatched then
-<<<<<<< HEAD
-    	enemy.rage = true
-=======
       enemy.rage = true
->>>>>>> e12c47f760d268065b1ceb03101fc3ea5a4376b5
       enemy.last_teleport = enemy.last_teleport + dt
       enemy.last_attack = enemy.last_attack + dt
       enemy.last_fireball = enemy.last_fireball + dt 
@@ -431,20 +365,11 @@ return {
       enemy.props.targetDive( enemy, player, -direction )
 
       --cornelius chases player
-<<<<<<< HEAD
-      if enemy.position.x > player.position.x then
-        enemy.velocity.x = 100
-      elseif enemy.position.x < player.position.x then
-        enemy.velocity.x = -100
-      end
-                  --[[
-=======
       --[[if enemy.position.x > player.position.x then
                     enemy.velocity.x = -enemy.velocity.x
                   elseif enemy.position.x < player.position.x then
                     enemy.velocity.x = -enemy.velocity.x
                   end
->>>>>>> e12c47f760d268065b1ceb03101fc3ea5a4376b5
                   if enemy.position.y <= enemy.miny then 
                     enemy.velocity.y = -enemy.velocity.y 
                   elseif enemy.position.y >= enemy.maxy then
