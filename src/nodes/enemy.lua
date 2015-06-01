@@ -20,6 +20,7 @@ local token = require 'nodes/token'
 local game = require 'game'
 local utils = require 'utils'
 local window = require 'window'
+local app = require 'app'
 
 
 local Enemy = {}
@@ -57,7 +58,7 @@ function Enemy.new(node, collider, enemytype)
   enemy.dead = false
   enemy.dying = false
   enemy.idletime = 0
-  
+  enemy.db = app.gamesaves:active()
   assert( enemy.props.damage, "You must provide a 'damage' value for " .. type )
 
   assert( enemy.props.hp, "You must provide a 'hp' ( hit point ) value for " .. type )
