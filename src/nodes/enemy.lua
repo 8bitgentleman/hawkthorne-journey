@@ -59,7 +59,7 @@ function Enemy.new(node, collider, enemytype)
   enemy.dead = false
   enemy.dying = false
   enemy.idletime = 0
-  
+  enemy.db = app.gamesaves:active()
   assert( enemy.props.damage, "You must provide a 'damage' value for " .. type )
 
   assert( enemy.props.hp, "You must provide a 'hp' ( hit point ) value for " .. type )
@@ -70,7 +70,6 @@ function Enemy.new(node, collider, enemytype)
   enemy.width = enemy.props.width
   enemy.bb_width = enemy.props.bb_width or enemy.width
   enemy.bb_height = enemy.props.bb_height or enemy.height
-  
   enemy.position_offset = enemy.props.position_offset or {x=0,y=0}
   
   -- Height to be used when offsetting an enemy to its node
@@ -91,6 +90,7 @@ function Enemy.new(node, collider, enemytype)
   
   enemy.jumpkill = enemy.props.jumpkill
   if enemy.jumpkill == nil then enemy.jumpkill = true end
+  enemy.jumpBounce = enemy.props.jumpBounce or false
   
   enemy.dyingdelay = enemy.props.dyingdelay and enemy.props.dyingdelay or 0.75
   enemy.revivedelay = enemy.props.revivedelay and enemy.props.revivedelay or .5
@@ -129,6 +129,9 @@ function Enemy.new(node, collider, enemytype)
                                    enemy.props.bb_height or enemy.props.height)
   enemy.bb.node = enemy
   enemy.bb_offset = enemy.props.bb_offset or {x=0,y=0}
+  
+  enemy.quest = node.properties.quest
+  enemy.drop = node.properties.drop
 
   if enemy.props.passive then
     collider:setGhost(enemy.bb)
@@ -352,7 +355,11 @@ function Enemy:collide(node, dt, mtv_x, mtv_y)
     self:hurt(player.jumpDamage)
     -- reset fall damage when colliding with an enemy
     player.fall_damage = 0
-    player.velocity.y = -450 * player.jumpFactor
+    if self.jumpBounce then
+      player.velocity.y = -750 * player.jumpFactor
+    else
+      player.velocity.y = -450 * player.jumpFactor
+    end
   end
 
   if cheat:is('god') then
