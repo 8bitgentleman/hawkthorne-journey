@@ -30,6 +30,7 @@ return{
   explosive = true,
   explodeTime = 1,
   explode_sound = 'explosion_quiet',
+  isMagical = true,
   animations = {
     default = {'loop', {'1-4,1'}, 0.15},
     thrown = {'loop', {'1-4,1'}, 0.15},
@@ -109,12 +110,15 @@ return{
     end
     if node.isPlayer then return end
     if node.isEnemy then
-      Timer.add(.1, function () 
-        projectile.velocity.x =0
-        if projectile.props.explode_sound then
-          sound.playSfx( projectile.props.explode_sound )
-        end
-      end)
+      -- Only trigger an explosion if the water spout has reached the center of the enemy
+      local direction = projectile.velocity.x > 1 and -1 or 0.5
+      local enemyCenter = (node.position.x + (node.width / 2))
+      enemyCenter = enemyCenter + ((projectile.width) * direction)
+      if math.abs(projectile.position.x - enemyCenter) > 1 then return end
+
+      projectile.velocity.x =0
+      sound.playSfx( projectile.props.explode_sound )
+
       projectile.animation = projectile.explodeAnimation
       Timer.add(projectile.explodeTime, function () 
         projectile:die()

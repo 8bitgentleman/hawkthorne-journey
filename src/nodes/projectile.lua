@@ -288,7 +288,7 @@ function Projectile:collide_end(node, dt)
   if self.props.collide_end then
     self.props.collide_end(node, dt, self)
   end
-  if self.explosive and node.isEnemy then
+  if self.explosive and node.isEnemy and not self.props.isMagical then
     -- Projectiles use velocity to determine direction, this ensures proper direction
     -- is use, -1 is small enough to be a negligable velocity
     self.velocity.x = self.velocity.x < 0 and -1 or 0
