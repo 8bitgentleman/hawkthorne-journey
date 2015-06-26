@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="47" height="18" tilewidth="24" tileheight="24">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="47" height="18" tilewidth="24" tileheight="24" nextobjectid="11">
  <properties>
   <property name="blue" value="249"/>
   <property name="floor" value="12"/>
@@ -51,7 +51,7 @@
  </layer>
  <layer name="vehicles" width="47" height="18">
   <data encoding="base64" compression="zlib">
-   eJzt1EszVnEAx/Hn0QvhDVCo2FJyq2W5k2UpKlmmUK7vwK13kNtOhYrsFF2EHZEi7Uou8bGwM82cmcdMzZzfzGdz5n/+8z2bE4mECxcuXLj/cc200Eob7XTE4N74aCSSEI3BRX9ZJ11000Mvj484l6gj6YiWw+cnOUUyKaRymjOcJY30GH/LE/roZ4BBhgK8n6Enk3OcJ4sLZJNDLnnkc5FLAfqHecoznjPCKGO84CWvGGeC10wGaL+s5QoFFFJEMSWUUkY5FVylMkD7FG94yzQzvOM9H/jILJ+YY56FAO3XtFynihvcpJoabnGbO9Ryl7oA7Yss8ZllVvjCKl/5xhrrfGeDHwHa72mp5z4PaKCRJh7yiGZaaKUtQPtPfrHJb7bYZodd/rB3cNCdUeI4ccz/h3Dh/tXtAxnhT3I=
+   eJzt1EtTjWEAB/Bz6oPUFygqydYlRJYoiloml4gJMwnldCr6AF2/gagd5dplR4WInUtFql3IpX4Wbc40zbwzx4xm3v/Mb/G8z+X9P5snEgkTJkyYMBsxMRqJ00QzLUk4Ny0aiaRHk3DQOmmjnQ466aJ7jXUZemSu0WX1+yY2k0U2OWwhl63ksS3Jd7lND3e4Sy99AfZv12cHO9lFPrvZw14K2Md+CjkQoP897tPPAA94yCMe84SnDDLEMCMBuh/U5RCHKaKYIxylhFKOcZwyygN0f8ZzRhljnBe85BUTvOYNk7zlXYDuFbqcoJKTnOI0Z6jiLOeo5jwXErrXGF/kEpcT5t7zgY98YoppZvjMF2b5yhzzLAToXut/V6jjKte4Tj0N3CBGI3GaEvq1GN/kFq0Jc4t84zs/WOInv/jNH5b/LrQvSgqp//h9CBPmf80K8xNTjg==
   </data>
  </layer>
  <layer name="collision" width="47" height="18">
@@ -59,28 +59,28 @@
    eJztw7EJAAAIA7D6/+TH3tBRSCAJAAD0dv6G1gEsLBrP
   </data>
  </layer>
- <objectgroup color="#0007a4" name="nodes" width="47" height="18">
-  <object name="left" type="door" x="0" y="288" width="24" height="48">
+ <objectgroup color="#0007a4" name="nodes">
+  <object id="1" name="left" type="door" x="0" y="288" width="24" height="48">
    <properties>
     <property name="instant" value="true"/>
     <property name="level" value="greendale-exterior"/>
     <property name="to" value="parking-lot"/>
    </properties>
   </object>
-  <object name="right" type="door" x="1104" y="288" width="24" height="48">
+  <object id="2" name="right" type="door" x="1104" y="288" width="24" height="48">
    <properties>
     <property name="instant" value="true"/>
     <property name="level" value="greendale-exterior"/>
     <property name="to" value="parking-lot-2"/>
    </properties>
   </object>
-  <object name="main" type="door" x="48" y="288" width="24" height="48"/>
-  <object name="bone" type="material" x="528" y="312" width="24" height="24"/>
-  <object name="bone" type="material" x="696" y="312" width="24" height="24"/>
-  <object name="bone" type="material" x="960" y="312" width="24" height="24"/>
-  <object name="bone" type="material" x="984" y="312" width="24" height="24"/>
-  <object name="bone" type="material" x="936" y="312" width="24" height="24"/>
-  <object name="bone" type="material" x="912" y="312" width="24" height="24"/>
-  <object name="main2" type="door" x="1056" y="288" width="24" height="48"/>
+  <object id="3" name="main" type="door" x="48" y="288" width="24" height="48"/>
+  <object id="4" name="bone" type="material" x="528" y="312" width="24" height="24"/>
+  <object id="5" name="bone" type="material" x="696" y="312" width="24" height="24"/>
+  <object id="6" name="bone" type="material" x="960" y="312" width="24" height="24"/>
+  <object id="7" name="bone" type="material" x="984" y="312" width="24" height="24"/>
+  <object id="8" name="bone" type="material" x="936" y="312" width="24" height="24"/>
+  <object id="9" name="bone" type="material" x="912" y="312" width="24" height="24"/>
+  <object id="10" name="main2" type="door" x="1056" y="288" width="24" height="48"/>
  </objectgroup>
 </map>
