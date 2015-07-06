@@ -1,6 +1,6 @@
 local game = require 'game'
 return{
-  name = 'paintball',
+  name = 'paintball_ammo',
   type = 'projectile',
   friction = 1,
   width = 6,

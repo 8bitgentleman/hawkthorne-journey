@@ -35,8 +35,13 @@ function Projectile.new(node, collider)
     dir = node.properties.directory or dir
     proj.defaultDirection = node.properties.direction or "right"
   end
-  
-  proj.sheet = love.graphics.newImage('images/'..dir..name..'.png')
+  proj.generic = node.properties.generic or false
+  if proj.generic ~= false then
+    local generic = proj.generic
+    proj.sheet = love.graphics.newImage('images/'..dir..name..generic'.png')
+  else
+    proj.sheet = love.graphics.newImage('images/'..dir..name..'.png')
+  end
   proj.foreground = proj.props.foreground
 
   proj.collider = collider

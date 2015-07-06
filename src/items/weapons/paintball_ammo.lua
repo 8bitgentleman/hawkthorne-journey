@@ -1,5 +1,5 @@
 return{
-  name = "paintball",
+  name = "paintball_ammo",
   description = "Paintball",
   type = "weapon",
   subtype = "ammo",

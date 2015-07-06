@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="240" height="18" tilewidth="24" tileheight="24">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="240" height="18" tilewidth="24" tileheight="24">
  <properties>
   <property name="blue" value="249"/>
   <property name="floor" value="12"/>
@@ -56,7 +56,7 @@
    eJzt2c0OwiAMwHF4/5PP4bz4eVZ5MPGwZIljLdtgK/5/SY86WiiwzDkAAABYcPbOXWJcY9xi3GM8/NajApAy7NmUkr189NPRojDI791ojv+u5NrV9GwK53KeIOxP9LA90nyWPIvCimuFdbcfmn0iJ/Y+t6X2xa5SHy6x1hxbNjb/pdZsy3VsDfdLYH1L7hdz92V6GV+cv/b1vYy6cvftvb/39cJgrFM5SqzXQSs0lBPvv/mWvC9Tx1+vmPfTaO7MHwC0L0yc9VufYdLzc8aXe7/VfOc5Cf9Xq37Sc6TcU78fq4GUs1bp2my9dufolHU+eIIgrAYAAAAAvQ9AM0Xc
   </data>
  </layer>
- <objectgroup color="#0007a4" name="nodes" width="240" height="18">
+ <objectgroup color="#0007a4" name="nodes">
   <object name="main" type="door" x="1848" y="264" width="48" height="48">
    <properties>
     <property name="level" value="hallway"/>
@@ -219,8 +219,9 @@
     <property name="info" value="This door is locked from the outside."/>
    </properties>
   </object>
+  <object name="todd" type="npc" x="2088" y="288" width="24" height="48"/>
  </objectgroup>
- <objectgroup name="movement" width="240" height="18">
+ <objectgroup name="movement">
   <object name="airline" x="3763" y="85">
    <polyline points="1998,-3 -3768,0"/>
   </object>
