@@ -4,7 +4,7 @@ return{
   type = "weapon",
   subtype = "ammo",
   damage = 2,
-  special_damage = 'paint= 1',
+  special_damage = 'paint',
   info = 'a set of 5 paintballs',
   MAX_ITEMS = 99,
   quantity = 5,

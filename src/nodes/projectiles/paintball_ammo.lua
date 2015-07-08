@@ -1,4 +1,6 @@
+local splat = require 'nodes/splat'
 local game = require 'game'
+
 return{
   name = 'paintball_ammo',
   type = 'projectile',
@@ -8,26 +10,41 @@ return{
   frameWidth = 6,
   frameHeight = 6,
   solid = true,
-  lift = game.gravity * 0.88,
+  lift = game.gravity,
   playerCanPickUp = false,
   enemyCanPickUp = false,
   canPlayerStore = true,
   usedAsAmmo = true,
-  throw_sound = 'arrow',
-  velocity = { x = -600, y = 0 }, --initial velocity
-  throwVelocityX = 600, 
-  throwVelocityY = -30,
+  --throw_sound = 'arrow',
+  velocity = { x = -200, y = 0 }, --initial velocity
+  throwVelocityX = 200, 
+  throwVelocityY = 0,
   thrown = false,
-  damage = 0,
-  special_damage = {paint = 1},
+  damage = 10,
+  special_damage = {paint = 1000},
   horizontalLimit = 800,
   animations = {
     default = {'once', {'1,1'},1},
     thrown = {'once', {'1,1'}, 1},
     finish = {'once', {'1,1'}, 1},
   },
+
+  splat = function(projectile)
+    local s = splat.new(projectile.position.x, projectile.position.y, projectile.width, projectile.height)
+    s:add(projectile.position.x, projectile.position.y, projectile.width, projectile.height)
+    return s
+  end,
+
   collide = function(node, dt, mtv_x, mtv_y,projectile)
-    if node.isPlayer then return end
+    if node.isPlayer then print('hit') end
+    if projectile.holderSave == node then return end    
+    
+    if node.isPlayer or (node.isEnemy and projectile.holderSave ~= node) then
+      if projectile.containerLevel then
+        table.insert(projectile.containerLevel.nodes, 5, projectile.props.splat(projectile))
+      end 
+    end
+
     if node.hurt then
       node:hurt(projectile.damage, projectile.special_damage, 0)
       projectile:die()

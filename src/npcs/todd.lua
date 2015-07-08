@@ -31,6 +31,7 @@ return {
         properties = {
             enemytype = 'paintball',
             sheet = 'paintball_todd',
+            npc = 'todd',
             canJump = true
           }
       }

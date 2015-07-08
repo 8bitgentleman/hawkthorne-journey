@@ -95,6 +95,7 @@ function Enemy.new(node, collider, enemytype)
   if enemy.jumpkill == nil then enemy.jumpkill = true end
   enemy.jumpBounce = enemy.props.jumpBounce or false
   enemy.canJump = node.properties.canJump or false
+  enemy.npc = node.properties.npc or nil
   
   enemy.dyingdelay = enemy.props.dyingdelay and enemy.props.dyingdelay or 0.75
   enemy.revivedelay = enemy.props.revivedelay and enemy.props.revivedelay or .5

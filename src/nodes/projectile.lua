@@ -34,11 +34,12 @@ function Projectile.new(node, collider)
   if node.properties then
     dir = node.properties.directory or dir
     proj.defaultDirection = node.properties.direction or "right"
+    proj.holderSave = node.properties.holderSave or nil
   end
-  proj.generic = node.properties.generic or false
+  proj.generic = node.properties and node.properties.generic or false
   if proj.generic ~= false then
     local generic = proj.generic
-    proj.sheet = love.graphics.newImage('images/'..dir..name..generic'.png')
+    proj.sheet = love.graphics.newImage('images/'..dir..name..'_'..generic..'.png')
   else
     proj.sheet = love.graphics.newImage('images/'..dir..name..'.png')
   end
