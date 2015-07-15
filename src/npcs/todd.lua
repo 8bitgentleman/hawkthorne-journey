@@ -37,6 +37,7 @@ return {
       }
       local tp = Enemy.new(node, npc.collider, Enemy.type)
       npc.containerLevel:addNode(tp)
+      --perhaps the NPC should be removed here as well
     end
   end,
 

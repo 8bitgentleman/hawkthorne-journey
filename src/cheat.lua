@@ -25,7 +25,7 @@ local function setCheat(cheatName, turnOn)
       'tacomeat','baggle','brekwich','chickenfinger','deepfrieddud',
       'ironcrepe','keynana','alcohol','watermelon'}},
     give_weapons = {weapons = {
-      'sword','battleaxe','boneclub','bow','longsword',
+      'paintball_gun','paintball_ammo','boneclub','bow','longsword',
       'mace','mallet','crimson_sword','torch','laser_pistol','lasercell',
       'throwingaxe','throwingknife','arrow'}},
     give_armor = {armor = {

@@ -37,9 +37,9 @@ return{
 
   collide = function(node, dt, mtv_x, mtv_y,projectile)
     if node.isPlayer then print('hit') end
-    if projectile.holderSave == node then return end    
+    if projectile.host == node then return end    
     
-    if node.isPlayer or (node.isEnemy and projectile.holderSave ~= node) then
+    if node.isPlayer or (node.isEnemy and projectile.host ~= node) then
       if projectile.containerLevel then
         table.insert(projectile.containerLevel.nodes, 5, projectile.props.splat(projectile))
       end 

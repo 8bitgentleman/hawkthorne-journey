@@ -64,7 +64,7 @@ return {
       y = enemy.position.y,
       width = 6,
       height = 6,
-      properties = { generic = 'red', holderSave = enemy }
+      properties = { generic = 'red', host = enemy }
     }
     local paintball = Projectile.new( node, enemy.collider )
     paintball.enemyCanPickUp = true
@@ -94,7 +94,6 @@ return {
   end,
 
   update = function ( dt, enemy, player )
-    print(enemy.npc)
     if enemy.position.x > player.position.x then
 
       enemy.direction = 'left'

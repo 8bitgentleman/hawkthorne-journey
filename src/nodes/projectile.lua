@@ -34,7 +34,7 @@ function Projectile.new(node, collider)
   if node.properties then
     dir = node.properties.directory or dir
     proj.defaultDirection = node.properties.direction or "right"
-    proj.holderSave = node.properties.holderSave or nil
+    proj.host = node.properties.host or nil
   end
   proj.generic = node.properties and node.properties.generic or false
   if proj.generic ~= false then
