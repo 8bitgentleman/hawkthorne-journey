@@ -3,7 +3,7 @@ local gs = require 'vendor/gamestate'
 local Splat = {}
 Splat.__index = Splat
 
-Splat.splatters = love.graphics.newImage('images/splatters.png')
+Splat.splatters = love.graphics.newImage('images/splatters/splatters_purple.png')
 Splat.splattersize = {width=300,height=250}
 Splat.splattersAvail = Splat.splatters:getWidth() / Splat.splattersize.width
 
@@ -21,8 +21,10 @@ function Splat.new(node)
   return splat
 end
 
-function Splat:add(x,y,width,height)
-
+function Splat:add(x,y,width,height,color)
+  if color then  
+    self.splatters = love.graphics.newImage('images/splatters/splatters_' .. color .. '.png')
+  end
   local index_x = math.random(6)
   local index_y = math.random(2)
   

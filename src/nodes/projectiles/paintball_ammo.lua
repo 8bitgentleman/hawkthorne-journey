@@ -29,9 +29,9 @@ return{
     finish = {'once', {'1,1'}, 1},
   },
 
-  splat = function(projectile)
+  splat = function(projectile, node)
     local s = splat.new(projectile.position.x, projectile.position.y, projectile.width, projectile.height)
-    s:add(projectile.position.x, projectile.position.y, projectile.width, projectile.height)
+    s:add(projectile.position.x, projectile.position.y, projectile.width, projectile.height, projectile.generic)
     return s
   end,
 
