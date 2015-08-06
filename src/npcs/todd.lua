@@ -32,12 +32,13 @@ return {
             enemytype = 'paintball',
             sheet = 'paintball_todd',
             npc = 'todd',
+            generic = true,
             canJump = true
           }
       }
       local tp = Enemy.new(node, npc.collider, Enemy.type)
       npc.containerLevel:addNode(tp)
-      --perhaps the NPC should be removed here as well
+      --perhaps the NPC should be removed here as well to 'clean up' the level
     end
   end,
 

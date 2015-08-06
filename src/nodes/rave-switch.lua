@@ -1,10 +1,11 @@
 local Gamestate = require 'vendor/gamestate'
+local app = require 'app'
 
 local RaveSwitch = {}
 RaveSwitch.__index = RaveSwitch
 -- Nodes with 'isInteractive' are nodes which the player can interact with, but not pick up in any way
 RaveSwitch.isInteractive = true
-
+print('hello')
 function RaveSwitch.new(node, collider)
   local raveswitch = {}
   setmetatable(raveswitch, RaveSwitch)
@@ -17,6 +18,8 @@ function RaveSwitch.new(node, collider)
   raveswitch.height = node.height
   raveswitch.width = node.width
   collider:setPassive(raveswitch.bb)
+  raveswitch.db = app.gamesaves:active()
+  raveswitch.dbValue = node.properties.dbValue or nil
   return raveswitch
 end
 
@@ -41,9 +44,20 @@ function RaveSwitch:switch(player)
 end
 
 function RaveSwitch:keypressed( button, player )
+  print('interact')
   if button == 'INTERACT' then
+    print('interacting')
     self:switch(player)
     -- Key has been handled, halt further processing
+    if self.dbValue then 
+      print(self.dbValue)
+      if self.db:get(self.dbValue, true) then
+        self.db:set(self.dbValue, false)
+      elseif self.db:get(self.dbValue, false) then
+        self.db:set(self.dbValue, true)
+      end
+    end
+
     return true
   end
 end

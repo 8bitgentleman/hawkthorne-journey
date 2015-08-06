@@ -235,6 +235,7 @@ local NPC = {}
 NPC.__index = NPC
 -- Nodes with 'isInteractive' are nodes which the player can interact with, but not pick up in any way
 NPC.isInteractive = true
+NPC.isNPC = true
 
 ---
 -- Creates a new NPC object

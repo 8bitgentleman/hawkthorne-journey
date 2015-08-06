@@ -37,7 +37,7 @@ return{
 
   collide = function(node, dt, mtv_x, mtv_y,projectile)
     if node.isPlayer then print('hit') end
-    if projectile.host == node then return end    
+    if projectile.host == node or node.isNPC then return end    
     
     if node.isPlayer or (node.isEnemy and projectile.host ~= node) then
       if projectile.containerLevel then

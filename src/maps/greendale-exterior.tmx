@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="240" height="18" tilewidth="24" tileheight="24" nextobjectid="42">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="240" height="18" tilewidth="24" tileheight="24" nextobjectid="44">
  <properties>
   <property name="blue" value="249"/>
   <property name="floor" value="12"/>
@@ -220,6 +220,11 @@
    </properties>
   </object>
   <object id="34" name="todd" type="npc" x="2088" y="288" width="24" height="48"/>
+  <object id="42" type="enemy" x="4560" y="258" width="48" height="80">
+   <properties>
+    <property name="enemytype" value="pistolPatty"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup name="movement">
   <object id="35" name="airline" x="3763" y="85">

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="47" height="18" tilewidth="24" tileheight="24" nextobjectid="11">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="47" height="18" tilewidth="24" tileheight="24" nextobjectid="12">
  <properties>
   <property name="blue" value="249"/>
   <property name="floor" value="12"/>
@@ -82,5 +82,14 @@
   <object id="8" name="bone" type="material" x="936" y="312" width="24" height="24"/>
   <object id="9" name="bone" type="material" x="912" y="312" width="24" height="24"/>
   <object id="10" name="main2" type="door" x="1056" y="288" width="24" height="48"/>
+  <object id="11" name="raveSwitch" type="door" x="576" y="288" width="90" height="42">
+   <properties>
+    <property name="button" value="INTERACT"/>
+    <property name="dbValue" value="paintball"/>
+    <property name="level" value="greendale-exterior"/>
+    <property name="sound" value="alarmswitch"/>
+    <property name="to" value="raveSwitch"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
