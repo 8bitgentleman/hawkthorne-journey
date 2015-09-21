@@ -3,7 +3,7 @@ local Projectile = require 'nodes/projectile'
 local NPC = require 'nodes/npc'
 
 return {
-  name = ducky,
+  name = paintball,
   height = 48,
   width = 48,
   damage = 0,

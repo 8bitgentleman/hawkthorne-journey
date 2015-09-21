@@ -158,7 +158,7 @@ function Debugger.drawInfoBox( x, y )
                 end
                 tablevalue = newtable
             end
-            love.graphics.print( '    ' .. tablekey .. ' = ' .. tablevalue, x, y, 0, 0.5 )
+            love.graphics.print( '    ' .. tablekey .. ' = ' .. tostring(tablevalue), x, y, 0, 0.5 )
             y = y + 6
           end
           love.graphics.print( '}', x, y, 0, 0.5 )

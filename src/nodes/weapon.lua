@@ -132,12 +132,14 @@ function Weapon.new(node, collider, plyr, weaponItem)
   weapon.dropping = false
   weapon.dropped = false
 
-  if weapon.player and weapon.props.trigger then
+  if weapon.player then
     weapon.db = app.gamesaves:active()
-    local trigger = weapon.db:get( weapon.name .. '-trigger', false)
-    if not trigger then
-      weapon.props.trigger(weapon)
-      weapon.db:set( weapon.name .. '-trigger', true)
+    if weapon.props.trigger then
+      local trigger = weapon.db:get( weapon.name .. '-trigger', false)
+      if not trigger then
+        weapon.props.trigger(weapon)
+        weapon.db:set( weapon.name .. '-trigger', true)
+      end
     end
   end
 
