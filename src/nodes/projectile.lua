@@ -49,6 +49,8 @@ function Projectile.new(node, collider)
 
   proj.explosive = false or proj.props.explosive
   proj.explodeTime = proj.props.explodeTime or 0
+  proj.bomb = proj.props.bomb or false
+  proj.explosing = false
 
   local animations = proj.props.animations
   local g = anim8.newGrid( proj.props.frameWidth,
@@ -318,7 +320,7 @@ function Projectile:floor_pushback(tile)
   if self.dead then return end
   -- Tile id 104-129 corresponds to breakable blocks
   if tile and (tile.id >= 104 and tile.id <= 129) then return end
-  if self.solid and self.thrown then self:die() end
+  if self.solid and self.thrown and not self.bomb then self:die() end
 
   -- Pushback code for a dropped item
   if self.dropped then
