@@ -285,11 +285,41 @@ end
 function love.joystickaxis(joystick, axis, value)
   if joystick:isGamepad() then return end
   axisDir1, axisDir2, _ = joystick:getAxes()
-  controls:switch(joystick)
-  if axisDir1 < 0 then buttonpressed('dpleft') end
-  if axisDir1 > 0 then buttonpressed('dpright') end
-  if axisDir2 < 0 then buttonpressed('dpup') end
-  if axisDir2 > 0 then buttonpressed('dpdown') end
+  if love.system.getOS() == "iOS" or love.system.getOS() == "Android" then
+    controls:switch(mobile)
+    if axisDir2 < 0 then buttonpressed('tilt_right') end
+    
+    if axisDir2 > 0 then buttonpressed('tilt_left') end
+  else
+    controls:switch(joystick)
+    if axisDir1 < 0 then buttonpressed('dpleft') end
+    if axisDir1 > 0 then buttonpressed('dpright') end
+    if axisDir2 < 0 then buttonpressed('dpup') end
+    if axisDir2 > 0 then buttonpressed('dpdown') end
+  end
+end
+
+function love.touchpressed( id, x, y, pressure )
+  print(id,x,y)
+end
+
+function love.touchreleased( id, x, y, pressure )
+  print(x,y)
+
+  local right_quadrant = love.graphics.getWidth()-(love.graphics.getWidth()/3)
+  local left_quadrant = love.graphics.getWidth()/3
+  local upper_quadrant = love.graphics.getHeight()/2
+
+  if x > right_quadrant and y > upper_quadrant then buttonpressed('tap_right') end
+  if x < left_quadrant and y > upper_quadrant then buttonpressed('tap_left') end
+  if x < right_quadrant and x > left_quadrant and y > upper_quadrant then print('interact') buttonpressed('tap_center_down') end
+  if x < right_quadrant and x > left_quadrant and y < upper_quadrant then print('select') buttonpressed('tap_center_up') end
+  if x < left_quadrant and y < upper_quadrant then print('start') buttonpressed('tap_left_up') end 
+
+end
+
+function love.touchmoved( id, x, y, pressure )
+  print('moved')
 end
 
 function love.draw()

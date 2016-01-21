@@ -45,12 +45,12 @@ local DEFAULT_ACTIONMAP = {
   mobile = {
     UP = 'swipe_up',
     DOWN = 'swipe_down',
-    LEFT = 'tap_left',
-    RIGHT = 'tap_right',
-    SELECT = 'tap_center',
-    START = 'tap_center_up',
-    JUMP = 'tap_up_right',
-    ATTACK = 'tap_up_left',
+    LEFT = 'tilt_left',
+    RIGHT = 'tilt_right',
+    SELECT = 'tap_center_up',
+    START = 'tap_left_up',
+    JUMP = 'tap_left',
+    ATTACK = 'tap_right',
     INTERACT = 'tap_center_down',
   }
 }
@@ -62,7 +62,7 @@ function InputController.new(name, actionmap)
   local controller = {}
   setmetatable(controller, InputController)
   if love.system.getOS() == "iOS" or love.system.getOS() == "Android" then 
-    controller.name = name or DEFAULT_PRESET
+    controller.name = 'mobile'
     controller:load(actionmap)
     return controller
   end
@@ -75,6 +75,7 @@ function InputController.new(name, actionmap)
 end
 
 function InputController:switch(joystick)
+  if love.system.getOS() == "iOS" or love.system.getOS() == "Android" then return end
   local controller_name = "actionmap"
   if joystick and joystick:isGamepad() then
     controller_name = joystick:getName() or "gamepad"
@@ -111,8 +112,8 @@ function InputController:getPreset(name)
         return DEFAULT_ACTIONMAP["gamepad"]
       elseif self.joystick and not self.joystick:isGamepad() then
         return DEFAULT_ACTIONMAP["joystick"]
-      elseif love.system.getOS() == "iOS" or love.system.getOS() == "mobile" then 
-        return DEFAULT_ACTIONMAP["actionmap"]
+      elseif love.system.getOS() == "iOS" or love.system.getOS() == "Android" then 
+        return DEFAULT_ACTIONMAP["mobile"]
       else
         return DEFAULT_ACTIONMAP["actionmap"]
       end
@@ -216,17 +217,17 @@ function InputController:isDown( action )
     local upper_quadrant = love.graphics.getHeight()/2
     local touches = love.touch.getTouches( )
 
-    if axisDir2 < 0 then
+    if axisDir2 > 0 then
         if action == "LEFT" then return true end
     end
-    if axisDir2 > 0 then
+    if axisDir2 < 0 then
         if action == "RIGHT" then return true end
     end
     if axisDir1 < 0 then
-        if action == "DOWN" then return true end
+        --if action == "DOWN" then return true end
     end
     if axisDir1 > 0 then
-        if action == "UP" then return true end
+        --if action == "UP" then return true end
     end
     if table.getn(touches) ~= 0 then
       --movement touch is touch 1
@@ -240,7 +241,7 @@ function InputController:isDown( action )
       end
     end 
   end 
-
+  --print(key)
   return love.keyboard.isDown(key)
 end
 
