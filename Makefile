@@ -102,6 +102,7 @@ build/hawkthorne-osx.zip: $(OSXAPP)
 	mkdir -p build
 	zip --symlinks -q -r hawkthorne-osx $(OSXAPP)
 	mv hawkthorne-osx.zip build
+	rm -rf hawkthorne-osx $(OSXAPP)
 
 productionize: venv
 	venv/bin/python scripts/productionize.py

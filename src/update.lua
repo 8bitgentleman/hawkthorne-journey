@@ -41,7 +41,7 @@ function screen:update(dt)
     return
   end
 
-  Gamestate.switch('welcome')
+  Gamestate.switch('town')
 end
 
 function screen:leave()

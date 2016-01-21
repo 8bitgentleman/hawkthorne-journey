@@ -1,6 +1,7 @@
 local store = require 'hawk/store'
 local utils = require "utils"
 
+
 local db = store('controls-1')
 
 local InputController = {}
@@ -40,6 +41,17 @@ local DEFAULT_ACTIONMAP = {
     JUMP = '2',
     ATTACK = '8',
     INTERACT = '6',
+  },
+  mobile = {
+    UP = 'swipe_up',
+    DOWN = 'swipe_down',
+    LEFT = 'tap_left',
+    RIGHT = 'tap_right',
+    SELECT = 'tap_center',
+    START = 'tap_center_up',
+    JUMP = 'tap_up_right',
+    ATTACK = 'tap_up_left',
+    INTERACT = 'tap_center_down',
   }
 }
 
@@ -49,7 +61,13 @@ local remapping = false
 function InputController.new(name, actionmap)
   local controller = {}
   setmetatable(controller, InputController)
+  if love.system.getOS() == "iOS" or love.system.getOS() == "Android" then 
+    controller.name = name or DEFAULT_PRESET
+    controller:load(actionmap)
+    return controller
+  end
 
+  
   controller.name = name or DEFAULT_PRESET
   controller:load(actionmap)
 
@@ -93,6 +111,8 @@ function InputController:getPreset(name)
         return DEFAULT_ACTIONMAP["gamepad"]
       elseif self.joystick and not self.joystick:isGamepad() then
         return DEFAULT_ACTIONMAP["joystick"]
+      elseif love.system.getOS() == "iOS" or love.system.getOS() == "mobile" then 
+        return DEFAULT_ACTIONMAP["actionmap"]
       else
         return DEFAULT_ACTIONMAP["actionmap"]
       end
@@ -168,7 +188,7 @@ function InputController:isDown( action )
     return false
   end
 
-  if self.joystick then
+  if self.joystick and not love.system.getOS() == "iOS" and not love.system.getOS() == "Android" then
     if self.joystick:isGamepad() then
       return self.joystick:isGamepadDown(key)
     else
@@ -189,6 +209,37 @@ function InputController:isDown( action )
       return self.joystick:isDown(tonumber(key))
     end
   end
+  if love.system.getOS() == "iOS" or love.system.getOS() == "Android" then
+    --section off quadrants of the screen as psudo buttons
+    local right_quadrant = love.graphics.getWidth()-(love.graphics.getWidth()/3)
+    local left_quadrant = love.graphics.getWidth()/3
+    local upper_quadrant = love.graphics.getHeight()/2
+    local touches = love.touch.getTouches( )
+
+    if axisDir2 < 0 then
+        if action == "LEFT" then return true end
+    end
+    if axisDir2 > 0 then
+        if action == "RIGHT" then return true end
+    end
+    if axisDir1 < 0 then
+        if action == "DOWN" then return true end
+    end
+    if axisDir1 > 0 then
+        if action == "UP" then return true end
+    end
+    if table.getn(touches) ~= 0 then
+      --movement touch is touch 1
+      local touchMovementPosition = love.touch.getPosition(touches[1]) 
+      if touchMovementPosition > right_quadrant then
+          --if action == "RIGHT" then return true end
+          --print("RIGHT")
+      elseif touchMovementPosition < left_quadrant then
+        --if action == "LEFT" then print('LEFT') return true end
+        
+      end
+    end 
+  end 
 
   return love.keyboard.isDown(key)
 end
