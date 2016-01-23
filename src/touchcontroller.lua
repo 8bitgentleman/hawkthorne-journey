@@ -2,7 +2,7 @@ local TouchController = {}
 
 TouchController.touches = {}
 
-local cutoff = 100 -- 100 pixels
+local cutoff = 100 -- 100 pixels TODO this should be set in new
 
 function TouchController:new()
 
@@ -10,6 +10,7 @@ end
 
 function TouchController:touchreleased(id, x, y)
   local touch = self.touches[id]
+  if touch.swiped then return end
 
   if math.abs(x - touch.start_x) < cutoff and math.abs(y - touch.start_y) < cutoff then
     local right_quadrant = love.graphics.getWidth()-(love.graphics.getWidth()/3)
@@ -36,20 +37,38 @@ end
 
 function TouchController:touchpressed(id, x, y)
   self.touches[id] = {start_x = x, start_y = y, x = x, y = y,
-                      dx = 0, dy = 0}
+                      dx = 0, dy = 0, swiped = false}
 end
 
 function TouchController:touchmoved(id, x, y)
   local touch = self.touches[id]
-  local odx = touch.dx
-  local ody = touch.dy
-  local dx = x - touch.x
-  local dy = y - touch.y
+  local osx = touch.start_x
+  local osy = touch.start_y
 
   self.touches[id].x = x
   self.touches[id].y = y
-  self.touches[id].dx = dx
-  self.touches[id].dy = dy
+  self.touches[id].dx = x - touch.x
+  self.touches[id].dy = y - touch.y
+
+  if math.abs(x - touch.start_x) > math.abs(y - touch.start_y) then
+      if math.abs(x - touch.start_x) > cutoff then
+        self.touches[id].swiped = true
+        self.touches[id].start_x = x
+        self.touches[id].start_y = y
+        if x - osx < 0 then return 'swipe_left'
+        else return 'swipe_right'
+        end
+      end
+  elseif math.abs(x - touch.start_x) < math.abs(y - touch.start_y) then
+      if math.abs(y - touch.start_y) > cutoff then
+        self.touches[id].swiped = true
+        self.touches[id].start_x = x
+        self.touches[id].start_y = y
+        if y - osy < 0 then return 'swipe_up'
+        else return 'swipe_down'
+        end
+      end
+  end
 end
 
 return TouchController
