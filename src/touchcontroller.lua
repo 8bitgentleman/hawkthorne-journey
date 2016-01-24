@@ -22,22 +22,11 @@ function TouchController:touchreleased(id, x, y)
     if x < right_quadrant and x > left_quadrant and y > upper_quadrant then print('interact') return 'tap_center_down' end
     if x < right_quadrant and x > left_quadrant and y < upper_quadrant then print('select') return 'tap_center_up' end
     if x < left_quadrant and y < upper_quadrant then print('start') return 'tap_left_up' end 
-  else
-      if math.abs(x - touch.start_x) > math.abs(y - touch.start_y) then
-          if x - touch.start_x < 0 then return 'swipe_left'
-          else return 'swipe_right'
-          end
-      else
-          if y - touch.start_y < 0 then return 'swipe_up'
-          else return 'swipe_down'
-          end
-      end
   end
 end
 
 function TouchController:touchpressed(id, x, y)
-  self.touches[id] = {start_x = x, start_y = y, x = x, y = y,
-                      dx = 0, dy = 0, swiped = false}
+  self.touches[id] = {start_x = x, start_y = y, swiped = false}
 end
 
 function TouchController:touchmoved(id, x, y)
@@ -45,30 +34,42 @@ function TouchController:touchmoved(id, x, y)
   local osx = touch.start_x
   local osy = touch.start_y
 
-  self.touches[id].x = x
-  self.touches[id].y = y
-  self.touches[id].dx = x - touch.x
-  self.touches[id].dy = y - touch.y
+  local swipe_direction = nil
 
   if math.abs(x - touch.start_x) > math.abs(y - touch.start_y) then
       if math.abs(x - touch.start_x) > cutoff then
-        self.touches[id].swiped = true
-        self.touches[id].start_x = x
-        self.touches[id].start_y = y
-        if x - osx < 0 then return 'swipe_left'
-        else return 'swipe_right'
+        if x - osx < 0 then swipe_direction = 'swipe_left'
+        else swipe_direction = 'swipe_right'
         end
       end
   elseif math.abs(x - touch.start_x) < math.abs(y - touch.start_y) then
       if math.abs(y - touch.start_y) > cutoff then
-        self.touches[id].swiped = true
-        self.touches[id].start_x = x
-        self.touches[id].start_y = y
-        if y - osy < 0 then return 'swipe_up'
-        else return 'swipe_down'
+        if y - osy < 0 then swipe_direction = 'swipe_up'
+        else swipe_direction = 'swipe_down'
         end
       end
   end
+
+  if swipe_direction ~= nil then
+    self.touches[id].swiped = true
+    self.touches[id].direction = swipe_direction
+    self.touches[id].start_x = x
+    self.touches[id].start_y = y
+    return swipe_direction
+  end
+end
+
+function TouchController:getSwipe()
+  for id, touch in pairs(self.touches) do
+      if touch.swiped == true then
+          return touch
+      end
+  end
+  return nil
+end
+
+function TouchController:getTouch(id)
+  return self.touches[id]
 end
 
 return TouchController

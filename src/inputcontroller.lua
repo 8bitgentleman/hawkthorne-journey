@@ -1,4 +1,5 @@
 local store = require 'hawk/store'
+local touch = require 'touchcontroller'
 local utils = require "utils"
 
 
@@ -211,35 +212,21 @@ function InputController:isDown( action )
     end
   end
   if love.system.getOS() == "iOS" or love.system.getOS() == "Android" then
-    --section off quadrants of the screen as psudo buttons
-    local right_quadrant = love.graphics.getWidth()-(love.graphics.getWidth()/3)
-    local left_quadrant = love.graphics.getWidth()/3
-    local upper_quadrant = love.graphics.getHeight()/2
-    local touches = love.touch.getTouches( )
-
+    local swipe = touch:getSwipe()
     if axisDir2 > 0 then
         if action == "LEFT" then return true end
     end
     if axisDir2 < 0 then
         if action == "RIGHT" then return true end
     end
-    if axisDir1 < 0 then
-        --if action == "DOWN" then return true end
-    end
-    if axisDir1 > 0 then
-        --if action == "UP" then return true end
-    end
-    if table.getn(touches) ~= 0 then
-      --movement touch is touch 1
-      local touchMovementPosition = love.touch.getPosition(touches[1]) 
-      if touchMovementPosition > right_quadrant then
-          --if action == "RIGHT" then return true end
-          --print("RIGHT")
-      elseif touchMovementPosition < left_quadrant then
-        --if action == "LEFT" then print('LEFT') return true end
-        
+    if swipe then
+      if swipe.direction == "swipe_down" then
+          if action == "DOWN" then return true end
       end
-    end 
+      if swipe.direction == "swipe_up" then
+          if action == "UP" then return true end
+      end
+    end
   end 
   --print(key)
   return love.keyboard.isDown(key)
