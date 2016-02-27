@@ -10,6 +10,7 @@ end
 
 function TouchController:touchreleased(id, x, y)
   local touch = self.touches[id]
+  self.touches[id] = nil
   if touch.swiped then return end
 
   if math.abs(x - touch.start_x) < cutoff and math.abs(y - touch.start_y) < cutoff then

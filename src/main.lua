@@ -314,17 +314,6 @@ function love.touchreleased( id, x, y, pressure )
   if t then
       buttonpressed(t)
   end
-
-  -- local right_quadrant = love.graphics.getWidth()-(love.graphics.getWidth()/3)
-  -- local left_quadrant = love.graphics.getWidth()/3
-  -- local upper_quadrant = love.graphics.getHeight()/2
-
-  -- if x > right_quadrant and y > upper_quadrant then buttonpressed('tap_right') end
-  -- if x < left_quadrant and y > upper_quadrant then buttonpressed('tap_left') end
-  -- if x < right_quadrant and x > left_quadrant and y > upper_quadrant then print('interact') buttonpressed('tap_center_down') end
-  -- if x < right_quadrant and x > left_quadrant and y < upper_quadrant then print('select') buttonpressed('tap_center_up') end
-  -- if x < left_quadrant and y < upper_quadrant then print('start') buttonpressed('tap_left_up') end 
-
 end
 
 function love.touchmoved( id, x, y, pressure )
