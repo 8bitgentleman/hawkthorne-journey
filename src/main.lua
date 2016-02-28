@@ -21,6 +21,7 @@ local camera = require 'camera'
 local fonts = require 'fonts'
 local window = require 'window'
 local controls = require('inputcontroller').get()
+local touch = require 'touchcontroller'
 local hud = require 'hud'
 local character = require 'character'
 local cheat = require 'cheat'
@@ -301,25 +302,26 @@ end
 
 function love.touchpressed( id, x, y, pressure )
   print(id,x,y)
+  local t = touch:touchpressed(id, x, y)
+  if t then
+      buttonpressed(t)
+  end
 end
 
 function love.touchreleased( id, x, y, pressure )
   print(x,y)
-
-  local right_quadrant = love.graphics.getWidth()-(love.graphics.getWidth()/3)
-  local left_quadrant = love.graphics.getWidth()/3
-  local upper_quadrant = love.graphics.getHeight()/2
-
-  if x > right_quadrant and y > upper_quadrant then buttonpressed('tap_right') end
-  if x < left_quadrant and y > upper_quadrant then buttonpressed('tap_left') end
-  if x < right_quadrant and x > left_quadrant and y > upper_quadrant then print('interact') buttonpressed('tap_center_down') end
-  if x < right_quadrant and x > left_quadrant and y < upper_quadrant then print('select') buttonpressed('tap_center_up') end
-  if x < left_quadrant and y < upper_quadrant then print('start') buttonpressed('tap_left_up') end 
-
+  local t = touch:touchreleased(id, x, y)
+  if t then
+      buttonpressed(t)
+  end
 end
 
 function love.touchmoved( id, x, y, pressure )
   print('moved')
+  local t = touch:touchmoved(id, x, y)
+  if t then
+      buttonpressed(t)
+  end
 end
 
 function love.draw()
