@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="35" height="14" tilewidth="24" tileheight="24" nextobjectid="13">
+ <properties>
+  <property name="blue" value="0"/>
+  <property name="green" value="0"/>
+  <property name="offset" value="0"/>
+  <property name="red" value="0"/>
+  <property name="soundtrack" value="winter"/>
+ </properties>
+ <tileset firstgid="1" name="santas-grotto" tilewidth="24" tileheight="24" tilecount="180" columns="12">
+  <image source="../images/tilesets/santas-grotto.png" width="288" height="360"/>
+  <tile id="147">
+   <properties>
+    <property name="parallax" value=" .54"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="181" name="castle-hawkthorne" tilewidth="24" tileheight="24" tilecount="800" columns="16">
+  <image source="../images/tilesets/castle-hawkthorne.png" width="384" height="1200"/>
+ </tileset>
+ <tileset firstgid="981" name="collisions" tilewidth="24" tileheight="24" tilecount="546" columns="26">
+  <image source="../images/tilesets/collisions.png" width="632" height="512"/>
+ </tileset>
+ <layer name="background" width="35" height="14">
+  <data encoding="base64" compression="zlib">
+   eJztjDEOQFAYxt7VMGN+zJhx/0SP0OTb5G/SrWlrRfF/BhxxChrzMMy44Bo05mHouOEeNOZhOPDEK2jMw3Djg2/QmEdRGD4vww/T
+  </data>
+ </layer>
+ <layer name="mountains" width="35" height="14">
+  <properties>
+   <property name="parallax" value=".43"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztkMsOgkAMRflvX3cH6hIfS1CXIP6iJ5lMnBRtxoSV0uQkTYHbU4pirrn+uxawhBWsA6IXM/FMU+dvyPy0o4QKtrALiF7MVE7gYvP3ZNod0beGAxzhFBC9mKnOdPFut/lnZnZH9G2ghQtcA6IXMzWZ/8e73ebfmNkd0beDHu4wBESv/ov/491u8x/M0h3de9+RS+ruuXi3D69cS+pjfUfvpO6eS87t3ve/Wk8GWIrT
+  </data>
+ </layer>
+ <layer name="mountains2" width="35" height="14">
+  <properties>
+   <property name="parallax" value=".54"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzr0KwkAQReF9bo1yqkQto7GMP2VifEYPbBOizW4hgjvwwTC7XG4IZcqU+eVZaa1KG20j3PGGb/iHb2TXarTTXocId7zhG3Vml9TsVked1Okc4Y43fKPN7JKa3euiq266R7jjDd/oM7ukZg8a9dA084xwZ8jsssyeZ3pjXGRP4b3Dpz45Xf5pXpJyWZk=
+  </data>
+ </layer>
+ <layer name="wall" width="35" height="14">
+  <data encoding="base64" compression="zlib">
+   eJztzDkKgFAQBNFB+BdXYzV2SV1S9YDWERo6GeQHLyuqRESpqp9r0aE3GuWhGDBiMhrloZixYDUa5aHYceA0GuWhuPHgNRrlkUGTyJbIlcgH1x9OvA==
+  </data>
+ </layer>
+ <layer name="door" width="35" height="14">
+  <data encoding="base64" compression="zlib">
+   eJztzjsPgjAYhWE2QBMWvIxeGBVNhFmd1RmcwVn5/xNvJ00T2i9piEtP8izt6UmDwMdnnJxQoHToSDYkOeOCq0NHsiHJDXc8HDqSjd8kA+cVajwNb20dyYZKiAgxJphq9w1avAwbto5kQyXFDHMssNTu3/igM2zYOpINlRXW2GCLzNIfMzvskeOA4x//4vNNDyejE0E=
+  </data>
+ </layer>
+ <layer name="features" width="35" height="14">
+  <data encoding="base64" compression="zlib">
+   eJztzjEOQFAURNG/DtRYCGrUqFFj/e4SJpniifybnO5l8lLK5f5fhx6DcaNsKI2YMBs3yobSghWbcaNsKO04cBo3yobShRuPcaNsRFSgRBX9CNVo0EY/8vFeFzgRIA==
+  </data>
+ </layer>
+ <layer name="collision" width="35" height="14">
+  <data encoding="base64" compression="zlib">
+   eJy7ysyw4OogwQyjYBSMglEwCkYsANYDDANdDw3G+ggAbeFmMQ==
+  </data>
+ </layer>
+ <objectgroup color="#a41f05" name="nodes">
+  <object id="3" name="main" type="door" x="108" y="216" width="47" height="72">
+   <properties>
+    <property name="level" value="winterwonderland"/>
+    <property name="to" value="grotto"/>
+   </properties>
+  </object>
+  <object id="7" type="sprite" x="726" y="264" width="24" height="24">
+   <properties>
+    <property name="height" value="24"/>
+    <property name="sheet" value="images/sprites/winter/toy1.png"/>
+    <property name="width" value="24"/>
+   </properties>
+  </object>
+  <object id="8" type="sprite" x="804" y="266" width="24" height="24">
+   <properties>
+    <property name="height" value="24"/>
+    <property name="sheet" value="images/sprites/winter/christmas_box_1.png"/>
+    <property name="width" value="24"/>
+   </properties>
+  </object>
+  <object id="9" type="enemy" x="732" y="228" width="96" height="48">
+   <properties>
+    <property name="enemytype" value="christmas-pterodactyl"/>
+   </properties>
+  </object>
+  <object id="10" type="sprite" x="750" y="264" width="24" height="24">
+   <properties>
+    <property name="height" value="24"/>
+    <property name="sheet" value="images/sprites/winter/christmas_box_2_open.png"/>
+    <property name="width" value="24"/>
+   </properties>
+  </object>
+  <object id="11" type="sprite" x="816" y="264" width="24" height="24">
+   <properties>
+    <property name="height" value="24"/>
+    <property name="sheet" value="images/sprites/winter/christmas_box_3.png"/>
+    <property name="width" value="24"/>
+   </properties>
+  </object>
+  <object id="12" type="sprite" x="714" y="268" width="24" height="24">
+   <properties>
+    <property name="height" value="24"/>
+    <property name="sheet" value="images/sprites/winter/christmas_box_4.png"/>
+    <property name="width" value="24"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="Tile Layer 7" width="35" height="14">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMApGwWAFAAeoAAE=
+  </data>
+ </layer>
+</map>
