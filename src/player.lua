@@ -195,6 +195,12 @@ function Player:refreshPlayer(collider)
   self.previous_character_height = self.character.bbox.height
 end
 
+-- Pristine reference to the genuine refreshPlayer. Some test suites stub
+-- Player.refreshPlayer on this shared module (to skip the collider dependency)
+-- and never restore it; the scenario test harness swaps this back in so it can
+-- build a fully-collided player. Untouched by those stubs. Not used at runtime.
+Player.realRefreshPlayer = Player.refreshPlayer
+
 ---
 -- Create or look up a new Player
 -- @param collider
@@ -208,6 +214,20 @@ end
 
 function Player.kill()
   player = nil
+end
+
+-- Test support: snapshot and restore the module-local singleton. The scenario
+-- harness runs with its own isolated player, but other suites capture the
+-- singleton once (at module load) and expect it to persist across their tests.
+-- The harness snapshots the existing singleton on setup and restores it on
+-- teardown so those suites are unaffected regardless of test-run order. Not
+-- used at runtime.
+function Player.getSingleton()
+  return player
+end
+
+function Player.setSingleton(p)
+  player = p
 end
 
 ---
