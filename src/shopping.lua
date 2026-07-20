@@ -190,6 +190,15 @@ function state:categoriesWindowKeypressed( button )
     self.itemSelection = 1
     self.itemsWindowLeft = 1
     sound.playSfx('confirm')
+
+  elseif button == "ATTACK" then
+    -- ATTACK is advertised as "GO BACK" and already backs out of the items
+    -- and purchase windows; on the top-level categories window it must exit
+    -- the shop (mirrors the START handler) so the menu can't soft-lock.
+    Gamestate.switch(self.previous)
+    self.buyAmount = 1
+    self.sellAmount = 1
+    sound.playSfx('confirm')
   end
 
 end
