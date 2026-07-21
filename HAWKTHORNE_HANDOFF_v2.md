@@ -395,4 +395,43 @@ make test                           # expect 95 passed, 0 failed, 0 error(s)
 #    https://github.com/hawkthorne/hawkthorne-journey/pull/<N>   (api.github.com is 403; HTML works)
 ```
 
-*End of handoff v2. Start at §0, do the branch merge, then §8.*
+---
+
+## 11. NEXT SESSION — #2491 `caveblocks`: surgical scope only ✅ RECON DONE (this session)
+
+**The task:** hand-port ONLY the maintainer-blessed changes from `origin/caveblocks` onto a fresh
+branch cut from `develop`. Owner's explicit instruction: *"be careful with 2491 and only bring in
+the very specific parts we need."*
+
+### ⛔ HARD RULE: do NOT merge, rebase, or cherry-pick `origin/caveblocks`.
+Recon (`git diff` vs merge-base, this session) shows why:
+- The branch **forks from a 2015 merge-base and is 100 commits behind `develop`** (~11 years drift).
+- It touches **68 files, mostly stale binary art reverts** that would **regress current sprites** —
+  e.g. `weapons/axe.png` 18550→**655 B**, `dagger.png` 19013→**395 B**, `keyshardbottom.png`
+  2994→**211 B**. These are old/placeholder art the current tree long since replaced. A merge or
+  wholesale cherry-pick drags all of it in. **Reject the art reverts and the hand-painted outlines
+  (niamu/edisonout vetoed outlines — keep art "pure").**
+
+### The 4 branch commits (for reference, NOT to cherry-pick):
+`2ba002ca` Rock HP and Interactable node visibility · `ad926317` foreground visibility ·
+`01a15473` bone items, tile tweaks, foreground fixes · `5c81269a` black-caverns tileset + platforms.
+
+### In-scope (blessed): port these hunks by hand onto a fresh `develop`-based branch
+1. **Forest-block HP-to-1** — the actual reason niamu blessed it. ⚠️ **NOT in `material.lua`.**
+   Its `material.lua` hunk is a *sprite-override feature* (`node.properties.sprite/width/height`),
+   not an HP change. **First job: find where block/rock HP actually lives** — likely a
+   `src/nodes/materials/*.lua` file (e.g. `rock.lua`) or the tile `properties` in `forest.tmx`.
+2. **Black-caverns tileset + platform level work** (`5c81269a`) — verify it's still an improvement
+   over current `develop` art before porting; it may be superseded.
+3. **Decide consciously** whether the `material.lua` sprite-override feature is wanted at all — it's
+   a clean addition (develop's `material.lua` == the 2015 base, so it applies without conflict) but
+   it's scope creep beyond "lower the block HP." Default: **leave it out** unless a blessed change
+   depends on it.
+
+### Verify each ported hunk
+`make test` (baseline **98 passed**) after each change; `make run` and walk the affected level
+(forest / black-caverns) to eye-check. Lint touched `.lua`. One PR into `develop` when green.
+
+---
+
+*End of handoff v2. Start at §0, do the branch merge, then §8. For the immediate next task see §11.*
