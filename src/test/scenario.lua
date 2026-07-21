@@ -22,9 +22,10 @@
 -- in one frame for instantaneous actions like ATTACK.
 --
 -- Fixture note: use a plain side-scrolling level with a `collision` tilelayer
--- (e.g. 'greendale-biology'). 'floorspace' rooms (studyroom) and levels with
--- moving platforms need node/state setup this harness doesn't perform, so the
--- player falls through the floor or a node update errors.
+-- (e.g. 'greendale-biology'). 'floorspace' rooms (studyroom) have no collision
+-- layer, so the player falls through the floor. Moving-platform levels
+-- (frozencave, black-caverns) ARE drivable — Scenario.new runs each platform's
+-- node:enter() to build its Bspline; see landOn()/movingPlatforms() below.
 -----------------------------------------------------------------------------
 
 local Level = require 'level'
@@ -85,6 +86,14 @@ function Scenario.new(name, opts)
   -- InputController:isDown so our love.keyboard.isDown stub takes effect.
   self.controls.joystick = nil
 
+  -- Moving-platform levels need each platform's node:enter() run to build its
+  -- Bspline path — Level:enter does this (level.lua:416) but restartLevel(),
+  -- which the harness calls instead, skips it. Without a bspline the first
+  -- MovingPlatform:update crashes at ':194 attempt to index field bspline'.
+  -- Run enter() here so moving-platform fixtures (frozencave, black-caverns…)
+  -- are drivable. Teardown resets map.moving_platforms so it can't leak.
+  self:_enterMovingPlatforms()
+
   -- Install the keyboard stub, remembering the original to restore on teardown.
   self._held = {}
   self._realIsDown = love.keyboard.isDown
@@ -109,6 +118,52 @@ function Scenario:spawn(x, y)
   self.player.velocity = { x = 0, y = 0 }
   self.player:moveBoundingBox()
   return self
+end
+
+-----------------------------------------------------------------------------
+-- Moving platforms
+-----------------------------------------------------------------------------
+
+-- Build the Bspline for every moving platform the map instantiated (see the
+-- note in Scenario.new). Safe to call once; no-op on levels without any.
+function Scenario:_enterMovingPlatforms()
+  local mps = self.level.map.moving_platforms
+  if not mps then return end
+  for _, mp in ipairs(mps) do
+    if mp.enter and not mp.bspline then mp:enter() end
+  end
+end
+
+-- The map's live list of moving platforms (in map order).
+function Scenario:movingPlatforms()
+  return self.level.map.moving_platforms or {}
+end
+
+-----------------------------------------------------------------------------
+-- Land the player on a moving platform and wait until the engine actually
+-- attaches them (player.currentplatform == platform). Spawning the player
+-- exactly *on* a platform does NOT reliably fire the HardonCollider overlap
+-- that sets currentplatform; dropping onto it from just above does, via the
+-- move_y "caught above a platform, moving down" path. Returns true once
+-- attached, false if it never latched within `maxFrames`.
+-----------------------------------------------------------------------------
+function Scenario:landOn(platform, maxFrames)
+  maxFrames = maxFrames or 180
+  local p = self.player
+  local bbox = p.character.bbox
+  -- Centre the player horizontally on the platform, feet a hair above its top,
+  -- then let gravity drop them onto it.
+  p.position = {
+    x = platform.x + platform.width / 2 - bbox.width / 2,
+    y = platform.y - bbox.height - 1,
+  }
+  p.velocity = { x = 0, y = 0 }
+  p:moveBoundingBox()
+  for _ = 1, maxFrames do
+    self:step(1)
+    if p.currentplatform == platform then return true end
+  end
+  return p.currentplatform == platform
 end
 
 -- Translate an action (e.g. 'RIGHT') to the raw key InputController watches.
@@ -186,6 +241,13 @@ function Scenario:teardown()
     self._realIsDown = nil
   end
   self._held = {}
+  -- Reset the map's moving-platform list. It lives on the require()-cached map
+  -- table, so without this it accumulates platforms across scenarios in one
+  -- test process (and chain platforms spawn extra entries mid-run) — the exact
+  -- order-dependent leakage the suite warns about elsewhere.
+  if self.level and self.level.map then
+    self.level.map.moving_platforms = {}
+  end
   -- Restore the singleton exactly as we found it (see Scenario.new).
   Player.setSingleton(self._prevPlayer)
   self._prevPlayer = nil

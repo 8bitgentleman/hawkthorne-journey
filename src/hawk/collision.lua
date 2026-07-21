@@ -395,28 +395,41 @@ function module.move_y(map, player, x, y, width, height, dx, dy)
   
   -- Scan through all moving platforms
   for _, platform in ipairs(map.moving_platforms) do
-    if x + width >= platform.x and x <= platform.x + platform.width then
+    local over = x + width >= platform.x and x <= platform.x + platform.width
+    if over then
       -- Only apply platform dy when the platform is moving up
       local foot = y + height - 2 + math.min(0, platform.dy)
       local above_tile = foot <= platform.y
-      
+
       if above_tile and platform.y <= (new_y + height + 2) and
          direction == 'down' then
-        
+
         -- Dropping is not allowed on moving platforms
         player.platform_dropping = false
-        
+
         if player.floor_pushback then
           player:floor_pushback()
         end
-        
+
         platform:collide(player)
         return platform.y - height
       end
     end
-    -- Player is no longer on the platform
+    -- Player is no longer on the platform. The catch above only fires while
+    -- moving *down*, so a rising platform carries its rider by calling this with
+    -- an upward dy (== platform.dy) every frame — which would otherwise detach
+    -- them here and leave re-attachment to the down-catch above. That re-catch is
+    -- marginal (it needs the foot at or above the platform top), so a single
+    -- frame where it misses — e.g. a crouch box-height change, or the platform
+    -- rising faster than the player can settle — drops the rider through a rising
+    -- platform (#2427). Stay attached while the platform itself is what's moving
+    -- us up: still horizontally over it, and rising no faster than it is (a jump
+    -- gives a much larger upward dy, so it still detaches).
     if player.currentplatform == platform then
-      player.currentplatform = nil
+      local carried_up = direction == 'up' and over and dy >= platform.dy
+      if not carried_up then
+        player.currentplatform = nil
+      end
     end
   end
 
