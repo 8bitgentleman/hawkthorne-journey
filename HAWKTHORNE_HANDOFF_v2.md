@@ -37,16 +37,11 @@ dropped the "rebuild master" step.)
 - **`develop`** = the fork's **real trunk / integration line**. ✅ Already created and pushed
   (`origin/develop`), cut from the clean `master` and carrying the two verified commits below.
   **This is the base for all new work.**
-- **Feature branches** = one short-lived branch per fix/feature, cut from `develop`, merged back
-  via **one PR per feature** when the suite is green + lint clean. **You (this new session) get
-  your own harness-assigned branch — base it on `develop`, PR into `develop`. Do NOT reuse
-  `claude/new-session-q1adh6`, and do NOT commit to `master` or `develop` directly.**
+- **All work lands directly on `develop`** (owner's workflow, confirmed 2026-07). Commit straight
+  to `develop` once the suite is green + lint clean. **No feature branches, no PRs** (neither
+  upstream nor within the fork). The owner pushes `develop` to their fork. `master` stays pristine.
 - Periodically: sync `master` from upstream (ff-only, above), then `git checkout develop &&
   git rebase master` to carry the integration line forward.
-
-**⚠️ ONE MANUAL STEP the owner must do (no API/tool for it):** set the fork's **default branch to
-`develop`** in GitHub → repo **Settings → Branches**. Until then PRs default their base to
-`master`; always set base = `develop` explicitly when opening a PR.
 
 ✅ **The two verified commits already live on `develop` (and on `claude/new-session-q1adh6`):**
 1. `Fix stuck blacksmith shop menu (#2608)` — real bug fix + 3 tests.
@@ -346,7 +341,11 @@ legitimately lift old constraints — but deliberately, not by accident.*
 3. ✅ **#2578 / #2456 verified end-to-end** (PR #48) — done. **#2427 is open & unfixed** (not a
    close): it needs a dedicated harness task (reliable land-player-on-platform + moving-platform
    teardown) then a real fix. See §3 for the parked investigation + repro obstacles.
-4. **#2442 New HUD** — static-icon + spacing fixes (📎 re-read the thread first).
+4. **#2442 New HUD** — ✅ thread verified (this session): the PR is **open/stalled, NOT rejected**
+   (last activity Sept 2015). edisonout's fix-list, which the owner agreed with: swap flashing
+   potion icons → static images, fix the saving-icon/weapon-ammo overlap, fix weapon-amount
+   spacing. 2015 code won't apply to today's tree — treat as "reimplement the agreed fixes," not
+   "revive the branch."
 5. **The fork in the road (owner's creative call):** either content ("feel like the show" — Gay
    Island integration, Hilda questline + quest-module refactor, revive Paintball) and/or **local
    co-op Spike A**. First decide consciously whether to keep or lift "consolidate, don't expand."

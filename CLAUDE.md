@@ -9,11 +9,9 @@ Community's *Digital Estate Planning*. This is the `8bitgentleman` fork being mo
 - **`master`** — pristine mirror of `upstream/master` (`hawkthorne/hawkthorne-journey`, dormant).
   **Never commit here.** Sync only via `git fetch upstream && git checkout master && git merge
   --ff-only upstream/master`.
-- **`develop`** — the fork's real trunk. Base for all work; PRs target `develop`.
-- **Feature branches** — one short-lived branch per fix, cut from `develop`, one PR back into
-  `develop` when the suite is green + lint clean. Never commit directly to `master` or `develop`.
-- ⚠️ The fork's GitHub default branch may still be `master` — when opening a PR, set base =
-  `develop` explicitly.
+- **`develop`** — the fork's real trunk and where **all work lands directly**. Commit straight to
+  `develop` (owner's workflow); the suite must be green + lint clean first. **No feature branches,
+  no PRs** (neither upstream nor within the fork). The owner pushes `develop` to their fork.
 
 ## Build / test / lint
 
