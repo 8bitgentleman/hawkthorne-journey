@@ -46,6 +46,10 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
 ### Internal
 - Add `test_christmas_pterodactyl.lua` — pins the boss's dive FSM (patrol → telegraph → dive →
   recover) by driving the enemy prop table directly with fake enemy/player tables, no Level needed.
+- Extend the scenario harness with two-player support (`spawn2`, per-player input via a `who`
+  arg, two-player teardown) and add `test_scenario_coop.lua` — Phase 0 of the local co-op spike.
+  Proves two `Player` instances register on one HardonCollider and move independently, with the
+  existing `on_collision` routing delivering each hit to the right instance (no engine changes).
 
 ## [1.1.3] - 2026-07-20
 

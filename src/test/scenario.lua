@@ -30,10 +30,23 @@
 
 local Level = require 'level'
 local Player = require 'player'
+local InputController = require 'inputcontroller'
 
 -- Fixed frame delta. Matches a steady 60fps; keeps physics integration
 -- reproducible across runs (unlike the real game's variable dt).
 local FIXED_DT = 1 / 60
+
+-- Physical keys for a second (co-op) player, chosen to be DISJOINT from the
+-- default preset's keys (up/down/left/right/space/a/d/s/escape). Because the
+-- keyboard is stubbed with a single shared held-key table, two players can only
+-- be polled independently if their action->key maps don't overlap: P1 holding
+-- 'right' must not also register as P2's RIGHT. Distinct keys give us that for
+-- free without per-player keyboard stubs.
+local P2_ACTIONMAP = {
+  UP = 'i', DOWN = 'k', LEFT = 'j', RIGHT = 'l',
+  JUMP = 'rshift', ATTACK = 'u', INTERACT = 'o',
+  SELECT = 'p', START = 'backspace',
+}
 
 local Scenario = {}
 Scenario.__index = Scenario
@@ -111,12 +124,59 @@ function Scenario.new(name, opts)
 end
 
 -----------------------------------------------------------------------------
--- Place the player and sync its collision shape to the new position.
+-- Place an arbitrary player instance and sync its collision shapes.
+-----------------------------------------------------------------------------
+function Scenario:_place(player, x, y)
+  player.position = { x = x, y = y }
+  player.velocity = { x = 0, y = 0 }
+  player:moveBoundingBox()
+  return self
+end
+
+-----------------------------------------------------------------------------
+-- Place the (first) player and sync its collision shape to the new position.
 -----------------------------------------------------------------------------
 function Scenario:spawn(x, y)
-  self.player.position = { x = x, y = y }
-  self.player.velocity = { x = 0, y = 0 }
-  self.player:moveBoundingBox()
+  return self:_place(self.player, x, y)
+end
+
+-----------------------------------------------------------------------------
+-- Spawn a SECOND player on the same level collider — the co-op kill-criterion.
+--
+-- Deliberately built with Player.new (NOT Player.factory): factory is
+-- create-or-return-the-one module singleton, so a second call would just hand
+-- back player 1. Player.new constructs a fresh, independent instance and, via
+-- its refreshPlayer, registers this player's own top_bb/bottom_bb on the shared
+-- level collider (each self-tagged `bb.player = self`, exactly like player 1).
+--
+-- This instance is intentionally NOT stored in the module singleton, so the
+-- existing getSingleton/setSingleton snapshot in Scenario.new/teardown fully
+-- covers the two-player case with no extra bookkeeping — player 1 remains the
+-- singleton; player 2 is a plain instance we drop on teardown.
+--
+-- Player 2 gets its own InputController preset with keys disjoint from player 1
+-- (see P2_ACTIONMAP) so per-player input helpers can drive them independently.
+-----------------------------------------------------------------------------
+function Scenario:spawn2(x, y)
+  assert(self.player2 == nil, 'spawn2 already called for this scenario')
+
+  local p2 = Player.new(self.level.collider)
+
+  -- Distinct controller so P2's polled input doesn't alias P1's. new(name,map)
+  -- with a table map loads it directly and never touches the controls db.
+  p2.controls = InputController.new('coop-p2', P2_ACTIONMAP)
+  p2.controls.joystick = nil -- force the keyboard path, like the harness's P1
+  self.controls2 = p2.controls
+
+  p2.boundary = {
+    width = self.level.map.width * self.level.map.tilewidth,
+    height = self.level.map.height * self.level.map.tileheight,
+  }
+  p2.freeze = false
+  p2:setSpriteStates(p2.current_state_set or 'default')
+
+  self.player2 = p2
+  self:_place(p2, x, y)
   return self
 end
 
@@ -166,53 +226,80 @@ function Scenario:landOn(platform, maxFrames)
   return p.currentplatform == platform
 end
 
--- Translate an action (e.g. 'RIGHT') to the raw key InputController watches.
-function Scenario:_key(action)
-  local key = self.controls.actionmap[action]
+-- Which player's controls does an index refer to? `who` defaults to 1, so every
+-- existing single-player call site keeps working unchanged.
+function Scenario:_controlsFor(who)
+  if who == 2 then
+    assert(self.controls2, 'spawn2() must be called before driving player 2')
+    return self.controls2
+  end
+  return self.controls
+end
+
+-- Translate an action (e.g. 'RIGHT') to the raw key the given player's
+-- InputController watches. Per-player because P1 and P2 map actions to
+-- different physical keys.
+function Scenario:_key(action, who)
+  local key = self:_controlsFor(who).actionmap[action]
   assert(key ~= nil, "unknown action: " .. tostring(action))
   return key
 end
 
 -----------------------------------------------------------------------------
--- Begin holding a continuous action (movement). Persists across step() calls
--- until release()d. Mirrors a key being held down.
+-- Begin holding a continuous action (movement) for player `who` (default 1).
+-- Persists across step() calls until release()d. Mirrors a key being held down.
+-- Because P1/P2 use disjoint physical keys, both players' holds coexist in the
+-- one shared held-key table.
 -----------------------------------------------------------------------------
-function Scenario:hold(action)
-  self._held[self:_key(action)] = true
+function Scenario:hold(action, who)
+  self._held[self:_key(action, who)] = true
   return self
 end
 
--- Stop holding a continuous action.
-function Scenario:release(action)
-  self._held[self:_key(action)] = nil
-  return self
-end
-
------------------------------------------------------------------------------
--- Fire a discrete button-down event (keypressed), routed through the level
--- exactly as main.lua's input dispatch would. Does NOT auto-release — use for
--- actions whose duration matters (e.g. JUMP: releasing early half-jumps). Pair
--- with lift() when the release should register.
------------------------------------------------------------------------------
-function Scenario:press(action)
-  self.level:keypressed(action)
-  return self
-end
-
--- Fire a discrete button-up event (keyreleased).
-function Scenario:lift(action)
-  self.level:keyreleased(action)
+-- Stop holding a continuous action for player `who` (default 1).
+function Scenario:release(action, who)
+  self._held[self:_key(action, who)] = nil
   return self
 end
 
 -----------------------------------------------------------------------------
--- Fire a full press+release in one frame. Convenient for instantaneous
--- actions (ATTACK, INTERACT). Do NOT use for JUMP — an immediate release
--- half-jumps; use press()/lift() around some step()s instead.
+-- Fire a discrete button-down event for player `who` (default 1). Does NOT
+-- auto-release — use for actions whose duration matters (e.g. JUMP: releasing
+-- early half-jumps). Pair with lift() when the release should register.
+--
+-- Player 1 routes through Level:keypressed (the full main.lua dispatch: node
+-- interactions then the player). Player 2 — which the level's single-player
+-- dispatch knows nothing about — is driven directly on its own instance. For
+-- the movement primitives this spike cares about (JUMP) that's equivalent; the
+-- level's node-interaction pass is out of scope for Phase 0.
 -----------------------------------------------------------------------------
-function Scenario:tap(action)
-  self.level:keypressed(action)
-  self.level:keyreleased(action)
+function Scenario:press(action, who)
+  if who == 2 then
+    self.player2:keypressed(action, self.level.map)
+  else
+    self.level:keypressed(action)
+  end
+  return self
+end
+
+-- Fire a discrete button-up event for player `who` (default 1).
+function Scenario:lift(action, who)
+  if who == 2 then
+    self.player2:keyreleased(action, self.level.map)
+  else
+    self.level:keyreleased(action)
+  end
+  return self
+end
+
+-----------------------------------------------------------------------------
+-- Fire a full press+release in one frame for player `who` (default 1).
+-- Convenient for instantaneous actions (ATTACK, INTERACT). Do NOT use for
+-- JUMP — an immediate release half-jumps; use press()/lift() around step()s.
+-----------------------------------------------------------------------------
+function Scenario:tap(action, who)
+  self:press(action, who)
+  self:lift(action, who)
   return self
 end
 
@@ -225,6 +312,13 @@ function Scenario:step(frames, dt)
   frames = frames or 1
   dt = dt or FIXED_DT
   for _ = 1, frames do
+    -- Player 2 (if any) is updated first so its freshly-moved bounding boxes
+    -- are seen by this same frame's collider:update inside Level:update. The
+    -- level itself only knows about player 1; the harness stands in for the
+    -- co-op update loop Phase 1 will add to Level:update.
+    if self.player2 then
+      self.player2:update(dt, self.level.map)
+    end
     self.level:update(dt)
   end
   return self
@@ -248,6 +342,22 @@ function Scenario:teardown()
   if self.level and self.level.map then
     self.level.map.moving_platforms = {}
   end
+  -- Drop player 2's shapes off the collider. The collider is per-scenario
+  -- (Level.new mints a fresh one), so this can't leak across scenarios — but
+  -- player 2 is never the module singleton, so nothing else would clean it up.
+  -- The singleton snapshot/restore below is unaffected: it only ever tracked
+  -- player 1.
+  if self.player2 then
+    local p2 = self.player2
+    if p2.top_bb then self.level.collider:remove(p2.top_bb) end
+    if p2.bottom_bb then self.level.collider:remove(p2.bottom_bb) end
+    if p2.attack_box and p2.attack_box.bb then
+      self.level.collider:remove(p2.attack_box.bb)
+    end
+    self.player2 = nil
+    self.controls2 = nil
+  end
+
   -- Restore the singleton exactly as we found it (see Scenario.new).
   Player.setSingleton(self._prevPlayer)
   self._prevPlayer = nil
