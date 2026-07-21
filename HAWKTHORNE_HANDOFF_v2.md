@@ -340,9 +340,9 @@ legitimately lift old constraints — but deliberately, not by accident.*
 1. **Housekeeping:** confirm `develop` is the fork's default branch (owner's manual step, §0).
    The shop fix + collision tests are already on `develop`. `claude/new-session-q1adh6` can be
    deleted once you've confirmed `develop` has everything.
-2. ✅ **#2491 `caveblocks`** — DONE. Forest boulder HP 3→1 ported to `forest.tmx` on branch
-   `fix/2491-forest-block-hp` (`ac0c419d`, 98 passed, PR pending). Black-caverns art + material.lua
-   sprite-override rejected (vetoed outlines / scope creep). See §11.
+2. ✅ **#2491 `caveblocks`** — DONE. Forest boulder HP 3→1 landed on `develop` (`19c97d9b`,
+   98 passed). Black-caverns art + material.lua sprite-override rejected (vetoed outlines / scope
+   creep). See §11.
 3. ✅ **#2578 / #2456 verified end-to-end** (PR #48) — done. **#2427 is open & unfixed** (not a
    close): it needs a dedicated harness task (reliable land-player-on-platform + moving-platform
    teardown) then a real fix. See §3 for the parked investigation + repro obstacles.
@@ -400,8 +400,9 @@ make test                           # expect 95 passed, 0 failed, 0 error(s)
 
 ## 11. #2491 `caveblocks`: surgical port ✅ DONE
 
-**Branch:** `fix/2491-forest-block-hp` (off `develop`). **Commit:** `ac0c419d`. `make test` →
-**98 passed / 0 failed**. TMX validates. **PR into `develop` still pending** (not yet pushed).
+**Landed directly on `develop`** (commit `19c97d9b`). `make test` → **98 passed / 0 failed**. TMX
+validates. Owner's workflow: **all work stays on `develop` on the fork — no feature branches, no
+PRs (upstream or otherwise).**
 
 **What shipped — the ONE blessed change:** in `src/maps/forest.tmx`, the three `breakable_block`
 boulders (objects at x/y = 1704/336, 1752/336, 2592/384; all `sprite=boulder`) drop `hp` **3 → 1**.
