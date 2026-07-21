@@ -340,8 +340,9 @@ legitimately lift old constraints — but deliberately, not by accident.*
 1. **Housekeeping:** confirm `develop` is the fork's default branch (owner's manual step, §0).
    The shop fix + collision tests are already on `develop`. `claude/new-session-q1adh6` can be
    deleted once you've confirmed `develop` has everything.
-2. **#2491 `caveblocks`** — revive the level + HP-to-1 changes only, rework/drop the outline
-   edits. ✅ genuinely blessed; cleanest quick win.
+2. ✅ **#2491 `caveblocks`** — DONE. Forest boulder HP 3→1 ported to `forest.tmx` on branch
+   `fix/2491-forest-block-hp` (`ac0c419d`, 98 passed, PR pending). Black-caverns art + material.lua
+   sprite-override rejected (vetoed outlines / scope creep). See §11.
 3. ✅ **#2578 / #2456 verified end-to-end** (PR #48) — done. **#2427 is open & unfixed** (not a
    close): it needs a dedicated harness task (reliable land-player-on-platform + moving-platform
    teardown) then a real fix. See §3 for the parked investigation + repro obstacles.
@@ -397,11 +398,40 @@ make test                           # expect 95 passed, 0 failed, 0 error(s)
 
 ---
 
-## 11. NEXT SESSION — #2491 `caveblocks`: surgical scope only ✅ RECON DONE (this session)
+## 11. #2491 `caveblocks`: surgical port ✅ DONE
 
-**The task:** hand-port ONLY the maintainer-blessed changes from `origin/caveblocks` onto a fresh
-branch cut from `develop`. Owner's explicit instruction: *"be careful with 2491 and only bring in
-the very specific parts we need."*
+**Branch:** `fix/2491-forest-block-hp` (off `develop`). **Commit:** `ac0c419d`. `make test` →
+**98 passed / 0 failed**. TMX validates. **PR into `develop` still pending** (not yet pushed).
+
+**What shipped — the ONE blessed change:** in `src/maps/forest.tmx`, the three `breakable_block`
+boulders (objects at x/y = 1704/336, 1752/336, 2592/384; all `sprite=boulder`) drop `hp` **3 → 1**.
+That's the entire diff — 3 lines, zero format churn (develop's `forest.tmx` is still the pre-2015
+format, so none of the branch's `id=`/`renderorder`/`nextobjectid` noise came along).
+
+**Where HP lives (answered):** NOT a central constant. Each `breakable_block` authors its own `hp`
+in the map object's properties; `breakable_block.lua:94` reads `node.properties.hp or frames`
+(`frames` = sprite-width ÷ block-width is the only fallback, used when a block sets no `hp`). So the
+`.tmx` is genuinely the only place to change it — no Lua edit needed.
+
+**Rejected (evidence-based), per the hard rule below:**
+- **Black-caverns art (`5c81269a`)** — all 3 binary files (`blackcavernsplatform.png`,
+  `sandplatformbreak.png`, `black-caverns.png` tileset). Extracted both versions and pixel-diffed:
+  each just overlays develop's clean art with busy scribbly crack/vein linework — **exactly the
+  hand-painted outlines niamu/edisonout vetoed**. Regression, not improvement. Left out.
+- **`material.lua` sprite-override feature** — scope creep; HP lives in the `.tmx`, nothing blessed
+  depends on it. Left out.
+
+**Intentionally NOT touched (out of blessed scope):** other maps still carry higher-HP breakable
+blocks — `forest-hidden.tmx` (one `hp=3`, one `hp=4`), `test-level.tmx` (one `hp=3`),
+`valley-hills{,-2}.tmx` (two `hp=2` each). The blessed commit only edited `forest.tmx`, so these
+were left as-is. Owner confirmed: keep it to `forest.tmx` only. If "forest boulders shouldn't be a
+slog" is the real intent, `forest-hidden.tmx` is the natural follow-up candidate.
+
+--- historical recon (kept for reference) ---
+
+**The task was:** hand-port ONLY the maintainer-blessed changes from `origin/caveblocks` onto a
+fresh branch cut from `develop`. Owner's explicit instruction: *"be careful with 2491 and only
+bring in the very specific parts we need."*
 
 ### ⛔ HARD RULE: do NOT merge, rebase, or cherry-pick `origin/caveblocks`.
 Recon (`git diff` vs merge-base, this session) shows why:
