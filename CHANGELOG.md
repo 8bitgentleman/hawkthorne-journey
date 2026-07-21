@@ -25,6 +25,16 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   The scenario harness's `spawn2` now delegates to `Level:spawnCoopPlayer`, so the existing
   two-player tests exercise the production build path; new `test_coop.lua` pins device ownership,
   join/drop, event routing, and the restart-rebuild.
+- **Greendale bursar & campus-improvements shop** — first slice of the teacher-lounge
+  expansion (PR #2530), ported forward to LÖVE 11.5. Adds a `bursar` NPC and a new
+  `improvements` category to the shop system: the bursar sells one-off campus upgrades
+  (airplane ad campaign, Pierce's hologram, Shirley's Sandwiches, the City College mascot
+  heist) which record a save flag for the world to read instead of entering the player's
+  inventory. Improvements are gated on the player's money and can't be sold back. This slice
+  is the shop system, improvement items, and NPC; the in-world bursar's-office entrance lands
+  with a later slice. Two upstream bugs were fixed in the port: the removed
+  `love.graphics.newScreenshot` call now uses the async `captureScreenshot`, and the `iamount`
+  variable-shadowing that would have zeroed every shop's sell count was dropped.
 - **Underwater levels** — ported from the `underwater2` branch. Adds an oxygen/drowning
   system and supporting enemies, hazards, and art:
   - **Oxygen system:** the player gains an oxygen meter (`max_oxygen = 20`). While submerged in

@@ -54,3 +54,54 @@ function test_navigation_does_not_exit_categories_window()
   assert_nil(switched, "RIGHT should not exit the shop")
   assert_equal("categoriesWindow", state.window, "RIGHT should keep the categories window open")
 end
+
+-- The bursar sells "improvements": campus upgrades that aren't inventory items.
+-- Buying one records a save flag (itemInfo[4]) that the world reads, rather
+-- than adding anything to the player's inventory. These tests drive
+-- buy/sellSelectedItem directly with a stubbed save (self.db).
+
+-- Build an improvements-mode context without init()/enter().
+local function setupImprovements(money)
+  state.improvements = true
+  state.window = "purchaseWindow"
+  state.buyAmount = 1
+  state.sellAmount = 1
+  state.itemSelection = 1
+  state.tooltip = { shut = function() end }
+  state.player = { money = money, inventory = { count = function() return 0 end } }
+  state.flags = {}
+  state.db = { set = function(_, key, value) state.flags[key] = value end }
+end
+
+-- it should set the improvement's save flag and deduct money on purchase
+function test_buying_improvement_sets_flag_and_deducts_money()
+  setupImprovements(5000)
+  -- {name, stock, cost, save-flag}
+  state.items = { { "mascot", 1, 1000, "mascot" } }
+  state:buySelectedItem()
+  assert_true(state.flags["mascot"], "buying should record the improvement's save flag")
+  assert_equal(4000, state.player.money, "money should drop by the cost")
+  assert_equal(0, state.items[1][2], "stock should decrement")
+  assert_equal("messageWindow", state.window, "should land on the message window")
+  state.improvements = false
+end
+
+-- it should not buy an improvement the player can't afford
+function test_buying_improvement_requires_money()
+  setupImprovements(500)
+  state.items = { { "airplane", 1, 100000, "greendale-airplane" } }
+  state:buySelectedItem()
+  assert_nil(state.flags["greendale-airplane"], "must not set the flag when too poor")
+  assert_equal(500, state.player.money, "money must be unchanged on a failed purchase")
+  assert_equal("messageWindow", state.window)
+  state.improvements = false
+end
+
+-- it should refuse to sell improvements (the player never owns them)
+function test_selling_improvement_is_blocked()
+  setupImprovements(5000)
+  state:sellSelectedItem()
+  assert_equal("messageWindow", state.window)
+  assert_equal("You can't sell something you don't own.", state.message)
+  state.improvements = false
+end

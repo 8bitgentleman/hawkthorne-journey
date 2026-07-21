@@ -8,6 +8,7 @@ local HUD = require 'hud'
 local utils = require 'utils'
 local Item = require 'items/item'
 local tooltip = require 'tooltip'
+local app = require 'app'
 
 
 --instantiate this gamestate
@@ -55,11 +56,22 @@ function state:init()
   self.shift["keys"] = 8
   self.shift["armor"] = 6
   self.shift["misc"] = 9
+  self.shift["improvements"] = 0
 
   self.categoriespic = {}
   for i = 1, #self.categories do
     self.categoriespic[i] = love.graphics.newImage('images/shopping/' .. self.categories[i] .. '.png')
   end
+
+  -- The bursar sells "improvements" (campus upgrades) instead of the standard
+  -- inventory categories. Snapshot the standard set so a bursar visit can swap
+  -- to an improvements-only view and any later visit can restore it (the shop
+  -- is a shared gamestate singleton).
+  self.stdCategories = self.categories
+  self.stdCategoriespic = self.categoriespic
+  self.improvementsCategories = {"improvements"}
+  self.improvementspic = { love.graphics.newImage('images/shopping/improvements.png') }
+  self.improvements = false
 
   self.items = {}
   self.purchaseOptions = {"BUY", "SELL"} 
@@ -91,10 +103,20 @@ function state:enter(previous, player, screenshot, supplierName)
   self.hud = HUD.new(previous)
   
   self.tooltip = tooltip:new()
-  
+
   self.message = nil
 
-  self.categorySelection = utils.indexof(self.categories,"weapons")
+  self.db = app.gamesaves:active()
+  self.improvements = supplierName == 'bursar'
+  if self.improvements then
+    self.categories = self.improvementsCategories
+    self.categoriespic = self.improvementspic
+    self.categorySelection = utils.indexof(self.categories,"improvements")
+  else
+    self.categories = self.stdCategories
+    self.categoriespic = self.stdCategoriespic
+    self.categorySelection = utils.indexof(self.categories,"weapons")
+  end
   self.itemsSelection = 1
   self.purchaseSelection = 1
 
@@ -330,6 +352,16 @@ function state:buySelectedItem()
     self.message = "This item is out of stock."
     self.window = "messageWindow"
 
+  elseif self.improvements then
+    -- Improvements aren't inventory items: buying one records a flag in the
+    -- save (itemInfo[4]) that the world reads to reveal/enable the upgrade.
+    local action = tostring(itemInfo[4])
+    self.db:set(action, true)
+    self.player.money = self.player.money - cost*self.buyAmount
+    itemInfo[2] = itemInfo[2] - self.buyAmount
+    self.message = "Purchase successful."
+    self.window = "messageWindow"
+
   else
 
     for i = 1,self.buyAmount do
@@ -362,6 +394,12 @@ function state:buySelectedItem()
 end
 
 function state:sellSelectedItem()
+
+  if self.improvements then
+    self.message = "You can't sell something you don't own."
+    self.window = "messageWindow"
+    return
+  end
 
   local itemInfo = self.items[self.itemSelection]
   local name = itemInfo[1]
@@ -472,7 +510,12 @@ function state:draw()
 
         local visI = i - self.itemsWindowLeft
 
-        love.graphics.print(cost .. " coins", xcorner + 15 + 32*visI, ycorner + 45, 0, 0.5, 0.5 )
+        -- Improvement costs run into the hundred-thousands; " coins" won't fit.
+        if self.improvements then
+          love.graphics.print(cost, xcorner + 20 + 32*visI, ycorner + 45, 0, 0.5, 0.5 )
+        else
+          love.graphics.print(cost .. " coins", xcorner + 15 + 32*visI, ycorner + 45, 0, 0.5, 0.5 )
+        end
 
         if itemInfo.draw then
           itemInfo.draw(xcorner + 20 + 32*visI, ycorner + 23, self.player)
