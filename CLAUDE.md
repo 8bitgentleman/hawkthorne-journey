@@ -13,6 +13,25 @@ Community's *Digital Estate Planning*. This is the `8bitgentleman` fork being mo
   `develop` (owner's workflow); the suite must be green + lint clean first. **No feature branches,
   no PRs** (neither upstream nor within the fork). The owner pushes `develop` to their fork.
 
+## Versioning & changelog
+
+The fork continues upstream's SemVer line (last upstream release: **v1.1.0**, 2024-11-22).
+Versions are **local, lightweight git tags** (`vX.Y.Z`) — **we do not cut GitHub releases**.
+`CHANGELOG.md` (Keep a Changelog format) is the human record; every tag has a matching
+`## [X.Y.Z]` section, and the current changelog starts at **v1.1.1** (July 2026).
+
+- **Every user-facing commit** — a fix, a gameplay/balance change, a new feature — adds a bullet
+  under **`## [Unreleased]`** in `CHANGELOG.md`, under the right heading: `Added` / `Changed` /
+  `Fixed` / `Removed` / `Deprecated`. A non-standard **`Internal`** heading holds dev-only tooling
+  and tests (kept in the log, but out of the player-facing headings). Cite the issue number.
+- **Pure bookkeeping** — handoff-doc edits, branch triage, record corrections — gets **no**
+  changelog entry and **no** tag.
+- **Cutting a version:** when the accumulated `[Unreleased]` work is worth a release, rename that
+  heading to `## [X.Y.Z] - YYYY-MM-DD`, add a fresh empty `## [Unreleased]` above it, update the
+  compare-link footnotes, and tag the commit: `git tag vX.Y.Z`. Choose the bump per SemVer —
+  **patch** = bug fix / balance, **minor** = new backwards-compatible feature/content, **major** =
+  save-breaking or removed content. Tags stay local; the owner may `git push --tags` at will.
+
 ## Build / test / lint
 
 Everything is driven by the `Makefile` (macOS + Linux; `make.ps1` is the Windows equivalent). The
