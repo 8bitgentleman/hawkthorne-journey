@@ -37,6 +37,12 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   visible entrance-tile art for the Winter Wonderland door is a pending art follow-up; the door
   is functional (an invisible trigger) without it.
 
+### Fixed
+- Several `Player` methods (jump/swim ladder-release, `die`, and `refreshPlayer`'s holdable
+  re-pickup) referenced the module-global `player` singleton instead of `self`. Harmless in
+  single-player (they're the same object) but a latent bug: any future second player would
+  release *player 1's* ladder or re-pickup onto *player 1*. Now use `self` throughout.
+
 ### Internal
 - Add `test_christmas_pterodactyl.lua` — pins the boss's dive FSM (patrol → telegraph → dive →
   recover) by driving the enemy prop table directly with fake enemy/player tables, no Level needed.

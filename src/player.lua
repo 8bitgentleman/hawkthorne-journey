@@ -178,7 +178,7 @@ function Player:refreshPlayer(collider)
     local holdable = self.currently_held
     -- If we are returning to the same level, pickup the holdable again, otherwise drop it
     if holdable.containerLevel.name == self.currentLevel.name then
-      holdable:pickup(player)
+      holdable:pickup(self)
     else
       self:setSpriteStates('default')
       self.currently_held = nil
@@ -540,8 +540,8 @@ function Player:update(dt, map)
     self.jumping = true
     self.velocity.y = -670 *self.jumpFactor
     sound.playSfx( "jump" )
-    if player.isClimbing then
-      player.isClimbing:release(player)
+    if self.isClimbing then
+      self.isClimbing:release(self)
     end
   elseif jumped and self.submerged and not self.rebounding
      and self.velocity.y > -120 and self.current_state_set ~= "crawling" then
@@ -549,8 +549,8 @@ function Player:update(dt, map)
     -- repeats once you've slowed, so tapping JUMP swims the player upward.
     self.velocity.y = SUBMERGED_STROKE
     sound.playSfx( "jump" )
-    if player.isClimbing then
-      player.isClimbing:release(player)
+    if self.isClimbing then
+      self.isClimbing:release(self)
     end
   elseif jumped and not self.jumping and self:solid_ground()
      and not self.rebounding and self.liquid_drag and
@@ -560,8 +560,8 @@ function Player:update(dt, map)
     self.jumping = true
     self.velocity.y = -270
     sound.playSfx( "jump" )
-    if player.isClimbing then
-      player.isClimbing:release(player)
+    if self.isClimbing then
+      self.isClimbing:release(self)
     end
   end
 
@@ -784,7 +784,7 @@ function Player:die()
   self.inventory:close()
   self.character.state = 'dead'
   if self.isClimbing then
-    self.isClimbing:release(player)
+    self.isClimbing:release(self)
   end
   if Dialog.currentDialog then
     Dialog.currentDialog = nil
