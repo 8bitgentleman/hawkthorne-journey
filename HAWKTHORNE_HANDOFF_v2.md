@@ -122,7 +122,7 @@ touching. Only "revive" branches enter the per-feature-PR loop.
 - **Test:** `src/test/test_shopping.lua` (3 cases) — ATTACK exits, START still exits, nav keys
   don't. Stubs `Gamestate.switch`/`sound.playSfx` via the shared cached module tables.
 
-### Collision family — #2456/#2578 VERIFIED ✅ · #2427 OPEN/UNFIXED ⚠️
+### Collision family — #2456/#2578 VERIFIED ✅ · #2427 FIXED ✅
 - ✅ **Merged PR #2584 ("Addresses two common collision issues", Jun 2022, closes #2456/#2578)
   is present and intact in the current tree** (`ff9fe9c`): the `move_y` downward guard
   (`slope_y >= new_y`), `Player:canStand`/`attack(map)`, and the `level.lua` map plumbing are
@@ -140,29 +140,28 @@ touching. Only "revive" branches enter the per-feature-PR loop.
   fails it — player warps box-top 246 → 199, i.e. clips up onto the ceiling); and `Player:canStand`
   refuses to stand up into a low ceiling. This is the gameplay-level companion the #2584 author
   said he couldn't write. Suite: **98 passed** (was 95).
-- ⚠️ **#2427 — CORRECTION: this is OPEN and UNFIXED, not "already fixed."** The v2 claim above
-  ("strong evidence both are fixed, close as resolved") was **wrong for #2427**: PR #2584 closed
-  #2456/#2578, NOT #2427. The #2427 thread (issue, not PR) is open with no closing commit and no
-  maintainer verdict. It is a real, timing/geometry-dependent bug: "falling through moving
-  platforms when crouching and spamming attack/interact," and the reporter noted "changing the
-  movement line slightly can resolve it." **Do NOT close it.**
-  - **Reproduction attempt (parked, PR #48 session):** the scenario harness *can* drive
-    moving-platform levels once you run the `node:enter()` hooks that `Level:restartLevel()` skips
-    (they build each platform's Bspline — `movingplatform.lua:110`; without them `update` crashes
-    at `:194 attempt to index field 'bspline'`). Vertical platforms are the candidates
-    (frozencave mp2/mp3, black-caverns mp1/mp6; horizontal ones like black-caverns-2's never
-    stress the fall-through). Riding a vertical platform **downward** with crouch + attack/interact
-    spam for 240 frames did NOT reproduce (player stayed glued, feet-gap 0). Two harness gaps block
-    a faithful repro and must be solved first: (1) **reliable platform attachment** — the player
-    only rides while `player.currentplatform == platform`, which is set by HardonCollider firing
-    `MovingPlatform:collide` on bb overlap; spawning the player *on* a platform doesn't reliably
-    trigger it, so upward-motion trials were invalid. (2) **state leak** — `map.moving_platforms`
-    accumulates across scenarios in one test process (black-caverns-2 reported 5 platforms after
-    black-caverns ran); a clean harness extension needs teardown for this or it causes the exact
-    order-dependent flakiness this doc warns about elsewhere.
-  - **Next step for #2427:** a dedicated harness task (land-player-on-platform helper + moving-
-    platform teardown), then sweep the vertical platforms for the crouch+spam fall-through, then
-    fix. It is NOT a quick verify.
+- ✅ **#2427 — FIXED** (`ebe1dcf4`). Root cause: `collision.move_y`'s moving-platform loop cleared
+  `player.currentplatform` on every frame the catch didn't fire, and that catch only fires while
+  the player moves **down** — so on a platform's **up leg** the rider was detached every single
+  frame. Staying glued then depended entirely on a one-frame gravity re-catch (`foot <= platform.y`,
+  an equality), which any per-frame disturbance defeats. **The disturbance is the crouch bounding
+  box flipping** as the crouch key is worked while attacking/interacting; on a platform rising fast
+  enough that a single missed re-catch can't recover, the rising platform slips out from under the
+  player → fall-through. This is exactly the issue's "crouching + spamming attack/interact" and
+  "changing the movement line slightly can resolve it" (the line sets the per-frame rise, i.e. the
+  race timing). **Fix:** don't clear `currentplatform` while the platform's own upward motion is
+  what's carrying the player (still horizontally over it, rising no faster than it — a jump gives a
+  much larger upward `dy`, so jumping off still detaches).
+  - **Reproduced deterministically** in the harness: steady crouch + attack-spam stays glued at all
+    speeds (the re-catch heals every frame), but crouch-**toggling** + attack on a fast vertical
+    platform (frozencave) cascades into a genuine fall-through (`fell=true`, feet 67px below the
+    surface at speed 48). Confirmed red/green: riding up at natural speed, the rider is attached on
+    **0/407** rising frames before the fix and **407/407** after.
+  - **Harness gaps from the parked attempt are now closed:** `Scenario.new` runs each platform's
+    `node:enter()` (builds the Bspline), `landOn()` drops the player on from just above so the
+    HardonCollider overlap actually latches `currentplatform`, `movingPlatforms()` exposes the
+    list, and teardown resets `map.moving_platforms` (kills the cross-scenario leak).
+  - **Pinned by** `src/test/test_moving_platform_scenario.lua`.
 
 ### Scenario harness — headless gameplay verification ✅ BUILT, tested, deterministic
 This is the big one for AI-driven work: **agents can now assert on real gameplay** (physics,
@@ -217,7 +216,7 @@ had no harness.
 | **PR #2229** (the real attempt at #1913/#2036) | (not clearly flagged) | **niamu CLOSED it (May 2015) as "too big of a core gameplay change… a level design issue instead."** 8bitgentleman & niamu openly disagreed on approach in-thread. | The one time this was tried, the lead maintainer backed it out. **Needs a fresh design decision from the owner before any revival — do not just re-implement.** |
 | **#2491 `caveblocks`** | Ship level+HP changes, drop the manual black outlines (niamu's SVG objection). | ✅ **Accurate.** niamu supports lower forest-block HP; niamu + edisonout object to hand-painted outlines (keep art "pure" for future SVG/programmatic borders); 8bitgentleman conceded but "the tileset and level changes are solid." | Ship level + HP-to-1 only; rework/drop outlines. **Genuinely the cleanest quick win now.** |
 | **#2584 / #2456 / #2578** | #2578 "partially fixed, bat path unverified." | ✅ **Fixed + now verified end-to-end.** Merged fix intact; unit tests + scenario tests (PR #48) drive the real Level/Player loop, including the bat-knockback ceiling case the author couldn't test. | Re-confirm done; close #2456/#2578. |
-| **#2427** | "likely already fixed." | ❌ **WRONG — open & unfixed.** #2584 closed #2456/#2578, not #2427. Timing/geometry-dependent moving-platform fall-through; no closing commit, no maintainer verdict. | **Do NOT close.** Needs harness work + a real fix (see §3). |
+| **#2427** | "likely already fixed." | ✅ **NOW ACTUALLY FIXED** (`ebe1dcf4`). Was open/unfixed (#2584 closed #2456/#2578, not this). Real cause: `move_y` detached the rider every up-leg frame, leaving a marginal one-frame re-catch that a crouch box-flip defeats → fall-through. Fixed + pinned (`test_moving_platform_scenario.lua`, 0/N→N/N attached). | Done. Close #2427. |
 
 ---
 
@@ -338,9 +337,15 @@ legitimately lift old constraints — but deliberately, not by accident.*
 2. ✅ **#2491 `caveblocks`** — DONE. Forest boulder HP 3→1 landed on `develop` (`19c97d9b`,
    98 passed). Black-caverns art + material.lua sprite-override rejected (vetoed outlines / scope
    creep). See §11.
-3. ✅ **#2578 / #2456 verified end-to-end** (PR #48) — done. **#2427 is open & unfixed** (not a
-   close): it needs a dedicated harness task (reliable land-player-on-platform + moving-platform
-   teardown) then a real fix. See §3 for the parked investigation + repro obstacles.
+3. ✅ **#2578 / #2456 verified end-to-end** (PR #48) — done. ✅ **#2427 FIXED** (`ebe1dcf4`):
+   `move_y` cleared `player.currentplatform` every frame a platform rose, so a rising platform held
+   the rider only by a marginal one-frame gravity re-catch — a per-frame disturbance (crouch box
+   flipping under attack/interact spam, on a fast platform) defeated it and dropped the player
+   through. Fix keeps the rider attached while the platform's own upward motion carries them.
+   Reproduced deterministically in the scenario harness (crouch-toggle + fast platform → genuine
+   fall-through) and pinned: a crouch-attacking rider stays bound to the rising platform for the
+   whole ascent — **0/N attached before the fix, N/N after** (`test_moving_platform_scenario.lua`).
+   Harness gained `landOn`/`movingPlatforms` + moving-platform teardown (the two gaps §3 flagged).
 4. **#2442 New HUD** — ✅ thread verified (this session): the PR is **open/stalled, NOT rejected**
    (last activity Sept 2015). edisonout's fix-list, which the owner agreed with: swap flashing
    potion icons → static images, fix the saving-icon/weapon-ammo overlap, fix weapon-amount
