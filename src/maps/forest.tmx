@@ -171,7 +171,7 @@
    <properties>
     <property name="crack" value="false"/>
     <property name="dying_animation" value="boulder-crumble"/>
-    <property name="hp" value="3"/>
+    <property name="hp" value="1"/>
     <property name="sound" value="boulder-crumble"/>
     <property name="sprite" value="boulder"/>
    </properties>
@@ -280,7 +280,7 @@
    <properties>
     <property name="crack" value="false"/>
     <property name="dying_animation" value="boulder-crumble"/>
-    <property name="hp" value="3"/>
+    <property name="hp" value="1"/>
     <property name="sound" value="boulder-crumble"/>
     <property name="sprite" value="boulder"/>
    </properties>
@@ -351,7 +351,7 @@
    <properties>
     <property name="crack" value="false"/>
     <property name="dying_animation" value="boulder-crumble"/>
-    <property name="hp" value="3"/>
+    <property name="hp" value="1"/>
     <property name="sound" value="boulder-crumble"/>
     <property name="sprite" value="boulder"/>
    </properties>
