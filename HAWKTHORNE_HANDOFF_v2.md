@@ -491,7 +491,7 @@ landed; pure ARCHIVE.
 
 | Branch | Issue/PR | Thread state | Size vs develop | Category | Why + next action |
 |---|---|---|---|---|---|
-| **underwater2** | — (never PR'd) | no upstream thread | 144f/+2715 (core Lua small; `npc_old.lua` cruft) | ✅ **PORTED 2026-07-21** (`58a4857b`) | Oxygen/suffocation mechanic + jellyfish/bubbles enemies + `forest-underwater.tmx` reimplemented clean on develop (99 passed, lint clean). **Remaining follow-ups: (1) door entrance — level is unreachable until wired; (2) floaty/buoyancy movement.** See spec below for both. |
+| **underwater2** | — (never PR'd) | no upstream thread | 144f/+2715 (core Lua small; `npc_old.lua` cruft) | ✅ **PORTED 2026-07-21** (`58a4857b`) | Oxygen/suffocation mechanic + jellyfish/bubbles enemies + `forest-underwater.tmx` reimplemented clean on develop (99 passed, lint clean). Floaty/buoyancy movement added `2026-07-21` (`08dd5fc2`). **Remaining follow-up: door entrance — level is unreachable until wired.** See spec below. |
 | **santas-grotto** | — (never PR'd) | no upstream thread | 15f/+297 (2 PNGs + tmx) | **REVIVE** | Small, self-contained holiday side-room + `christmas-pterodactyl` boss. ✅ **Code-reviewed 2026-07-21.** Confirmed cleanest low-risk win; boss is written against **today's** `enemy.lua` API (verified field-for-field, lints clean). **Queued as the next port after `underwater2`.** Full spec below the table. |
 | **paintball** | #2481 | recoverable; owner had "almost all the code", accepted sfx; missing enemy art | 38f/+513 (core Lua compact) | **SALVAGE-PARTS** | Engine hooks are gold and **feed the NPCs-as-enemies pillar**: `npc.lua` `isNPC` marker, `enemy.lua` generic-conversion, `weapon.lua` trigger fix — small + clean, portable now as one PR. Full feature blocked only on missing art. ⚠️ its `rave-switch.lua` edit collides with teacher-lounge's `switch.lua` refactor — sequence them. |
 | **teacher-lounge** | #2530 | big content win, **4 open design Qs, must split into smaller PRs** | 106f/+2028 (Lua/tmx subset ~39f) | **SALVAGE-PARTS** | Real content (speakeasy, computer-wing quest, ~5 NPCs) but ships only if split per maintainer's own ask. `door.lua` `hiddenKey` prompt is clean/self-contained. ⚠️ `shopping.lua` hunk is buggy (dead `iamount`, empty `if` block); `switch.lua` refactor must reconcile with paintball first. Next: carve one room (e.g. speakeasy) as a standalone PR. |
@@ -541,13 +541,18 @@ so every oxygen tick froze the player's controls for 1.5s → underwater is half
 to `false` (suffocation is passive damage, not a knockback). The branch had this right; the port
 flipped it.
 
-**Remaining follow-ups (NOT done):**
+**Remaining follow-up:**
 1. **Door entrance** — no door wires into `forest-underwater`, so it's unreachable in normal play
    and invisible to `test_maps.lua`'s door walk. Hand-add a door (e.g. into `forest.tmx`) to make
    it reachable. Until then it was verified only via a throwaway scenario load.
-2. **Floaty/buoyancy movement** — deliberately NOT implemented (owner's "floaty movement, no new
-   art" call). This is the new-physics part; do it in `Player:update`/liquid handlers, harness-
-   verified. See original findings below.
+
+**✅ Floaty/buoyancy movement — DONE `2026-07-21` (`08dd5fc2`).** New `buoyant` liquid property
+(distinct from `drag`'s stuck-in-quicksand feel) toggles `player.submerged`. While submerged:
+gravity × `BUOYANCY` (0.35), terminal sink capped at `SUBMERGED_MAX_Y` (140, no fall damage),
+horizontal speed damped, and JUMP becomes a repeatable `SUBMERGED_STROKE` (−300) swim-stroke that
+needs no solid ground. All gated on `self.submerged` → zero effect on dry levels. `forest-
+underwater.tmx` switched from `drag` to `buoyant`. Covered by `test_buoyancy.lua` (5 tests,
+incl. a pin that `suffocate()` keeps `rebounding=false`); 104 passed, deterministic across 5 runs.
 
 --- original findings + design decision (kept for reference) ---
 
