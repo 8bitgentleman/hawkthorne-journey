@@ -12,11 +12,20 @@ local lens = love.graphics.newImage('images/hud/lens.png')
 local chevron = love.graphics.newImage('images/hud/chevron.png')
 local energy = love.graphics.newImage('images/hud/energy.png')
 local savingImage = love.graphics.newImage('images/hud/saving.png')
+local oxygenbar = love.graphics.newImage('images/hud/oxygenbar.png')
 
 lens:setFilter('nearest', 'nearest')
 chevron:setFilter('nearest', 'nearest')
 energy:setFilter('nearest', 'nearest')
 savingImage:setFilter('nearest', 'nearest')
+oxygenbar:setFilter('nearest', 'nearest')
+
+-- oxygenbar.png is a 21-frame strip (28x27 per frame) matching max_oxygen = 20:
+-- oxygenbarq[oxygen + 1] gives the correct frame, full at oxygen == max_oxygen.
+local oxygenbarq = {}
+for i = 20, 0, -1 do
+  table.insert(oxygenbarq, love.graphics.newQuad(28 * i, 0, 28, 27, oxygenbar:getWidth(), oxygenbar:getHeight()))
+end
 
 function HUD.new(level)
   local hud = {}
@@ -90,6 +99,11 @@ function HUD:draw( player )
   love.graphics.draw(energy, energy_quad, self.x + 50, self.y)
 
   love.graphics.setColor(1, 1, 1, 1)
+
+  --OXYGEN (only shown while it's not full, e.g. while underwater)
+  if player.oxygen and player.oxygen < player.max_oxygen then
+    love.graphics.draw(oxygenbar, oxygenbarq[player.oxygen + 1], self.x + 50, self.y + 64)
+  end
 
   local currentWeapon = player.inventory:currentWeapon()
   if currentWeapon and not player.doBasicAttack or (player.holdingAmmo and currentWeapon) then

@@ -10,6 +10,24 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
 
 ## [Unreleased]
 
+### Added
+- **Underwater levels** — ported from the `underwater2` branch. Adds an oxygen/drowning
+  system and supporting enemies, hazards, and art:
+  - **Oxygen system:** the player gains an oxygen meter (`max_oxygen = 20`). While submerged in
+    air-less liquid, `Player:suffocate()` drains oxygen instead of health on a timer; hitting zero
+    kills the player. Oxygen refills fully on leaving the water and on level refresh. A HUD oxygen
+    bar shows only while oxygen is below full.
+  - **`liquid` node** gains a numeric `injure` + `injure_timer` mode that drains N oxygen every
+    T seconds (distinct from the existing boolean `injure`, which drains health).
+  - **Jellyfish enemies:** `jellyfish-strawberry` (slow, constantly homes in) and
+    `jellyfish-blueberry` (drifts until the player is near, then chases faster) — both antigravity,
+    6 HP, vulnerable to blunt attacks.
+  - **`bubbles`** — decorative, peaceful floating bubbles that bob in place.
+  - **`healing_floor`** — an invisible air-pocket zone that refills oxygen on contact.
+  - **`killing_floor_underwater`** — an underwater variant of `killing_floor` for bottom hazards.
+  - New assets: `underwater.png` tileset, jellyfish/bubbles sprites, HUD `oxygenbar.png`, and the
+    `jellyfish_die.ogg` sound.
+
 ## [1.1.3] - 2026-07-20
 
 ### Fixed

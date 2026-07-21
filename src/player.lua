@@ -77,6 +77,9 @@ function Player.new(collider)
   plyr.max_health = 100
   plyr.health = plyr.max_health
 
+  plyr.max_oxygen = 20
+  plyr.oxygen = plyr.max_oxygen
+
   plyr.jumpDamage = 3
   plyr.punchDamage = 1
 
@@ -102,6 +105,10 @@ end
 
 function Player:refillHealth()
   self.health = self.max_health
+end
+
+function Player:refillOxygen()
+  self.oxygen = self.max_oxygen
 end
 
 function Player:refreshPlayer(collider)
@@ -140,6 +147,7 @@ function Player:refreshPlayer(collider)
   self.since_down = 0
   self.platform_dropping = false
   self.dead = false
+  self.oxygen = self.max_oxygen
 
   self:setSpriteStates(self.current_state_set or 'default')
 
@@ -693,6 +701,47 @@ function Player:hurt(damage)
     self.rebounding = false
     self.showDamageText = false
     self.color = color
+  end)
+
+  self:startBlink()
+end
+
+---
+-- Called while the player is submerged without air. Drains oxygen instead of
+-- health; once oxygen is exhausted the player dies just like running out of
+-- health.
+-- @param damage The amount of oxygen to remove
+--
+function Player:suffocate(damage)
+  if self.invulnerable or self.godmode or self.dead then
+    return
+  end
+
+  damage = math.floor(damage)
+  if damage <= 0 then return end
+
+  sound.playSfx( "damage" )
+  -- Suffocation is passive damage, not a hit: keep rebounding false so the player
+  -- retains movement/jump control while submerged (rebounding gates input).
+  self.rebounding = false
+  self.invulnerable = true
+
+  self.damageTaken = damage
+  self.oxygen = math.max(self.oxygen - damage, 0)
+
+  if self.oxygen <= 0 then
+    self:die()
+  else
+    self.attacked = true
+    self.character.state = 'hurt'
+  end
+
+  Timer.add(0.4, function()
+    self.attacked = false
+  end)
+
+  Timer.add(1.5, function()
+    self.invulnerable = false
   end)
 
   self:startBlink()

@@ -11,6 +11,10 @@
 -- 'tile_width' ( integer ) - Width of the sprite tiles ( deafults to 24 )
 -- 'death' ( true / false ) - Player dies immediaetly on contact with liquid
 -- 'injure' ( true / false ) - Player is injured for as long as they are touching the liquid
+-- 'injure' ( number ) - Player instead loses this much oxygen every 'injure_timer' seconds while
+--             touching the liquid ( e.g. underwater ), via Player:suffocate(). Oxygen is restored
+--             to full when the player leaves the liquid. Ignored unless 'injure_timer' is also set.
+-- 'injure_timer' ( number ) - Seconds between oxygen-drain ticks when 'injure' is a number
 -- 'drown' ( true / false ) - Player dies when his head is submersed in the liquid
 -- 'drag' ( true / false ) - Player is slowly dragged down by the liquid ( like quicksand )
 -- 'speed' ( 0 => 1 ) - Speed at which the animation is played ( defaults to 0.2 )
@@ -64,6 +68,10 @@ function Liquid.new(node, collider)
   liquid.death = np.death == 'true'
   liquid.oscillating = np.oscillating == 'true'
   liquid.injure = np.injure == 'true'
+  -- numeric 'injure' (distinct from the boolean 'true' above) drains oxygen instead of health
+  liquid.oxygen_drain = tonumber(np.injure)
+  liquid.injure_timer = np.injure_timer and tonumber(np.injure_timer) or 1
+  liquid.injure_elapsed = 0
   liquid.drown = np.drown == 'true'
   liquid.drag = np.drag == 'true'
   liquid.foreground = np.foreground ~= 'false'
@@ -108,6 +116,14 @@ function Liquid:collide(node, dt, mtv_x, mtv_y)
     player:hurt(10)
   end
 
+  if self.oxygen_drain then
+    self.injure_elapsed = self.injure_elapsed + dt
+    if self.injure_elapsed >= self.injure_timer then
+      self.injure_elapsed = self.injure_elapsed - self.injure_timer
+      player:suffocate(self.oxygen_drain)
+    end
+  end
+
   if self.drown and player.position.y >= self.position.y then
     player:die()
   end
@@ -137,6 +153,11 @@ function Liquid:collide_end(node, dt, mtv_x, mtv_y)
 
   -- unmask
   if self.mask then player.stencil = nil end
+
+  if self.oxygen_drain then
+    player:refillOxygen()
+    self.injure_elapsed = 0
+  end
 
   if self.drag and player.liquid_drag then
     player.liquid_drag = false
