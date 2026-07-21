@@ -127,7 +127,7 @@ touching. Only "revive" branches enter the per-feature-PR loop.
 - **Test:** `src/test/test_shopping.lua` (3 cases) — ATTACK exits, START still exits, nav keys
   don't. Stubs `Gamestate.switch`/`sound.playSfx` via the shared cached module tables.
 
-### #2427 / #2578 — collision family: RE-TESTED ✅
+### Collision family — #2456/#2578 VERIFIED ✅ · #2427 OPEN/UNFIXED ⚠️
 - ✅ **Merged PR #2584 ("Addresses two common collision issues", Jun 2022, closes #2456/#2578)
   is present and intact in the current tree** (`ff9fe9c`): the `move_y` downward guard
   (`slope_y >= new_y`), `Player:canStand`/`attack(map)`, and the `level.lua` map plumbing are
@@ -137,11 +137,37 @@ touching. Only "revive" branches enter the per-feature-PR loop.
   test_collision_ceiling.lua` (3 tests) pinning the underlying `collision.move_y` /
   `collision.stand` behaviour. **Proven genuine:** reverting the `slope_y >= new_y` guard makes
   the key test fail with the exact bug symptom (player warps y=30 → y=12); with the guard it passes.
-- **Still to do (needs interactive play, not yet done):** live-repro #2578 (get hit by a bat in
-  the Forest, confirm no ceiling clip) and #2427 (crouch + spam attack/interact on a moving
-  platform in `black-caverns-2`). Maps now compile, so these are loadable — but driving the
-  input interactively is the hard part. Strong evidence both are already fixed; **recommend
-  live-verify then close #2427 (and re-confirm #2578) as resolved.**
+- ✅ **#2578 / #2456 — now VERIFIED end-to-end (PR #48, `ceiling-collision-scenario-tests`).**
+  Added `src/test/test_collision_ceiling_scenario.lua` (3 tests) that drive the **real** Level +
+  Player update loop through the scenario harness: the actual bat knockback impulse
+  (`player.velocity.y = -450`) into a low ceiling stops cleanly at the underside and never clips;
+  the "ceiling edge + gravity down-tick" warp is pinned (reverting the `slope_y >= new_y` guard
+  fails it — player warps box-top 246 → 199, i.e. clips up onto the ceiling); and `Player:canStand`
+  refuses to stand up into a low ceiling. This is the gameplay-level companion the #2584 author
+  said he couldn't write. Suite: **98 passed** (was 95).
+- ⚠️ **#2427 — CORRECTION: this is OPEN and UNFIXED, not "already fixed."** The v2 claim above
+  ("strong evidence both are fixed, close as resolved") was **wrong for #2427**: PR #2584 closed
+  #2456/#2578, NOT #2427. The #2427 thread (issue, not PR) is open with no closing commit and no
+  maintainer verdict. It is a real, timing/geometry-dependent bug: "falling through moving
+  platforms when crouching and spamming attack/interact," and the reporter noted "changing the
+  movement line slightly can resolve it." **Do NOT close it.**
+  - **Reproduction attempt (parked, PR #48 session):** the scenario harness *can* drive
+    moving-platform levels once you run the `node:enter()` hooks that `Level:restartLevel()` skips
+    (they build each platform's Bspline — `movingplatform.lua:110`; without them `update` crashes
+    at `:194 attempt to index field 'bspline'`). Vertical platforms are the candidates
+    (frozencave mp2/mp3, black-caverns mp1/mp6; horizontal ones like black-caverns-2's never
+    stress the fall-through). Riding a vertical platform **downward** with crouch + attack/interact
+    spam for 240 frames did NOT reproduce (player stayed glued, feet-gap 0). Two harness gaps block
+    a faithful repro and must be solved first: (1) **reliable platform attachment** — the player
+    only rides while `player.currentplatform == platform`, which is set by HardonCollider firing
+    `MovingPlatform:collide` on bb overlap; spawning the player *on* a platform doesn't reliably
+    trigger it, so upward-motion trials were invalid. (2) **state leak** — `map.moving_platforms`
+    accumulates across scenarios in one test process (black-caverns-2 reported 5 platforms after
+    black-caverns ran); a clean harness extension needs teardown for this or it causes the exact
+    order-dependent flakiness this doc warns about elsewhere.
+  - **Next step for #2427:** a dedicated harness task (land-player-on-platform helper + moving-
+    platform teardown), then sweep the vertical platforms for the crouch+spam fall-through, then
+    fix. It is NOT a quick verify.
 
 ### Scenario harness — headless gameplay verification ✅ BUILT, tested, deterministic
 This is the big one for AI-driven work: **agents can now assert on real gameplay** (physics,
@@ -195,7 +221,8 @@ had no harness.
 | **#1913 enemy follow-freeze** | "niamu blessed a stand-beside-attack design; CalebJohn: 'shouldn't be too hard' — **best next code win.**" | Issue #1913 is **open with ZERO comments** (author CalebJohn: "not really sure what this would look like"). No blessing, no such quote exists in it. | **Downgrade.** Not a blessed quick win. |
 | **PR #2229** (the real attempt at #1913/#2036) | (not clearly flagged) | **niamu CLOSED it (May 2015) as "too big of a core gameplay change… a level design issue instead."** 8bitgentleman & niamu openly disagreed on approach in-thread. | The one time this was tried, the lead maintainer backed it out. **Needs a fresh design decision from the owner before any revival — do not just re-implement.** |
 | **#2491 `caveblocks`** | Ship level+HP changes, drop the manual black outlines (niamu's SVG objection). | ✅ **Accurate.** niamu supports lower forest-block HP; niamu + edisonout object to hand-painted outlines (keep art "pure" for future SVG/programmatic borders); 8bitgentleman conceded but "the tileset and level changes are solid." | Ship level + HP-to-1 only; rework/drop outlines. **Genuinely the cleanest quick win now.** |
-| **#2584 / #2427 / #2578** | #2427 "likely already fixed"; #2578 "partially fixed, bat path unverified." | ✅ **Confirmed & now improved:** fix is merged + intact; author explicitly couldn't test the bat path; niamu accepted on code-reasoning only. Now covered by new unit tests. | Live-verify + close (see §3). |
+| **#2584 / #2456 / #2578** | #2578 "partially fixed, bat path unverified." | ✅ **Fixed + now verified end-to-end.** Merged fix intact; unit tests + scenario tests (PR #48) drive the real Level/Player loop, including the bat-knockback ceiling case the author couldn't test. | Re-confirm done; close #2456/#2578. |
+| **#2427** | "likely already fixed." | ❌ **WRONG — open & unfixed.** #2584 closed #2456/#2578, not #2427. Timing/geometry-dependent moving-platform fall-through; no closing commit, no maintainer verdict. | **Do NOT close.** Needs harness work + a real fix (see §3). |
 
 ---
 
@@ -315,8 +342,9 @@ legitimately lift old constraints — but deliberately, not by accident.*
    deleted once you've confirmed `develop` has everything.
 2. **#2491 `caveblocks`** — revive the level + HP-to-1 changes only, rework/drop the outline
    edits. ✅ genuinely blessed; cleanest quick win.
-3. **Live-verify + close #2427** (and re-confirm #2578) on `black-caverns-2` / Forest now that
-   maps compile.
+3. ✅ **#2578 / #2456 verified end-to-end** (PR #48) — done. **#2427 is open & unfixed** (not a
+   close): it needs a dedicated harness task (reliable land-player-on-platform + moving-platform
+   teardown) then a real fix. See §3 for the parked investigation + repro obstacles.
 4. **#2442 New HUD** — static-icon + spacing fixes (📎 re-read the thread first).
 5. **The fork in the road (owner's creative call):** either content ("feel like the show" — Gay
    Island integration, Hilda questline + quest-module refactor, revive Paintball) and/or **local
