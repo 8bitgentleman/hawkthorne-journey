@@ -28,6 +28,16 @@ Player.married = false
 Player.jumpFactor = 1
 Player.speedFactor = 1
 
+-- Buoyancy: while submerged in a 'buoyant' liquid the player floats — gravity is
+-- softened, the terminal sink speed is capped low, JUMP becomes a repeatable swim
+-- stroke that works without solid ground, and horizontal motion is damped like
+-- water resistance. All of this is gated on self.submerged, so it has zero effect
+-- on dry levels. Tune these three to taste (the underwater level is not yet
+-- reachable in normal play, so they were set by feel via the scenario harness).
+local BUOYANCY = 0.35          -- fraction of normal gravity applied while submerged
+local SUBMERGED_MAX_Y = 140    -- terminal sink speed underwater (vs game.max_y = 600)
+local SUBMERGED_STROKE = -300  -- upward impulse per swim stroke (vs -670 land jump)
+
 -- single 'character' object that handles all character switching, costumes and animation
 
 local player = nil
@@ -79,6 +89,7 @@ function Player.new(collider)
 
   plyr.max_oxygen = 20
   plyr.oxygen = plyr.max_oxygen
+  plyr.submerged = false
 
   plyr.jumpDamage = 3
   plyr.punchDamage = 1
@@ -137,6 +148,7 @@ function Player:refreshPlayer(collider)
 
   self.jumping = false
   self.liquid_drag = false
+  self.submerged = false
   self.flash = false
   self.actions = {}
 
@@ -512,15 +524,30 @@ function Player:update(dt, map)
     end
   end
 
+  -- Water resistance: damp horizontal speed while submerged so movement drifts
+  -- instead of running at full land speed.
+  if self.submerged then
+    self.velocity.x = self.velocity.x * (1 - 3 * dt)
+  end
+
   local jumped = self.events:poll('jump')
   local halfjumped = self.events:poll('halfjump')
 
   if jumped and not self.jumping and self:solid_ground()
-     and not self.rebounding and not self.liquid_drag and
+     and not self.rebounding and not self.liquid_drag and not self.submerged and
      self.current_state_set ~= "crawling" and
      self:canStand(map) then
     self.jumping = true
     self.velocity.y = -670 *self.jumpFactor
+    sound.playSfx( "jump" )
+    if player.isClimbing then
+      player.isClimbing:release(player)
+    end
+  elseif jumped and self.submerged and not self.rebounding
+     and self.velocity.y > -120 and self.current_state_set ~= "crawling" then
+    -- Buoyant swim stroke: a gentle upward push that needs no solid ground and
+    -- repeats once you've slowed, so tapping JUMP swims the player upward.
+    self.velocity.y = SUBMERGED_STROKE
     sound.playSfx( "jump" )
     if player.isClimbing then
       player.isClimbing:release(player)
@@ -543,13 +570,17 @@ function Player:update(dt, map)
   end
   
   if not self.footprint or self.jumping then
-    self.velocity.y = self.velocity.y + ((game.gravity * dt) / 2)
+    self.velocity.y = self.velocity.y + ((game.gravity * dt) / 2) * (self.submerged and BUOYANCY or 1)
   end
   self.since_solid_ground = self.since_solid_ground + dt
 
-  if self.velocity.y > game.max_y then
-    self.velocity.y = game.max_y
-    self.fall_damage = self.fall_damage + game.fall_dps * dt
+  local terminal = self.submerged and SUBMERGED_MAX_Y or game.max_y
+  if self.velocity.y > terminal then
+    self.velocity.y = terminal
+    -- No fall damage underwater — the low terminal speed is a float, not a plummet.
+    if not self.submerged then
+      self.fall_damage = self.fall_damage + game.fall_dps * dt
+    end
   end
   -- end sonic physics
   
@@ -571,7 +602,7 @@ function Player:update(dt, map)
   end
 
   if not self.footprint or self.jumping then
-    self.velocity.y = self.velocity.y + ((game.gravity * dt) / 2)
+    self.velocity.y = self.velocity.y + ((game.gravity * dt) / 2) * (self.submerged and BUOYANCY or 1)
   end
 
   --falling off the bottom of the map

@@ -50,7 +50,7 @@
  <objectgroup name="nodes" width="40" height="15">
   <object type="liquid" x="24" y="24" width="912" height="312">
    <properties>
-    <property name="drag" value="true"/>
+    <property name="buoyant" value="true"/>
     <property name="injure" value="10"/>
     <property name="injure_timer" value="3"/>
     <property name="mask" value="true"/>

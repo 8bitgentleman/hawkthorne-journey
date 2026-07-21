@@ -17,6 +17,8 @@
 -- 'injure_timer' ( number ) - Seconds between oxygen-drain ticks when 'injure' is a number
 -- 'drown' ( true / false ) - Player dies when his head is submersed in the liquid
 -- 'drag' ( true / false ) - Player is slowly dragged down by the liquid ( like quicksand )
+-- 'buoyant' ( true / false ) - Player floats: reduced gravity, low sink speed, repeatable
+--             swim-stroke jumps ( JUMP, no solid ground needed ), and damped horizontal motion
 -- 'speed' ( 0 => 1 ) - Speed at which the animation is played ( defaults to 0.2 )
 -- 'mode' ( 'loop', 'once' or 'bounce' ) - Mode to play the animation at ( defaults to loop )
 -- 'foreground' ( true / false ) - Render the sprites in front of the player ( defaults to true )
@@ -74,6 +76,7 @@ function Liquid.new(node, collider)
   liquid.injure_elapsed = 0
   liquid.drown = np.drown == 'true'
   liquid.drag = np.drag == 'true'
+  liquid.buoyant = np.buoyant == 'true'
   liquid.foreground = np.foreground ~= 'false'
   liquid.mask = np.mask == 'true'
   liquid.uniform = np.uniform == 'true'
@@ -106,7 +109,9 @@ function Liquid:collide(node, dt, mtv_x, mtv_y)
 
   -- mask the player outside the liquid
   if self.mask then player.stencil = self.stencil end
-  
+
+  if self.buoyant then player.submerged = true end
+
   if self.death then
     player:die()
     self.died = true
@@ -153,6 +158,8 @@ function Liquid:collide_end(node, dt, mtv_x, mtv_y)
 
   -- unmask
   if self.mask then player.stencil = nil end
+
+  if self.buoyant then player.submerged = false end
 
   if self.oxygen_drain then
     player:refillOxygen()
