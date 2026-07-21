@@ -346,7 +346,7 @@ legitimately lift old constraints — but deliberately, not by accident.*
    fall-through) and pinned: a crouch-attacking rider stays bound to the rising platform for the
    whole ascent — **0/N attached before the fix, N/N after** (`test_moving_platform_scenario.lua`).
    Harness gained `landOn`/`movingPlatforms` + moving-platform teardown (the two gaps §3 flagged).
-4. **#2442 New HUD** — ✅ thread verified (this session): the PR is **open/stalled, NOT rejected**
+4. ❌**#2442 New HUD** — thread verified (this session): the PR is **open/stalled, NOT rejected**
    (last activity Sept 2015). edisonout's fix-list, which the owner agreed with: swap flashing
    potion icons → static images, fix the saving-icon/weapon-ammo overlap, fix weapon-amount
    spacing. 2015 code won't apply to today's tree — treat as "reimplement the agreed fixes," not
@@ -452,11 +452,11 @@ Recon (`git diff` vs merge-base, this session) shows why:
 `01a15473` bone items, tile tweaks, foreground fixes · `5c81269a` black-caverns tileset + platforms.
 
 ### In-scope (blessed): port these hunks by hand onto a fresh `develop`-based branch
-1. **Forest-block HP-to-1** — the actual reason niamu blessed it. ⚠️ **NOT in `material.lua`.**
+1. ✅ **Forest-block HP-to-1** — the actual reason niamu blessed it. ⚠️ **NOT in `material.lua`.**
    Its `material.lua` hunk is a *sprite-override feature* (`node.properties.sprite/width/height`),
    not an HP change. **First job: find where block/rock HP actually lives** — likely a
    `src/nodes/materials/*.lua` file (e.g. `rock.lua`) or the tile `properties` in `forest.tmx`.
-2. **Black-caverns tileset + platform level work** (`5c81269a`) — verify it's still an improvement
+2.  ✅ **Black-caverns tileset + platform level work** (`5c81269a`) — verify it's still an improvement
    over current `develop` art before porting; it may be superseded.
 3. **Decide consciously** whether the `material.lua` sprite-override feature is wanted at all — it's
    a clean addition (develop's `material.lua` == the 2015 base, so it applies without conflict) but
@@ -491,14 +491,14 @@ landed; pure ARCHIVE.
 
 | Branch | Issue/PR | Thread state | Size vs develop | Category | Why + next action |
 |---|---|---|---|---|---|
-| **underwater2** | — (never PR'd) | no upstream thread | 144f/+2715 (core Lua small; `npc_old.lua` cruft) | **REVIVE** | Novel oxygen/suffocation + jellyfish/bubbles enemies + `forest-underwater.tmx`; **nothing equivalent on develop.** Next: reimplement the oxygen system in `player.lua`, port the 2 enemies + map, **modernize dead APIs** (`love.graphics.drawq`→`draw`+quads, `table.getn`→`#`), and re-check the dropped `self.dead` guard in `Player:hurt`. Verify via scenario harness. |
-| **santas-grotto** | — (never PR'd) | no upstream thread | 15f/+297 (2 PNGs + tmx) | **REVIVE** | Small, self-contained holiday side-room + `christmas-pterodactyl` boss using only `isBoss`/`vulnerabilities`/`tokenTypes` fields **today's `enemy.lua` already supports**. Cleanest low-risk win. Next: port enemy.lua + tmx verbatim, hand-add the door into current `winterwonderland.tmx`. |
+| **underwater2** | — (never PR'd) | no upstream thread | 144f/+2715 (core Lua small; `npc_old.lua` cruft) | ✅ **PORTED 2026-07-21** (`58a4857b`) | Oxygen/suffocation mechanic + jellyfish/bubbles enemies + `forest-underwater.tmx` reimplemented clean on develop (99 passed, lint clean). **Remaining follow-ups: (1) door entrance — level is unreachable until wired; (2) floaty/buoyancy movement.** See spec below for both. |
+| **santas-grotto** | — (never PR'd) | no upstream thread | 15f/+297 (2 PNGs + tmx) | **REVIVE** | Small, self-contained holiday side-room + `christmas-pterodactyl` boss. ✅ **Code-reviewed 2026-07-21.** Confirmed cleanest low-risk win; boss is written against **today's** `enemy.lua` API (verified field-for-field, lints clean). **Queued as the next port after `underwater2`.** Full spec below the table. |
 | **paintball** | #2481 | recoverable; owner had "almost all the code", accepted sfx; missing enemy art | 38f/+513 (core Lua compact) | **SALVAGE-PARTS** | Engine hooks are gold and **feed the NPCs-as-enemies pillar**: `npc.lua` `isNPC` marker, `enemy.lua` generic-conversion, `weapon.lua` trigger fix — small + clean, portable now as one PR. Full feature blocked only on missing art. ⚠️ its `rave-switch.lua` edit collides with teacher-lounge's `switch.lua` refactor — sequence them. |
 | **teacher-lounge** | #2530 | big content win, **4 open design Qs, must split into smaller PRs** | 106f/+2028 (Lua/tmx subset ~39f) | **SALVAGE-PARTS** | Real content (speakeasy, computer-wing quest, ~5 NPCs) but ships only if split per maintainer's own ask. `door.lua` `hiddenKey` prompt is clean/self-contained. ⚠️ `shopping.lua` hunk is buggy (dead `iamount`, empty `if` block); `switch.lua` refactor must reconcile with paintball first. Next: carve one room (e.g. speakeasy) as a standalone PR. |
 | **hippy_grab** | #2534 | real tester bugs (freeze/phantom-attack/blink); **no maintainer verdict — owner must weigh in** | 2f/+9 | **SALVAGE-PARTS** | `grab`/freeze mechanic is sound; **root-caused the freeze bug this session**: `collide_end` sets `player.freeze=false` but `player` is undefined there (param is `node`) → freeze never clears. Fix = `node.freeze=false` guarded by `node.isPlayer`. ⚠️ blink/phantom-attack reports aren't explained by this diff — needs a fuller pass + owner sign-off. |
 | **village-forest-maze** | — | no thread | 30f/+1347 | **SALVAGE-PARTS** | `village-labyrinth{,-2}.tmx` maps + `feral_woman` NPC + pickaxe/`Sword_of_Duquesne` are novel; but its `squirrel`/`tilda`/`fish_horizontal`/`breakable_block brokenBy` code is **already on develop, more mature**. Lift maps + new assets only; rewire onto develop's newer node code. |
 | **bomb** | — | no thread | 8f/+210 (2 PNGs) | **SALVAGE-PARTS** | Player-throwable bomb; `projectile.lua` hook is oddly near-clean vs today's tree and doesn't collide with existing enemy bombs. Reimplement `bomb_throwable`/`bomb_explosion` clean (strip debug `print()`s, fix `explosing` typo). Standalone combat variety, no pillar tie. |
-| **oxygen** | — | no thread | 5f/+134 (usable `oxygenbar.png`) | **SALVAGE-PARTS** | Earlier/thinner take on `underwater2`'s mechanic (develop's `drown` is still instant-death, so the gap is real). Code is WIP/buggy (commented-out `oxygenBar`, debug print, malformed `if/elseif`). **Prefer underwater2's fuller version; salvage `oxygenbar.png` + the `Player:suffocate()` shape.** |
+| **oxygen** | — | no thread | 5f/+134 | ~~SALVAGE-PARTS~~ **DELETED 2026-07-21** (`1dc7f43a`) | ✅ Reviewed: strict subset of `underwater2` — **identical** `oxygenbar.png` blob, smaller/buggier mechanic. Deleted. Its one useful detail (correct bar-frame math) folded into the underwater2 spec below. |
 | **npc-gravity** | — | no thread | 1f/+31 | **SALVAGE-PARTS** | **Feeds the NPCs-as-enemies pillar** (gravity-affected NPCs). But it's a sketch: adds `game.gravity` accumulation + `floor/ceiling_pushback` yet **never calls `collision.move`**, so NPCs fall through floors. Re-derive against `enemy.lua:503`'s terrain-resolution pattern — take the intent, not the code. |
 | **hammer** | — | no thread | 3f/+25 (unused PNG) | **SALVAGE-PARTS** | Damage-dealing "injure" trap platform — no equivalent on develop. Patch is **stale vs the #2427 fix**: `MovingPlatform:collide` signature changed, so reimplement the `injure` flag against `:collide(node)`. Generic hazard, low priority. |
 | **moneymoneymoney** | — | no thread | 30f/+222 (3 token PNGs) | **SALVAGE-PARTS** | Tiered currency (`gold`/`greaterCoin`/`jewel`) + difficulty-scaled loot — develop's `tokens/` has only coin/health, so unclaimed. Concept + token art are salvageable; the drop-weight formula is half-baked WIP ("begin dependent drops", debug prints). Reimplement the concept, not the math. |
@@ -519,7 +519,127 @@ landed; pure ARCHIVE.
 | **love10** | — | — | ahead=0 (ancestor) | **ARCHIVE** | Fully contained in develop; nothing unique. |
 | **showHide** | — | — | ahead=0 (ancestor) | **ARCHIVE** | Fully contained in develop; nothing unique. |
 
-**Tally:** REVIVE 2 · SALVAGE-PARTS 11 · ARCHIVE 14 (27 total).
+**Tally (original triage):** REVIVE 2 · SALVAGE-PARTS 11 · ARCHIVE 14 (27 total).
+**Post-cleanup:** 9 branches deleted from origin (8 ARCHIVE on 2026-07-21 + `oxygen`, reclassified
+from SALVAGE to delete-after-review). `oxygen` folded into the `underwater2` spec.
+
+### ⚓ underwater2 revive spec — ✅ PORTED 2026-07-21 (`58a4857b`)
+**Status:** the oxygen-hazard mechanic + content are now on develop (Sonnet subagent port,
+reviewed + fixed in the main session; 99 passed, lint clean). What shipped, what was caught in
+review, and what remains:
+
+**Shipped:** oxygen meter (`max_oxygen=20`) + `Player:suffocate()`; HUD oxygen bar (21-frame,
+next to health); `liquid.lua` numeric-`injure`+`injure_timer` oxygen-drain path (via a proper `dt`
+accumulator — the branch wrongly spawned a fresh `Timer.add` every collide frame); `bubbles` +
+`jellyfish-blueberry` + `jellyfish-strawberry` enemies; `healing_floor` (air pocket) +
+`killing_floor_underwater`; `forest-underwater.tmx` + `underwater.png` tileset. All 5 landmines
+below were avoided. `CHANGELOG.md` updated.
+
+**⚠️ Bug caught in review (don't reintroduce):** the port initially set `self.rebounding = true`
+in `suffocate()`. `rebounding` gates OUT horizontal-move + jump input (player.lua ~463/485/519+),
+so every oxygen tick froze the player's controls for 1.5s → underwater is half-unplayable. Fixed
+to `false` (suffocation is passive damage, not a knockback). The branch had this right; the port
+flipped it.
+
+**Remaining follow-ups (NOT done):**
+1. **Door entrance** — no door wires into `forest-underwater`, so it's unreachable in normal play
+   and invisible to `test_maps.lua`'s door walk. Hand-add a door (e.g. into `forest.tmx`) to make
+   it reachable. Until then it was verified only via a throwaway scenario load.
+2. **Floaty/buoyancy movement** — deliberately NOT implemented (owner's "floaty movement, no new
+   art" call). This is the new-physics part; do it in `Player:update`/liquid handlers, harness-
+   verified. See original findings below.
+
+--- original findings + design decision (kept for reference) ---
+
+Firsthand code review of `underwater2` **and** `oxygen` this session. Findings + owner decisions:
+
+**The sprite question is moot.** Neither branch adds swim sprites — **neither implements
+swimming.** Water is an *oxygen-drain hazard zone*: normal platforming sprites, a second bar
+(oxygen) drains while submerged, zero = death. `player.lua` has **no movement/gravity edits** in
+either branch. So "we have no swim sprites" never blocked this.
+
+**Owner's chosen feel: "floaty movement, no new art."** The revive should go one step past the
+branches: **in water, reduce gravity / add buoyancy** so movement reads as aquatic, still using
+existing sprites. This is new engine work (not in either branch) — do it in `Player:update`/the
+liquid `collide`/`collide_end` handlers (a `player.liquid_drag`-style flag already exists in
+`liquid.lua`), verified through the scenario harness.
+
+**Base = `underwater2`** (has all the content); `oxygen` is deleted (was a strict subset).
+- **Port (reimplement clean on develop, don't cherry-pick):** `forest-underwater.tmx`,
+  `underwater.png` tileset, the 2 jellyfish + `bubbles` enemies (they use `vulnerabilities` etc.
+  that today's `enemy.lua` already supports), `healing_floor`/`killing_floor_underwater` nodes,
+  the `Player:suffocate()` + oxygen-refill shape, and `liquid.lua`'s `injure`+`injure_timer`
+  oxygen wiring.
+- **Bar rendering — take oxygen's math, not underwater2's:** the shared `oxygenbar.png` is a
+  **21-frame** strip. `oxygen` correctly used `max_oxygen=20` + a 21-quad loop; `underwater2`
+  wrongly set `max_oxygen=100` but looped only **6** quads (mis-indexes its own art). Use the
+  21-frame alignment. **Better still: draw it in `hud.lua` next to the health bar** (the oxygen
+  branch started moving it there but left it commented-out) instead of the janky above-the-head
+  blit both branches ship.
+- **⛔ Do NOT carry these underwater2 regressions:** the dropped `self.dead` guard in
+  `Player:hurt` (lets you damage a corpse); the `saveData` hunk that drops
+  `characterName`/`costumeName` persistence; the debug `love.graphics.print`; deprecated
+  `love.graphics.drawq`/`table.getn` (→ `draw`+quads / `#`); and the dead `player_new.lua` /
+  `npc_old.lua` files.
+
+### 🎄 santas-grotto revive spec (code-reviewed 2026-07-21) — NEXT PORT after underwater2
+Firsthand read of `origin/santas-grotto` this session. It's the cleanest revive in the triage:
+a small self-contained holiday side-room + a boss written against **today's** `enemy.lua` API.
+
+**Owner's creative direction:** the `christmas-pterodactyl` should play like **the bird boss in
+Super Mario Land 2** — a flying boss with a telegraphed swooping dive-attack pattern (fly across,
+then dive at the player), not just drifting around. Use this as the target when reworking the
+boss's `attack`/`update` behavior; the branch's version is functional but plain.
+
+**What's genuinely new (port these):**
+- `src/maps/santas-grotto.tmx` — 840×336 (~35×14 @ 24px) side-room. `soundtrack=winter` (exists).
+  References its own new tileset `santas-grotto.png` (288×360) + existing `castle-hawkthorne` /
+  `collisions` tilesets (dimensions match develop, GIDs resolve).
+- `src/nodes/enemies/christmas-pterodactyl.lua` (102 lines) — ✅ verified field-for-field against
+  **current** `enemy.lua`: `isBoss`, `hp=50`, `damage=10`, `vulnerabilities={'blunt'}`,
+  `antigravity`, `tokens`/`tokenTypes`, anim8-format `animations`, `enter`/`attack`/`update`/
+  `floor_pushback` hooks — all still live. Lints clean. Sprite sheet `christmas-pterodactyl.png`
+  (480×96 = 5×2 grid of 96×48) matches its own frame refs exactly.
+- Referenced decorative sprites in `src/images/sprites/winter/`: `toy1.png`, `christmas_box_1.png`,
+  `christmas_box_2_open.png`, `christmas_box_3.png`, `christmas_box_4.png` (all 24×24).
+
+**Entrance wiring (hand-add, don't merge the raw diff):** the branch's 148-line
+`winterwonderland.tmx` diff is **almost all mechanical GID-shift churn** from the tileset growing
+one row — NOT a reversion of newer develop work (verified: 62→63 objects, otherwise byte-identical).
+The only real changes to reproduce by hand on current develop:
+  1. One new door object in `winterwonderland.tmx`:
+     `<object name="grotto" type="door" x="3398" y="526" width="47" height="72">` with
+     `level=santas-grotto`, `to=main`. (The grotto's own `main` door returns to `winterwonderland`/
+     `grotto` — bidirectional wiring is correct.)
+  2. One appended tile row (20 tiles) on `src/images/tilesets/winter-wonderland.png`
+     (480×552 → 480×576) — the visible entrance. Needs a human art eyeball.
+
+**Cleanup / decisions on reimplement:**
+- **Drop 4 dead assets** unless finishing the interaction: `christmas_box_{1,3,4}_open.png` +
+  `christmas_box_2.png` are shipped-but-**unreferenced**. They imply an "open the present"
+  interaction that was never built (`sprite.lua` is purely static, no toggle logic). Either drop
+  them or build the toggle — owner's call.
+- Fix one indentation slip + `if(` spacing in the boss's `update()`; remove a dead
+  `--bb_offset` comment.
+- **No boss HP bar:** unlike `turkeyBoss`/`acornBoss`, this boss has no custom `draw`/boss-HUD.
+  Optional polish for visual parity — pairs naturally with the SML2-style rework above.
+- **Two visual unknowns diffs can't resolve:** the new winter-wonderland tileset row art and the
+  pterodactyl frame art — eyeball both in-game before calling it done.
+
+### 🗑️ Deleted from origin (2026-07-21) — first ARCHIVE cleanup pass
+8 ARCHIVE branches removed from the fork. Recorded tip SHAs below so GitHub's reflog can restore
+any of them if ever needed:
+- **Ancestors of develop** (ahead=0, work fully landed, zero-risk): `love10` (`9dfa9bed`),
+  `showHide` (`04ee9e8b`), `fix-neil` (`e0417e63`), `LoubiTek-acorn` (`3de3b26c`).
+- **Superseded / dead** (had unique commits but ARCHIVE per triage): `blacksmith_burned`
+  (`c2694c7a`, +7), `castle-hawkthorne-tower` (`7c8c3f0f`, +2), `multi-map` (`457e3942`, +5),
+  `VoLBrews` (`0aa8161b`, +2).
+- **`oxygen`** (`1dc7f43a`) — deleted after firsthand code review (2026-07-21) confirmed it is a
+  **strict subset of `underwater2`**: its `oxygenbar.png` is the **byte-identical blob**
+  (`a8a715e0`) that `underwater2` also ships, and its `player.lua`/`liquid.lua` are a smaller,
+  buggier version of the same mechanic (its `liquid.lua` even has a mangled `elseif` with a
+  stray inline `if`). Nothing unique to salvage — see the `underwater2` note in §12 for the one
+  detail worth carrying (its bar math is the *correct* one for the shared art).
 
 ### ⭐ Top-2 REVIVE candidates — owner picks the next one
 1. **`santas-grotto` — lowest-risk win.** One self-contained PR: a holiday side-room + boss that
