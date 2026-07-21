@@ -335,5 +335,11 @@
     <property name="enemytype" value="penguin"/>
    </properties>
   </object>
+  <object name="grotto" type="door" x="3398" y="526" width="47" height="72">
+   <properties>
+    <property name="level" value="santas-grotto"/>
+    <property name="to" value="main"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

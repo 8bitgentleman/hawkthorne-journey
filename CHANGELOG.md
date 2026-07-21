@@ -27,6 +27,19 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   - **`killing_floor_underwater`** — an underwater variant of `killing_floor` for bottom hazards.
   - New assets: `underwater.png` tileset, jellyfish/bubbles sprites, HUD `oxygenbar.png`, and the
     `jellyfish_die.ogg` sound.
+- **Santa's Grotto** — ported from the `santas-grotto` branch. A self-contained holiday
+  side-room, reachable through a new `grotto` door in Winter Wonderland, housing the
+  `christmas-pterodactyl` boss. The boss was reworked to the swooping bird boss from *Super
+  Mario Land 2*: it cruises the ceiling, telegraphs above the player, then commits a fast dive
+  at where the player was standing (a late sideways dodge beats it), bottoming out just above
+  the floor before climbing back. 50 HP, vulnerable to blunt attacks. New `santas-grotto.tmx`
+  map, `santas-grotto.png` tileset, and winter decoration sprites (toy + present boxes). The
+  visible entrance-tile art for the Winter Wonderland door is a pending art follow-up; the door
+  is functional (an invisible trigger) without it.
+
+### Internal
+- Add `test_christmas_pterodactyl.lua` — pins the boss's dive FSM (patrol → telegraph → dive →
+  recover) by driving the enemy prop table directly with fake enemy/player tables, no Level needed.
 
 ## [1.1.3] - 2026-07-20
 
