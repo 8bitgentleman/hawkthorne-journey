@@ -350,7 +350,7 @@ legitimately lift old constraints — but deliberately, not by accident.*
    (last activity Sept 2015). edisonout's fix-list, which the owner agreed with: swap flashing
    potion icons → static images, fix the saving-icon/weapon-ammo overlap, fix weapon-amount
    spacing. 2015 code won't apply to today's tree — treat as "reimplement the agreed fixes," not
-   "revive the branch."
+   "revive the branch." - this is mostly visual and we should skip
 5. **The fork in the road (owner's creative call):** either content ("feel like the show" — Gay
    Island integration, Hilda questline + quest-module refactor, revive Paintball) and/or **local
    co-op Spike A**. First decide consciously whether to keep or lift "consolidate, don't expand."
@@ -466,6 +466,83 @@ Recon (`git diff` vs merge-base, this session) shows why:
 ### Verify each ported hunk
 `make test` (baseline **98 passed**) after each change; `make run` and walk the affected level
 (forest / black-caverns) to eye-check. Lint touched `.lua`. One PR into `develop` when green.
+
+---
+
+## 12. Stranded-branch triage — ✅ ALL 27 READ THIS SESSION (code-first)
+
+**Method used** (per the §0 / #2491 rules): read every branch's `git diff develop...origin/<b>`
+and commit log against today's `develop` (`084cfdb2`). **No branch was merged, rebased, or
+cherry-picked** — this is a reading pass. Category = what to do with the *idea*, not the branch:
+- **REVIVE** = idea still relevant, no equivalent on develop, not rejected → **reimplement the
+  vetted hunks on develop** (never merge the 2015 branch).
+- **SALVAGE-PARTS** = branch itself is dead/stale, but a specific asset or hunk is worth lifting.
+- **ARCHIVE** = superseded, already-landed, rejected, trivial, or broken → leave it; delete-safe.
+
+**Key divergence fact that shaped this:** upstream barely moved after 2016, so the 2016 branches
+(`teacher-lounge`, `santas-grotto`, `piZero`, `mobile`) are only ~50–63 commits behind develop and
+port far more cleanly than the 2014 branches (900–1325 behind). Four branches (`LoubiTek-acorn`,
+`fix-neil`, `love10`, `showHide`) are **ancestors of develop** (`ahead=0`) — their work already
+landed; pure ARCHIVE.
+
+> ⚠️ Recurring red flag across these branches: leftover `print()` debug lines, WIP typos
+> (`explosing`, `if x = true`), and half-baked formulas. None are copy-paste-ready — every
+> "SALVAGE"/"REVIVE" item is *reimplement the hunk clean*, not *apply the patch*.
+
+| Branch | Issue/PR | Thread state | Size vs develop | Category | Why + next action |
+|---|---|---|---|---|---|
+| **underwater2** | — (never PR'd) | no upstream thread | 144f/+2715 (core Lua small; `npc_old.lua` cruft) | **REVIVE** | Novel oxygen/suffocation + jellyfish/bubbles enemies + `forest-underwater.tmx`; **nothing equivalent on develop.** Next: reimplement the oxygen system in `player.lua`, port the 2 enemies + map, **modernize dead APIs** (`love.graphics.drawq`→`draw`+quads, `table.getn`→`#`), and re-check the dropped `self.dead` guard in `Player:hurt`. Verify via scenario harness. |
+| **santas-grotto** | — (never PR'd) | no upstream thread | 15f/+297 (2 PNGs + tmx) | **REVIVE** | Small, self-contained holiday side-room + `christmas-pterodactyl` boss using only `isBoss`/`vulnerabilities`/`tokenTypes` fields **today's `enemy.lua` already supports**. Cleanest low-risk win. Next: port enemy.lua + tmx verbatim, hand-add the door into current `winterwonderland.tmx`. |
+| **paintball** | #2481 | recoverable; owner had "almost all the code", accepted sfx; missing enemy art | 38f/+513 (core Lua compact) | **SALVAGE-PARTS** | Engine hooks are gold and **feed the NPCs-as-enemies pillar**: `npc.lua` `isNPC` marker, `enemy.lua` generic-conversion, `weapon.lua` trigger fix — small + clean, portable now as one PR. Full feature blocked only on missing art. ⚠️ its `rave-switch.lua` edit collides with teacher-lounge's `switch.lua` refactor — sequence them. |
+| **teacher-lounge** | #2530 | big content win, **4 open design Qs, must split into smaller PRs** | 106f/+2028 (Lua/tmx subset ~39f) | **SALVAGE-PARTS** | Real content (speakeasy, computer-wing quest, ~5 NPCs) but ships only if split per maintainer's own ask. `door.lua` `hiddenKey` prompt is clean/self-contained. ⚠️ `shopping.lua` hunk is buggy (dead `iamount`, empty `if` block); `switch.lua` refactor must reconcile with paintball first. Next: carve one room (e.g. speakeasy) as a standalone PR. |
+| **hippy_grab** | #2534 | real tester bugs (freeze/phantom-attack/blink); **no maintainer verdict — owner must weigh in** | 2f/+9 | **SALVAGE-PARTS** | `grab`/freeze mechanic is sound; **root-caused the freeze bug this session**: `collide_end` sets `player.freeze=false` but `player` is undefined there (param is `node`) → freeze never clears. Fix = `node.freeze=false` guarded by `node.isPlayer`. ⚠️ blink/phantom-attack reports aren't explained by this diff — needs a fuller pass + owner sign-off. |
+| **village-forest-maze** | — | no thread | 30f/+1347 | **SALVAGE-PARTS** | `village-labyrinth{,-2}.tmx` maps + `feral_woman` NPC + pickaxe/`Sword_of_Duquesne` are novel; but its `squirrel`/`tilda`/`fish_horizontal`/`breakable_block brokenBy` code is **already on develop, more mature**. Lift maps + new assets only; rewire onto develop's newer node code. |
+| **bomb** | — | no thread | 8f/+210 (2 PNGs) | **SALVAGE-PARTS** | Player-throwable bomb; `projectile.lua` hook is oddly near-clean vs today's tree and doesn't collide with existing enemy bombs. Reimplement `bomb_throwable`/`bomb_explosion` clean (strip debug `print()`s, fix `explosing` typo). Standalone combat variety, no pillar tie. |
+| **oxygen** | — | no thread | 5f/+134 (usable `oxygenbar.png`) | **SALVAGE-PARTS** | Earlier/thinner take on `underwater2`'s mechanic (develop's `drown` is still instant-death, so the gap is real). Code is WIP/buggy (commented-out `oxygenBar`, debug print, malformed `if/elseif`). **Prefer underwater2's fuller version; salvage `oxygenbar.png` + the `Player:suffocate()` shape.** |
+| **npc-gravity** | — | no thread | 1f/+31 | **SALVAGE-PARTS** | **Feeds the NPCs-as-enemies pillar** (gravity-affected NPCs). But it's a sketch: adds `game.gravity` accumulation + `floor/ceiling_pushback` yet **never calls `collision.move`**, so NPCs fall through floors. Re-derive against `enemy.lua:503`'s terrain-resolution pattern — take the intent, not the code. |
+| **hammer** | — | no thread | 3f/+25 (unused PNG) | **SALVAGE-PARTS** | Damage-dealing "injure" trap platform — no equivalent on develop. Patch is **stale vs the #2427 fix**: `MovingPlatform:collide` signature changed, so reimplement the `injure` flag against `:collide(node)`. Generic hazard, low priority. |
+| **moneymoneymoney** | — | no thread | 30f/+222 (3 token PNGs) | **SALVAGE-PARTS** | Tiered currency (`gold`/`greaterCoin`/`jewel`) + difficulty-scaled loot — develop's `tokens/` has only coin/health, so unclaimed. Concept + token art are salvageable; the drop-weight formula is half-baked WIP ("begin dependent drops", debug prints). Reimplement the concept, not the math. |
+| **newcastletileset** | — | no thread | 7f/+49 (1 tileset PNG) | **SALVAGE-PARTS** | Larger `castle-hawkthorne.png` tileset (36KB vs 18KB). develop's tileset evolved on a separate lineage since 2014 — **not clearly better or worse.** Cheap to evaluate: needs a **human visual side-by-side** before adopting. Low risk/low effort. |
+| **leaderboard** | — | no thread | 4f/+283 | **SALVAGE-PARTS** | Only the `deaths`/`time` stat sliver + `Player:round()` in `player.lua` is usable (develop tracks neither). The highscore UI is **verbatim code from another game ("Mr. Rescue")** referencing globals this codebase lacks — unrunnable, not a port target. Take the stats, drop the UI. |
+| **caveblocks** | #2491 | ✅ blessed (level+HP), outlines vetoed | 68f/+315 | **ARCHIVE** | ✅ **Already harvested** — forest boulder HP 3→1 landed on develop (`19c97d9b`, see §11). Art reverts + hand-painted outlines correctly rejected. Nothing left. |
+| **blacksmith_burned** | #2153 (merged) | landed upstream years ago | 17f/+404 | **ARCHIVE** | **Already shipped on develop, strictly better** (merged `#2153` + hardening `#2178/#2217/#2340/#2479`). develop adds real `collision.remove_tile`, scoped door removal, `trigger`/`isBuilding` wiring this branch lacks. Nothing to port. |
+| **castle-hawkthorne-tower** | — | no thread | 702f/+8752/-17463 | **ARCHIVE** | Overworld animation flourishes (clouds/sparkles/wheelchair/water) **already on develop** in mature `state:` form; also deletes NPCs + the (already-removed) mixpanel stack. Author's own follow-up commit: "no real improvement." Superseded in full. |
+| **multi-map** | — | no thread | 136f/+2017 | **ARCHIVE** | Strictly-worse, less-complete fork of `underwater2` + a dead unreferenced `player_new.lua` (1036 lines) + an unclear-purpose `multi.tmx` with no networking code. Look at underwater2 instead. |
+| **VoLBrews** | — | no thread | 2f/+53 | **ARCHIVE** | Cauldron side-room — but `cauldron.lua` + a cauldron object **already shipped on develop** directly in `valley-tacotown.tmx`. Superseded; room was unfinished per author. |
+| **notes-inventory** | — | no thread | 1f/+37 | **ARCHIVE** | Never ran — `if info.note = true` is a syntax error (assignment) + undefined `material` ref from first commit; 2nd commit literally titled "I broke everything, whoops." Only the concept survives, no code. |
+| **acorn_flame** | #2535 | author called it a **discussion prompt**, "no consensus" | 3f/+108 | **ARCHIVE** | Clean tiny `continousRage` enemy flag, but author frames it as an unresolved design question, not a feature. Reviving = **resolve the design first**, then a trivial reimplement. Not shippable as-is. |
+| **minimal-hud-redesign** | ~#2442 | New-HUD class of work — **owner already decided SKIP** (§8.4, "mostly visual") | 41f/+1526 | **ARCHIVE** | Ground-up `hud.lua` rewrite belonging to the New-HUD initiative the owner passed on. Nothing to lift. |
+| **mobile** | (upstream #47) | no fork thread | 5f/+158 | **ARCHIVE** | Touch-control prototype, but **no mobile build target exists** (Makefile is desktop-only); reviving = standing up a whole platform target. Also has debug prints + a stray `update.lua` `welcome`→`town` regression. |
+| **piZero** | — | no thread | 1f/-6 | **ARCHIVE** | Hardcodes always-fullscreen for a Raspberry Pi kiosk by **deleting the windowed toggle** — a regression for everyone else. If kiosk support is ever wanted, make it a config flag, not this. |
+| **LoubiTek-acorn** | — | — | ahead=0 (ancestor) | **ARCHIVE** | Fully contained in develop; nothing unique. |
+| **fix-neil** | — | — | ahead=0 (ancestor) | **ARCHIVE** | Fully contained in develop; nothing unique. |
+| **love10** | — | — | ahead=0 (ancestor) | **ARCHIVE** | Fully contained in develop; nothing unique. |
+| **showHide** | — | — | ahead=0 (ancestor) | **ARCHIVE** | Fully contained in develop; nothing unique. |
+
+**Tally:** REVIVE 2 · SALVAGE-PARTS 11 · ARCHIVE 14 (27 total).
+
+### ⭐ Top-2 REVIVE candidates — owner picks the next one
+1. **`santas-grotto` — lowest-risk win.** One self-contained PR: a holiday side-room + boss that
+   maps onto today's `enemy.lua` *verbatim* (only shared touch is one door in `winterwonderland.tmx`).
+   No cross-branch conflicts, no dead APIs. Ships in an afternoon; good momentum-builder / warm-up
+   for the scenario-harness-verified revive loop. Downside: seasonal side content, not core.
+2. **`underwater2` — highest novel-gameplay value.** A whole breathing/suffocation system + two
+   underwater enemies + a new level, with **no equivalent anywhere on develop.** More work:
+   reimplement the oxygen loop in `player.lua`, modernize `drawq`/`table.getn` to 11.5/5.4, verify
+   the `Player:hurt` `self.dead` guard, and drive it through the scenario harness. Supersedes the
+   thinner `oxygen` branch (salvage its `oxygenbar.png` into this).
+
+**Strategic wildcard (not a clean "revive" but worth the owner's eye):** **`paintball` (#2481)**
+engine hooks — the `npc.lua isNPC` marker + `enemy.lua` generic-NPC-conversion are the exact
+groundwork the accepted **"NPCs-as-enemies"** pillar needs (blacksmith repercussions, the Cornelius
+heel-turn, and Paintball itself all sit on it). Small, clean, portable now as one PR — higher
+leverage than either revive above if the owner wants to invest in the pillar rather than ship a room.
+Build once, reuse thrice. (Sequence it *before* teacher-lounge — they collide on `rave-switch.lua`.)
+
+**Note on thread verification:** the two REVIVE candidates were **never submitted upstream** (no PR,
+no maintainer thread), so there's no verdict to honor or fear — a plus under the owner's own-fork
+workflow, but also no external validation. The PR'd branches' thread states (#2481/#2530/#2534/#2535)
+are carried from the firsthand reads in §4/§5/§8; re-read the HTML page before acting if in doubt.
 
 ---
 
