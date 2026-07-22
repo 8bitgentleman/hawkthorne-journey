@@ -25,6 +25,20 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   The scenario harness's `spawn2` now delegates to `Level:spawnCoopPlayer`, so the existing
   two-player tests exercise the production build path; new `test_coop.lua` pins device ownership,
   join/drop, event routing, and the restart-rebuild.
+- **Teacher-lounge questline** — second slice of the teacher-lounge expansion (PR #2530),
+  ported forward to LÖVE 11.5. Wires the interconnected questline into the campus: the
+  administration hallway now has a door to the bursar's office (connecting slice one's shop to
+  the world), and the exterior/quad lead into a new teacher's lounge, lounge bathroom, three
+  computer-wing rooms, Russell Borchert's secret lab, and the reopened Borchert pool. Adds the
+  **Borchert**, **Raquel** (his emotion-processing computer), **Officer Cackowski**, and
+  **Pierce hologram** NPCs; the **flashlight** and **rope** key items; and the trigger
+  infrastructure the questline runs on — save-flag-gated `sprite`/`movingplatform` sprites (e.g.
+  the exterior airplane banner that appears after buying the airplane improvement) and the
+  City College mascot goat that stays hidden until the mascot heist is funded. Bugs fixed in the
+  port: Raquel's "paintball" topic only bumped her side of the affection counter (not the
+  player's, which drives the marriage threshold) so it never counted; and the revealed-but-locked
+  hidden-door prompt was dead code (guarded by a `hiddable` typo) — the lounge vending-machine
+  door now explains it still needs the rope instead of silently refusing.
 - **Greendale bursar & campus-improvements shop** — first slice of the teacher-lounge
   expansion (PR #2530), ported forward to LÖVE 11.5. Adds a `bursar` NPC and a new
   `improvements` category to the shop system: the bursar sells one-off campus upgrades

@@ -41,6 +41,7 @@ local gs = require 'vendor/gamestate'
 local sound = require 'vendor/TEsound'
 local options = require 'options'
 local utils = require 'utils'
+local app = require 'app'
 
 local MovingPlatform = {}
 MovingPlatform.__index = MovingPlatform
@@ -78,7 +79,13 @@ function MovingPlatform.new(node, collider, level)
   mp.sfx = node.properties.sfx and node.properties.sfx or nil
   mp.allowed_offscreen = node.properties.offscreen == 'true'
   mp.chain = tonumber(node.properties.chain) or 1
-  
+  -- swap in an alternate platform sprite once a save flag is set (e.g. the
+  -- exterior airplane changing banner after buying the airplane improvement)
+  mp.db = app.gamesaves:active()
+  mp.spriteTrigger = node.properties.spriteTrigger or nil
+  if mp.spriteTrigger and mp.db:get(mp.spriteTrigger, false) then
+    mp.sprite = love.graphics.newImage( node.properties.sprite2 )
+  end
   if node.properties.animation then
     local p = node.properties
     mp.anim_speed = p.anim_speed and tonumber(p.anim_speed) or 0.20

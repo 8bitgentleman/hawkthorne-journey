@@ -33,6 +33,12 @@ return {
     },
   },
   enter = function( enemy )
+    -- The City College mascot goat stays hidden in the exterior until the
+    -- player buys the mascot-heist improvement from the bursar.
+    local hidden = enemy.db:get('mascot', false)
+    if enemy.containerLevel.name == 'greendale-exterior' and hidden ~= true then
+      enemy.state = 'hidden'
+    end
     enemy.direction = math.random(2) == 1 and 'left' or 'right'
     enemy.maxx = enemy.position.x + math.random(48,60)
     enemy.minx = enemy.position.x - math.random(48,60)

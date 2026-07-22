@@ -75,6 +75,9 @@ function Door.new(node, collider, level)
     door.movetime = node.properties.movetime and tonumber(node.properties.movetime) or 1
     door.obstruct = node.properties.obstruct or false
     door.show_sfx = node.properties.show_sfx or 'reveal'
+    -- used if a hidden door still needs a key after being revealed
+    -- (e.g. the rope in the teacher's-lounge bathroom)
+    door.hiddenKey = node.properties.hiddenKey or false
     --used if the closed door should obstruct the player's movement
     if door.obstruct and not door.open then
       -- used for collision detection
@@ -105,6 +108,26 @@ function Door.new(node, collider, level)
   return door
 end
 
+-- Freeze the player and show a "you need <key>" prompt. Used by the hidden-key
+-- paths below: a revealed-but-still-locked door (e.g. the lounge vending machine
+-- that needs the rope) explains itself instead of silently refusing.
+local function showNeedKeyPrompt(self, player)
+  local message
+  if self.closedinfo then
+    message = {self.closedinfo}
+  elseif self.info then
+    message = {self.info}
+  else
+    message = {'You need a "'..self.key..'" key to open this door.'}
+  end
+  player.freeze = true
+  local callback = function(result)
+    self.prompt = nil
+    player.freeze = false
+  end
+  self.prompt = Prompt.new(message, callback, {'Exit'})
+end
+
 function Door:switch(player)
   local _, _, _, wy2  = self.bb:bbox()
   local _, _, _, py2 = player.bottom_bb:bbox()
@@ -119,6 +142,12 @@ function Door:switch(player)
   end
 
   if not self.key or (player.inventory:hasKey(self.key) and not self.inventory) or self.open then
+    -- A revealed hidden door can still require a key (hiddenKey): don't let the
+    -- player through on the `self.open` branch without it.
+    if self.hiddenKey and self.key and not player.inventory:hasKey(self.key) then
+      showNeedKeyPrompt(self, player)
+      return
+    end
     if self.sound ~= false and not self.instant then
       sound.playSfx( ( type(self.sound) ~= 'boolean' ) and self.sound or 'unlocked' )
     end
@@ -162,7 +191,13 @@ end
 
 function Door:keypressed( button, player)
   if player.freeze or player.dead then return end
-  if self.hideable and self.hidden and not self.inventory then 
+  -- Revealed-but-key-locked door: explain the requirement on interact.
+  -- (Upstream guarded this with a `hiddable` typo, so it never ran.)
+  if self.hideable and self.open and self.hiddenKey and self.key and not player.inventory:hasKey(self.key) then
+    showNeedKeyPrompt(self, player)
+    return
+  end
+  if self.hideable and self.hidden and not self.inventory then
     if self.obstruct then
       if not player.inventory:hasKey(self.key) and self.info then
         message = {self.info}
