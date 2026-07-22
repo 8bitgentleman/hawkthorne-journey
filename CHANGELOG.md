@@ -25,6 +25,12 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   The scenario harness's `spawn2` now delegates to `Level:spawnCoopPlayer`, so the existing
   two-player tests exercise the production build path; new `test_coop.lua` pins device ownership,
   join/drop, event routing, and the restart-rebuild.
+- **Greendale speakeasy** — final slice of the teacher-lounge expansion (PR #2530), ported
+  forward to LÖVE 11.5. Adds a hidden speakeasy reachable through Sophie's room (`sophieb`,
+  rebuilt to house the entrance and Shirley's Sandwiches): a new `greendale-speakeasy` map with a
+  house band and a `switch` node (a generic interact-to-toggle-a-save-flag node), plus the
+  `todd-sandwich` NPC running the "special" behind the sandwich curtain. Removes the orphaned
+  `rave-switch` node (a dead file with no map or code references).
 - **Teacher-lounge questline** — second slice of the teacher-lounge expansion (PR #2530),
   ported forward to LÖVE 11.5. Wires the interconnected questline into the campus: the
   administration hallway now has a door to the bursar's office (connecting slice one's shop to
@@ -74,6 +80,10 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   map, `santas-grotto.png` tileset, and winter decoration sprites (toy + present boxes). The
   visible entrance-tile art for the Winter Wonderland door is a pending art follow-up; the door
   is functional (an invisible trigger) without it.
+
+### Changed
+- The `sophieb` room was widened and redrawn to add the speakeasy entrance and the Shirley's
+  Sandwiches storefront (part of PR #2530).
 
 ### Fixed
 - Several `Player` methods (jump/swim ladder-release, `die`, and `refreshPlayer`'s holdable
