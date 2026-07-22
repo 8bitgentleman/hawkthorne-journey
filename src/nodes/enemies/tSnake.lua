@@ -79,8 +79,6 @@ return {
   end,
 
   die = function( enemy, player )
-    local Player = require 'player'
-    local player = Player.factory()
     local NodeClass = require('nodes/key')
     local node = {
       type = 'key',

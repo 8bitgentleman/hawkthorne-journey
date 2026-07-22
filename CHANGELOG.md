@@ -67,6 +67,14 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   exact old framing point, so the camera math is byte-identical (parity test added); with two
   players the shared view sits at their midpoint. `camera.lua` is untouched; true zoom-to-fit
   and a separation leash are deferred (they conflict with the fixed-scale centering/clamp math).
+- Target bosses at the nearest living player instead of the singleton (co-op spike Phase 4a):
+  new `Level:nearestLivingPlayer(pos)` (squared-distance scan over `level.players`), and the
+  five boss/projectile sites that reached `Player.factory()` now use it — including three that
+  captured the singleton at *module load* (`qfo`, `laserlotusBoss`, `cornelius`) and so could
+  never have seen a second player. Each keeps a `player.factory()` fallback for the pre-`addNode`
+  construction path (e.g. an on-load quest-mismatch `die`), so with one living player targeting
+  is byte-identical. A dead `Player.factory()` local in `tSnake`'s `die` was removed. No
+  death/revive changes here.
 
 ## [1.1.3] - 2026-07-20
 

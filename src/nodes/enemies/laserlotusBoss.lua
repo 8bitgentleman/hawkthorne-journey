@@ -5,13 +5,22 @@ local Projectile = require 'nodes/projectile'
 local sound = require 'vendor/TEsound'
 local utils = require 'utils'
 local Dialog = require 'dialog'
-local player = require 'player'
-local Player = player.factory()
 local Quest = require 'quest'
+local player = require 'player'
 
 local window = require 'window'
 local camera = require 'camera'
 local fonts = require 'fonts'
+
+-- Co-op targeting: the living player nearest the boss. Falls back to the module
+-- singleton when the node has no level yet (e.g. an on-load quest-mismatch die),
+-- which is exactly the pre-co-op behavior for that path.
+local function targetPlayer(enemy)
+  if enemy.containerLevel then
+    return enemy.containerLevel:nearestLivingPlayer(enemy.position)
+  end
+  return player.factory()
+end
 
 return {
   name = 'laserlotusBoss',
@@ -77,13 +86,14 @@ return {
   end,
 
   die = function( enemy )
-  if Player.quest == 'To Slay An Acorn - Explore the Mines for a Map to the Acorn King' then
+  local target = targetPlayer(enemy)
+  if target.quest == 'To Slay An Acorn - Explore the Mines for a Map to the Acorn King' then
     Dialog.new("With the laser wielding man dead, you're not sure what to do...maybe Tilda has an idea of what to do next.", function()
-      Quest.removeQuestItem(Player)
-      Player.quest = 'To Slay an Acorn - Return to Tilda'
-      Player.questParent = 'Tilda'
+      Quest.removeQuestItem(target)
+      target.quest = 'To Slay an Acorn - Return to Tilda'
+      target.questParent = 'Tilda'
       Quest.addQuestItem({questParent = 'Tilda',
-                          questName = 'To Slay an Acorn - Return to Tilda'}, Player)
+                          questName = 'To Slay an Acorn - Return to Tilda'}, target)
     end)
   end
   end,

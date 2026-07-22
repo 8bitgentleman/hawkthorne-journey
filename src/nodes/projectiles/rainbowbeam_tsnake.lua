@@ -28,9 +28,18 @@ return{
   },
   
   new = function(projectile)
-    local Player = require 'player'
-    local player = Player.factory()
-    
+    -- Aim at the living player nearest the beam. The beam is spawned into the
+    -- active level during the tSnake fight, so currentState is that Level; fall
+    -- back to the module singleton when there's no such level (e.g. node tests),
+    -- which matches the pre-co-op behavior.
+    local level = require('vendor/gamestate').currentState()
+    local player
+    if level and level.nearestLivingPlayer then
+      player = level:nearestLivingPlayer(projectile.position)
+    else
+      player = require('player').factory()
+    end
+
     local angle = math.atan2(((player.position.y - (player.height - 10)) - projectile.position.y), (player.position.x - projectile.position.x))
     local dx = 300 * math.cos(angle) * (player.position.x < projectile.position.x and -1 or 1)
     local dy = 300 * math.sin(angle) * (player.position.y < projectile.position.y and -1 or 1)

@@ -541,6 +541,28 @@ function Level:cameraFocus()
   return sx / n, sy / n
 end
 
+-- Nearest living player to a point (co-op targeting, Phase 4a). Scans self.players
+-- by squared distance to `pos` (a table with .x/.y). With a single living player
+-- this returns that player, which is level.player / the old Player.factory()
+-- singleton, so single-player targeting is byte-identical. Falls back to
+-- self.player when everyone is dead so targeting code always has a non-nil object.
+function Level:nearestLivingPlayer(pos)
+  local players = self.players or { self.player }
+  local nearest, best = nil, math.huge
+  for _, p in ipairs(players) do
+    if not p.dead then
+      local dx = p.position.x - pos.x
+      local dy = p.position.y - pos.y
+      local d = dx * dx + dy * dy
+      if d < best then
+        best = d
+        nearest = p
+      end
+    end
+  end
+  return nearest or self.player
+end
+
 function Level:cameraPosition()
   local x, y = self:cameraFocus()
   return math.max(x - window.width / 2, 0),

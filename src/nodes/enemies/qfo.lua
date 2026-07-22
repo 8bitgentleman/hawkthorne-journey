@@ -8,11 +8,20 @@ local utils = require 'utils'
 local Sprite = require 'nodes/sprite'
 local Dialog = require 'dialog'
 local player = require 'player'
-local Player = player.factory()
 
 local window = require 'window'
 local camera = require 'camera'
 local fonts = require 'fonts'
+
+-- Co-op targeting: the living player nearest the boss. Falls back to the module
+-- singleton when the node has no level yet (e.g. an on-load quest-mismatch die),
+-- which is exactly the pre-co-op behavior for that path.
+local function targetPlayer(enemy)
+  if enemy.containerLevel then
+    return enemy.containerLevel:nearestLivingPlayer(enemy.position)
+  end
+  return player.factory()
+end
 
 return {
   name = 'qfo',
@@ -82,13 +91,14 @@ return {
   end,
 
   die = function( enemy )
-    if enemy.quest and Player.quest == enemy.quest then
+    local target = targetPlayer(enemy)
+    if enemy.quest and target.quest == enemy.quest then
       enemy.db:set("bosstriggers.qfo", true)
     end
   end,
 
   draw = function( enemy )
-    if enemy.quest and Player.quest ~= enemy.quest then return end
+    if enemy.quest and targetPlayer(enemy).quest ~= enemy.quest then return end
     fonts.set( 'small' )
 
 
@@ -248,9 +258,10 @@ return {
 
     if enemy.dead then return end
 
+    local target = targetPlayer(enemy)
     local direction = player.position.x > enemy.position.x + 40 and -1 or 1
     local offset = math.random(0,200)
-    if enemy.hp < enemy.props.hp and Player.quest ~= 'Aliens! - Destroy the QFO!' then
+    if enemy.hp < enemy.props.hp and target.quest ~= 'Aliens! - Destroy the QFO!' then
       enemy.hp = enemy.hp + 1
     end
 

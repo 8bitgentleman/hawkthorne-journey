@@ -16,10 +16,6 @@ local Sprite = require 'nodes/sprite'
 local Insults = require 'nodes/insults'
 local Firework = require 'nodes/firework'
 
-local Player = require 'player'
-Player = Player.factory()
-local playersinsult = Insults[Player.character.name]
-
 return {
   name = 'cornelius',
   isBoss = true,
@@ -56,8 +52,8 @@ return {
   enterScript ={
     "{{grey}}Welcome{{white}}, you are the first to make it to the {{orange}}Throne of Hawkthorne{{white}}.",
     "Let me take a look at you...",
-    "According to your {{olive}}complexion{{white}}, I think you might be...{{purple}} " .. Player.character.name:gsub("^%l", string.upper) .. "{{white}}.",
-  }, 
+    "According to your {{olive}}complexion{{white}}, I think you might be...",
+  },
   deathScript ={
     "{{grey}}*heavy breathing*{{white}} I suppose you're wondering,{{purple}} player{{white}}.",
     "Why program myself dying and letting you destroy me?",
@@ -137,6 +133,9 @@ return {
 
     --enter dialog
     if enemy.props.enterScript then
+      local target = enemy.containerLevel:nearestLivingPlayer(enemy.position)
+      local playersinsult = Insults[target.character.name]
+      enemy.props.enterScript[3] = "According to your {{olive}}complexion{{white}}, I think you might be...{{purple}} " .. target.character.name:gsub("^%l", string.upper) .. "{{white}}."
       for i= 0, #playersinsult do
         table.insert(enemy.props.enterScript, playersinsult[i])
       end
