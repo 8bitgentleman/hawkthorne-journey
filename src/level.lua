@@ -16,6 +16,8 @@ local utils = require 'utils'
 local music = {}
 
 local Player = require 'player'
+local character = require 'character'
+local coop = require 'coop'
 local Floorspace = require 'nodes/floorspace'
 local Floorspaces = require 'floorspaces'
 local Sprite = require 'nodes/sprite'
@@ -269,7 +271,69 @@ function Level:restartLevel(characterSwitch)
     self.player.position = {x = self.default_position.x, y = self.default_position.y}
   end
 
+  -- Co-op: if a second player has joined, rebuild them on this level's collider.
+  -- restartLevel is the single point where player 1 is (re)built per level, so
+  -- rebuilding player 2 here keeps them in lockstep across every door/level
+  -- switch. The overworld never reaches here (asserted above), so player 2 stays
+  -- dormant there and reappears on the next real level — "P2 comes along".
+  if coop.active() then
+    self:spawnCoopPlayer(coop.p2Controls())
+  end
+
   Floorspaces:init()
+end
+
+-- Build a second local player on this level's collider and add them to the live
+-- player list. Mirrors the proven scenario-harness recipe (test/scenario.lua's
+-- spawn2): a fresh Player.new instance (NOT the factory singleton — that returns
+-- player 1) with its OWN character object so animation/sprite state can't bleed
+-- into player 1, its own controller, and shared_health pointed at player 1 who
+-- physically holds the team's one health bar. Idempotent: returns the existing
+-- second player if there already is one.
+function Level:spawnCoopPlayer(controls)
+  if self.players[2] then return self.players[2] end
+
+  local p2 = Player.new(self.collider)
+
+  -- Player.new hands back the shared character.current() singleton; swap in a
+  -- fresh build so P2's animation/costume state is independent of P1's.
+  p2.character = character.build()
+  p2.character:reset()
+  p2.previous_character_height = p2.character.bbox.height
+
+  p2.controls = controls
+  p2.boundary = {
+    width = self.map.width * self.map.tilewidth,
+    height = self.map.height * self.map.tileheight,
+  }
+  p2.freeze = false
+  p2:setSpriteStates(p2.current_state_set or 'default')
+
+  -- Shared health bar (Phase 4b): P2's damage drains the one pool player 1 holds.
+  p2.shared_health = self.player
+
+  -- Spawn alongside player 1.
+  p2.position = { x = self.player.position.x, y = self.player.position.y }
+  p2:moveBoundingBox()
+
+  table.insert(self.players, p2)
+  return p2
+end
+
+-- Drop the second local player: remove them from the live list and unregister
+-- their shapes from the collider so nothing keeps driving a departed player.
+function Level:removeCoopPlayer()
+  local p2 = self.players[2]
+  if not p2 then return end
+
+  for i = #self.players, 2, -1 do
+    table.remove(self.players, i)
+  end
+  if p2.top_bb then self.collider:remove(p2.top_bb) end
+  if p2.bottom_bb then self.collider:remove(p2.bottom_bb) end
+  if p2.attack_box and p2.attack_box.bb then
+    self.collider:remove(p2.attack_box.bb)
+  end
 end
 
 ---
@@ -473,6 +537,18 @@ function Level:update(dt)
   -- falling off the bottom of the map
   if self.player.position.y - self.player.height > self.map.height * self.map.tileheight then
     self.player:die()
+  end
+
+  -- Co-op: a secondary player who falls off the bottom isn't "dead" — with one
+  -- shared health bar there are no per-player lives, so leash them back to
+  -- player 1 instead of letting them drop off-screen forever.
+  for i = 2, #self.players do
+    local p = self.players[i]
+    if p.position.y - p.height > self.map.height * self.map.tileheight then
+      p.position = { x = self.player.position.x, y = self.player.position.y }
+      p.velocity = { x = 0, y = 0 }
+      p:moveBoundingBox()
+    end
   end
 
   -- start death sequence
@@ -734,11 +810,21 @@ function Level:leave()
   end
 end
 
-function Level:keyreleased( button )
-  self.player:keyreleased( button, self )
+function Level:keyreleased( button, playerIndex )
+  local p = (playerIndex and self.players[playerIndex]) or self.player
+  p:keyreleased( button, self )
 end
 
-function Level:keypressed( button )
+function Level:keypressed( button, playerIndex )
+  -- Co-op secondary players drive only their own actions (jump/attack); menus,
+  -- pausing, doors and pickups stay player 1's to avoid a second player warping
+  -- the whole party through a door or opening the shared inventory.
+  if playerIndex and playerIndex ~= 1 then
+    local p = self.players[playerIndex]
+    if p and self.state == 'active' then p:keypressed( button, self.map ) end
+    return
+  end
+
   if self.state ~= 'active' then
     return true
   end

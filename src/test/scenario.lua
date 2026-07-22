@@ -32,6 +32,7 @@ local Level = require 'level'
 local Player = require 'player'
 local InputController = require 'inputcontroller'
 local character = require 'character'
+local coop = require 'coop'
 
 -- Fixed frame delta. Matches a steady 60fps; keeps physics integration
 -- reproducible across runs (unlike the real game's variable dt).
@@ -79,6 +80,11 @@ function Scenario.new(name, opts)
   -- restores this snapshot so they're unaffected no matter the test-run order.
   self._prevPlayer = Player.getSingleton()
   Player.kill()
+
+  -- Clear any leaked co-op intent so each scenario boots single-player and
+  -- restartLevel doesn't auto-spawn a stale player 2. spawn2() below drives the
+  -- second player explicitly instead.
+  coop.reset()
 
   self.level = Level.new(name)
 
@@ -166,41 +172,20 @@ end
 function Scenario:spawn2(x, y)
   assert(self.player2 == nil, 'spawn2 already called for this scenario')
 
-  local p2 = Player.new(self.level.collider)
+  -- Distinct controller with keys DISJOINT from player 1 (P2_ACTIONMAP) so P2's
+  -- polled input doesn't alias P1's in the one shared held-key table. new(name,
+  -- map) with a table map loads it directly and never touches the controls db.
+  local controls = InputController.new('coop-p2', P2_ACTIONMAP)
+  controls.joystick = nil -- force the keyboard path, like the harness's P1
+  self.controls2 = controls
 
-  -- Give P2 its own character instance. Player.new sets p2.character to the
-  -- shared character.current() singleton (same object P1 holds); swap in a fresh
-  -- build so P2's animation/sprite state can't bleed into P1's. Mirror how
-  -- Player.new/refreshPlayer initialise the character (reset + cache the height).
-  p2.character = character.build()
-  p2.character:reset()
-  p2.previous_character_height = p2.character.bbox.height
-
-  -- Distinct controller so P2's polled input doesn't alias P1's. new(name,map)
-  -- with a table map loads it directly and never touches the controls db.
-  p2.controls = InputController.new('coop-p2', P2_ACTIONMAP)
-  p2.controls.joystick = nil -- force the keyboard path, like the harness's P1
-  self.controls2 = p2.controls
-
-  p2.boundary = {
-    width = self.level.map.width * self.level.map.tilewidth,
-    height = self.level.map.height * self.level.map.tileheight,
-  }
-  p2.freeze = false
-  p2:setSpriteStates(p2.current_state_set or 'default')
-
-  -- Shared-health co-op (Phase 4b): P2's damage drains the one shared pool, which
-  -- P1 physically holds (P1.health is what the HUD and the game-over check read).
-  -- Real P2-join would set this the same way when a second player enters a level.
-  p2.shared_health = self.player
-
+  -- Build player 2 through the SAME production path the running game uses: fresh
+  -- instance, own character, shared_health -> P1, appended to level.players so
+  -- Level:update's player-list loop drives it. Passing our disjoint-key
+  -- controller makes these headless tests exercise Level:spawnCoopPlayer for real.
+  local p2 = self.level:spawnCoopPlayer(controls)
   self.player2 = p2
   self:_place(p2, x, y)
-
-  -- Engine-drive P2: appending to level.players makes Level:update's player-list
-  -- loop step P2's physics/input every frame, exactly like P1. The level's
-  -- single-player read sites (level.player) still point at P1 = players[1].
-  table.insert(self.level.players, p2)
   return self
 end
 

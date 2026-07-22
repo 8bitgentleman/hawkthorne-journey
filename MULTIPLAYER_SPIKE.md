@@ -99,12 +99,22 @@ select for P2, overworld, save/load with two players, netcode.
   that's the real surprise and where the time goes.
 - **Green gate:** full suite still 108-pass (single-player must be untouched by the shim).
 
-### Phase 2 — second input (1–2 days)
-- Bind `players[2].controls = InputController.get('gamepad')` (or a second keyboard preset).
-- Route raw key/gamepad events in `main.lua` to the owning player's controller. The action
-  abstraction already exists; this is wiring, not redesign.
-- Harness proof: P1 holds RIGHT while P2 presses JUMP → P1 walks, P2 jumps, neither bleeds into
-  the other. (This is the test the `self` bug fix was a prerequisite for.)
+### Phase 2 — second input — **done (real drop-in gamepad wiring)**
+- **Was (2a, engine-drive):** the harness appended P2 to `level.players` and drove it via its own
+  controller polling stubbed keys — proved independence, but nothing outside tests ever created a
+  real P2. `main.lua` still ran all input through one dynamic-switching `controls` singleton.
+- **Now (2b, shipped):** real drop-in co-op. `src/coop.lua` holds the persistent co-op intent
+  (which pad is P2's) across level switches; `main.lua` routes each raw event to the owning
+  player and no longer lets P1's controller hijack P2's pad. Device model (owner's call): P1 stays
+  flexible keyboard-or-gamepad, P2 claims the **next free gamepad** via a drop-in join (**Start**
+  on a pad P1 isn't using) and can drop out (Start again, or unplug). `Level:spawnCoopPlayer`/
+  `removeCoopPlayer` build/tear-down a real P2 on the level collider (the same recipe the harness
+  proved — the harness's `spawn2` now *delegates* to it), and `restartLevel` rebuilds P2 on every
+  level switch so **the overworld stays P1-only and P2 comes along**. `Level:keypressed/keyreleased`
+  take a player index; P2 gets an actions-only path (no menus/doors/inventory). A pitfallen P2
+  leashes back to P1 (shared-health = no per-player lives). `test_coop.lua` pins the device logic,
+  join/drop, routing, and restart-rebuild.
+- **Deferred:** P2 character/costume select (skin hardcoded), co-op in menus/save, >2 players.
 
 ### Phase 3 — shared camera (1 day) — **done (centroid), zoom/leash deferred**
 - Compute the camera target as the midpoint/bbox of all living players; clamp span with a leash

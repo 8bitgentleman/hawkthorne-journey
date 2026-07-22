@@ -12,6 +12,7 @@ local camera = require 'camera'
 local fonts = require 'fonts'
 local window = require 'window'
 local controls = require('inputcontroller').get()
+local coop = require 'coop'
 local hud = require 'hud'
 local character = require 'character'
 local cheat = require 'cheat'
@@ -185,26 +186,30 @@ function love.update(dt)
   end
 end
 
-function buttonreleased(key)
+-- Translate a raw key through the given player's controller and forward the
+-- action to the active gamestate, tagged with which player it belongs to.
+-- playerIndex threads through Gamestate.keyreleased to Level:keyreleased so the
+-- owning player receives it; every non-Level gamestate ignores the extra arg.
+function buttonreleased(controller, key, playerIndex)
   if testing then return end
-  local action = controls:getAction(key)
-  if action then Gamestate.keyreleased(action) end
+  local action = controller:getAction(key)
+  if action then Gamestate.keyreleased(action, playerIndex) end
 
   if not action then return end
 
   if Prompt.currentPrompt or Dialog.currentDialog then
     --bypass
   else
-    Gamestate.keyreleased(action)
+    Gamestate.keyreleased(action, playerIndex)
   end
 end
 
-function buttonpressed(key)
+function buttonpressed(controller, key, playerIndex)
   if testing then return end
-  if controls:isRemapping() then Gamestate.keypressed(key) return end
+  if controller:isRemapping() then Gamestate.keypressed(key) return end
   if key == "f5" then debugger:toggle() end
   if key == "f6" and debugger.on then debug.debug() end
-  local action = controls:getAction(key)
+  local action = controller:getAction(key)
   local state = Gamestate.currentState().name or ""
 
   if not action and state ~= "welcome" then return end
@@ -213,51 +218,87 @@ function buttonpressed(key)
   elseif Dialog.currentDialog then
     Dialog.currentDialog:keypressed(action)
   else
-    Gamestate.keypressed(action)
+    Gamestate.keypressed(action, playerIndex)
   end
 end
 
 function love.keyreleased(key, scancode)
-  buttonreleased(key)
+  buttonreleased(controls, key, 1)
 end
 
 function love.keypressed(key, scancode, isrepeat)
   controls:switch()
-  buttonpressed(key)
+  buttonpressed(controls, key, 1)
 end
 
 function love.gamepadreleased(joystick, key)
-  buttonreleased(key)
+  if coop.owner(joystick) == 2 then
+    -- Player 2's pad only acts inside a level.
+    if Gamestate.currentState().isLevel then
+      buttonreleased(coop.p2Controls(), key, 2)
+    end
+    return
+  end
+  buttonreleased(controls, key, 1)
 end
 
 function love.gamepadpressed(joystick, key)
+  local state = Gamestate.currentState()
+
+  -- Player 2 drops out by pressing Start on their own pad.
+  if coop.isDropPress(joystick, key) then
+    coop.drop()
+    if state.isLevel then state:removeCoopPlayer() end
+    return
+  end
+
+  -- Drop-in join: Start on a free pad, only inside a level, brings player 2 in.
+  if state.isLevel and coop.isJoinPress(joystick, key, controls.joystick) then
+    state:spawnCoopPlayer(coop.join(joystick))
+    return
+  end
+
+  if coop.owner(joystick) == 2 then
+    if state.isLevel then buttonpressed(coop.p2Controls(), key, 2) end
+    return
+  end
+
+  -- Player 1's flexible keyboard-or-gamepad switch. owner()==1 guarantees this
+  -- is never player 2's pad, so player 1 can never hijack it.
   controls:switch(joystick)
-  buttonpressed(key)
+  buttonpressed(controls, key, 1)
 end
 
 function love.joystickremoved(joystick)
+  -- If player 2's pad is unplugged, drop them from the game.
+  if coop.active() and joystick == coop.p2Device() then
+    coop.drop()
+    local state = Gamestate.currentState()
+    if state.isLevel then state:removeCoopPlayer() end
+    return
+  end
   controls:switch()
 end
 
 function love.joystickreleased(joystick, key)
   if joystick:isGamepad() then return end
-  buttonreleased(tostring(key))
+  buttonreleased(controls, tostring(key), 1)
 end
 
 function love.joystickpressed(joystick, key)
   if joystick:isGamepad() then return end
   controls:switch(joystick)
-  buttonpressed(tostring(key))
+  buttonpressed(controls, tostring(key), 1)
 end
 
 function love.joystickaxis(joystick, axis, value)
   if joystick:isGamepad() then return end
   axisDir1, axisDir2, _ = joystick:getAxes()
   controls:switch(joystick)
-  if axisDir1 < 0 then buttonpressed('dpleft') end
-  if axisDir1 > 0 then buttonpressed('dpright') end
-  if axisDir2 < 0 then buttonpressed('dpup') end
-  if axisDir2 > 0 then buttonpressed('dpdown') end
+  if axisDir1 < 0 then buttonpressed(controls, 'dpleft', 1) end
+  if axisDir1 > 0 then buttonpressed(controls, 'dpright', 1) end
+  if axisDir2 < 0 then buttonpressed(controls, 'dpup', 1) end
+  if axisDir2 > 0 then buttonpressed(controls, 'dpdown', 1) end
 end
 
 function love.draw()

@@ -11,6 +11,20 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
 ## [Unreleased]
 
 ### Added
+- **Drop-in local co-op** (co-op spike Phase 2 completion) — a second player can now actually
+  join a level by pressing **Start** on a free gamepad, and drop out again the same way (or by
+  unplugging). Player 1 keeps the flexible keyboard-or-gamepad handling; player 2 claims the
+  next free pad, and neither can hijack the other's device. Both walk/jump/attack independently,
+  share one zoom-and-centroid camera and one health bar, and enemies hit whichever they touch.
+  The **overworld stays single-player** — player 1 drives it and player 2 "comes along",
+  reappearing automatically in the next level (`Level:spawnCoopPlayer` rebuilds them on each
+  level's collider via the existing restart path). Input events are routed per-device to the
+  owning player (`main.lua` + new `coop.lua`; `Level:keypressed/keyreleased` take a player index),
+  and a downed-in-a-pit player 2 leashes back to player 1 rather than falling off-screen. Spike
+  scope: levels only, player 2's skin is hardcoded, no P2 character-select/menus/save yet.
+  The scenario harness's `spawn2` now delegates to `Level:spawnCoopPlayer`, so the existing
+  two-player tests exercise the production build path; new `test_coop.lua` pins device ownership,
+  join/drop, event routing, and the restart-rebuild.
 - **Underwater levels** — ported from the `underwater2` branch. Adds an oxygen/drowning
   system and supporting enemies, hazards, and art:
   - **Oxygen system:** the player gains an oxygen meter (`max_oxygen = 20`). While submerged in
