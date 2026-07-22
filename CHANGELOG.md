@@ -10,6 +10,8 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-07-22
+
 ### Fixed
 - The teacher-lounge bathroom door was unreachable (PR #2530): in a floorspace room the player's
   feet sit at a fixed depth, and this door's bounding box sat 25px above it — past `Door:switch`'s
@@ -202,7 +204,8 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   Fork modernization continues above. (Changes between this release and 1.1.1 — the LÖVE 11.5 /
   love.js migration of late 2024 — predate this changelog and are not itemized here.)
 
-[Unreleased]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.1.3...v1.2.0
