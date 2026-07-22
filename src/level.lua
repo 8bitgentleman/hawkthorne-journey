@@ -517,9 +517,32 @@ function Level:update(dt)
   end
 end
 
+-- Camera focus point: the centroid of all living players (co-op spike Phase 3).
+-- In single-player this is exactly the one player's framing point, so the camera
+-- math downstream is byte-identical; with two players the view sits at their
+-- midpoint (one shared camera, no split-screen). Zoom-to-fit and a separation
+-- leash are deferred follow-ups — they fight the fixed window.width/2 centering
+-- and the enter-time camera.max.x clamp, so the spike keeps a fixed scale.
+function Level:cameraFocus()
+  local players = self.players or { self.player }
+  local sx, sy, n = 0, 0, 0
+  for _, p in ipairs(players) do
+    if not p.dead then
+      sx = sx + p.position.x + p.character.bbox.width / 2
+      sy = sy + p.position.y - self.map.tilewidth * 4.5
+      n = n + 1
+    end
+  end
+  if n == 0 then  -- all dead: hold on player 1 so the view doesn't snap to 0,0
+    local p = self.player
+    return p.position.x + p.character.bbox.width / 2,
+           p.position.y - self.map.tilewidth * 4.5
+  end
+  return sx / n, sy / n
+end
+
 function Level:cameraPosition()
-  local x = self.player.position.x + self.player.character.bbox.width / 2
-  local y = self.player.position.y - self.map.tilewidth * 4.5
+  local x, y = self:cameraFocus()
   return math.max(x - window.width / 2, 0),
     limit( limit(y, 0, self.offset) + self.pan, 0, self.offset )
 end
@@ -527,8 +550,7 @@ end
 
 function Level:moveCamera()
   if not self.trackPlayer then return end
-  local x = self.player.position.x + self.player.character.bbox.width / 2
-  local y = self.player.position.y - self.map.tilewidth * 4.5
+  local x, y = self:cameraFocus()
   camera:setPosition(
     math.max(x - window.width / 2, 0),
     limit( limit(y, 0, self.offset) + self.pan, 0, self.offset )

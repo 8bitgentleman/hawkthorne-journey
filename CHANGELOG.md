@@ -61,6 +61,12 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   and gives it a fresh `character.build()`, so `Level:update`'s list loop drives P2's input and
   physics with no harness poke; two new coop tests prove opposite-direction engine-driven
   movement and independent per-player animation state. Single-player untouched.
+- Share one camera across players (co-op spike Phase 3): new `Level:cameraFocus()` returns the
+  centroid of all living players, and both `moveCamera` and `cameraPosition` (the latter also
+  drives enemy off-screen culling) track it. In single-player the one-element centroid is the
+  exact old framing point, so the camera math is byte-identical (parity test added); with two
+  players the shared view sits at their midpoint. `camera.lua` is untouched; true zoom-to-fit
+  and a separation leash are deferred (they conflict with the fixed-scale centering/clamp math).
 
 ## [1.1.3] - 2026-07-20
 

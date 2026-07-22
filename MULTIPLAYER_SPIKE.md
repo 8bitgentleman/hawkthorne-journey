@@ -106,10 +106,20 @@ select for P2, overworld, save/load with two players, netcode.
 - Harness proof: P1 holds RIGHT while P2 presses JUMP → P1 walks, P2 jumps, neither bleeds into
   the other. (This is the test the `self` bug fix was a prerequisite for.)
 
-### Phase 3 — shared camera (1 day)
+### Phase 3 — shared camera (1 day) — **done (centroid), zoom/leash deferred**
 - Compute the camera target as the midpoint/bbox of all living players; clamp span with a leash
   so one can't drag the view off the other. Keep the single `camera` module — only its
   per-frame target math changes (likely in `level.lua`'s camera update, not `camera.lua` itself).
+- **Shipped:** `Level:cameraFocus()` returns the centroid of all living players; `moveCamera`
+  and `cameraPosition` (also used by enemy off-screen culling) both route through it. Single
+  player = one-element centroid = byte-identical framing (proved by a parity test). `camera.lua`
+  untouched.
+- **Deferred (follow-ups, not blockers for the proof):** true zoom-to-fit and a separation
+  leash. Both fight the current fixed-scale assumptions — the centering uses a constant
+  `window.width / 2` (not `camera:getWidth()`), and `camera.max.x` is clamped once at enter to
+  `map.width*tilewidth - window.width`. Changing scale per-frame makes those inconsistent, so
+  the spike keeps a fixed scale; players walking far apart go off-screen (acceptable for a
+  proof). Zoom-to-fit is a self-contained later task against `camera:setScale` + the clamp math.
 
 ### Phase 4 — targeting + death/revive (2–3 days)
 - Replace `Player.factory()` in the ~7 boss/special nodes with a `level:nearestLivingPlayer(pos)`

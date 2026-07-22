@@ -196,3 +196,42 @@ function test_two_player_teardown_restores_singleton()
   s:teardown()
   assert_true(Player.getSingleton() == before, "teardown restores the prior singleton")
 end
+
+-- Shared camera (Phase 3): with two players the camera focus point is their
+-- centroid, so the one shared view sits at their midpoint. cameraFocus() returns
+-- the pre-clamp target moveCamera/cameraPosition track — asserting it directly
+-- avoids any window-width dependence.
+function test_camera_focus_is_centroid_of_two_players()
+  local s = Scenario.new('greendale-biology')
+  local base = s.level.default_position
+  s:spawn(base.x, base.y)
+  s:spawn2(base.x + 6 * TILE, base.y)
+  s:step(8) -- settle both onto the floor
+
+  local fx = s.level:cameraFocus()
+  local p1x = s.player.position.x + s.player.character.bbox.width / 2
+  local p2x = s.player2.position.x + s.player2.character.bbox.width / 2
+  local mid = (p1x + p2x) / 2
+  assert_true(math.abs(fx - mid) < 0.001,
+    string.format("camera focus x should be the players' midpoint: focus=%.2f mid=%.2f", fx, mid))
+  assert_true(fx > math.min(p1x, p2x) and fx < math.max(p1x, p2x),
+    "camera focus must sit strictly between the two players")
+
+  s:teardown()
+end
+
+-- Single-player parity: the focus point equals the one player's framing point,
+-- so the shared-camera refactor leaves single-player camera math byte-identical.
+function test_camera_focus_single_player_is_byte_identical()
+  local s = Scenario.new('greendale-biology')
+  s:spawn(s.level.default_position.x, s.level.default_position.y)
+  s:step(8)
+
+  local fx, fy = s.level:cameraFocus()
+  local px = s.player.position.x + s.player.character.bbox.width / 2
+  local py = s.player.position.y - s.level.map.tilewidth * 4.5
+  assert_equal(px, fx, "single-player camera focus x must equal the player's framing x")
+  assert_equal(py, fy, "single-player camera focus y must equal the player's framing y")
+
+  s:teardown()
+end
