@@ -220,6 +220,11 @@ function Level.new(name)
   end
 
   level.player = player
+  -- Co-op shim: the engine is expressed in terms of a player LIST. `level.player`
+  -- stays a live alias of `level.players[1]` for the many existing read sites;
+  -- both are (re)bound together in restartLevel. Initialised here so the field
+  -- always exists (Level.new leaves level.player nil until restartLevel runs).
+  level.players = level.player and { level.player } or {}
   return level
 end
 
@@ -246,6 +251,10 @@ function Level:restartLevel(characterSwitch)
   self.over = false
 
   self.player = Player.factory(self.collider)
+  -- Keep the player list in lockstep with the singleton binding. players[1] is
+  -- the alias target for every `self.player` read site; Level:update iterates
+  -- this list. Single-player = exactly one element, so the loop runs once.
+  self.players = { self.player }
   local old_height = self.player.previous_character_height
   self.player:refreshPlayer(self.collider)
   self.player.boundary = {
@@ -449,7 +458,12 @@ function Level:update(dt)
   end
 
   if self.state == 'active' or self.respawn == true then
-    self.player:update(dt, self.map)
+    -- Co-op shim: update every live player. players[1] is level.player, so with
+    -- a single player this loop runs exactly once and is identical to the old
+    -- `self.player:update(dt, self.map)`.
+    for _, p in ipairs(self.players) do
+      p:update(dt, self.map)
+    end
   end
 
   if self.hud then
@@ -658,6 +672,7 @@ function Level:leave()
 
   if not self.paused and self.name ~= 'new-abedtown' then
   self.player = nil
+  self.players = {}
   self.map = nil
   self.tileset = nil
   self.collider = nil

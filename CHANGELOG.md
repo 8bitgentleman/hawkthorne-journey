@@ -50,6 +50,10 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   arg, two-player teardown) and add `test_scenario_coop.lua` — Phase 0 of the local co-op spike.
   Proves two `Player` instances register on one HardonCollider and move independently, with the
   existing `on_collision` routing delivering each hit to the right instance (no engine changes).
+- Express the engine in terms of a player *list* behind a compatibility shim (co-op spike
+  Phase 1): `Player.all()` and `level.players` (with `level.player` kept as a live alias of
+  `players[1]`); `Level:update` now iterates the list. Single-player is byte-identical — the
+  list always holds exactly the one live player.
 
 ## [1.1.3] - 2026-07-20
 

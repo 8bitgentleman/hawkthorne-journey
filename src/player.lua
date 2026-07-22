@@ -77,6 +77,11 @@ function Player.new(collider)
   plyr.height = 48
   plyr.bbox_width = 18
   plyr.bbox_height = 44
+  -- TODO(coop): character.current() is a shared singleton (character.lua ~96), so
+  -- every Player instance receives the SAME character object and would share its
+  -- animation/sprite/costume state. Harmless in Phase 1 (only player 1 is live;
+  -- the harness drives player 2 directly), but a real second live player needs
+  -- its own character instance. De-singleton in Phase 2+.
   plyr.character = character.current()
   plyr.previous_character_height = plyr.character.bbox.height
   plyr.crouching = false
@@ -248,6 +253,17 @@ end
 
 function Player.setSingleton(p)
   player = p
+end
+
+-- Co-op shim: the list of live players. Today the module only ever tracks the
+-- one singleton (player 1 = players[1]), so this returns it as a single-element
+-- list (or empty when there is no live player). Phase 2+ will grow this to
+-- include additional local players; callers should iterate it rather than
+-- reach for the singleton directly. Returns a fresh table so callers can't
+-- mutate module state.
+function Player.all()
+  if player == nil then return {} end
+  return { player }
 end
 
 ---
