@@ -92,6 +92,12 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   release *player 1's* ladder or re-pickup onto *player 1*. Now use `self` throughout.
 
 ### Internal
+- Add `test_todd_sandwich.lua` — regression coverage for the Shirley's-Sandwiches NPC ported
+  from PR #2530, whose tester reported an "endless loop of Shirley dialogue" / "not being able
+  to get away". Drives the real Prompt/Dialog singletons through todd's `begin()` on all three
+  branches (decline, accept, returning visit) and asserts each settles: the prompt clears, the
+  menu closes once, and the player unfreezes (no re-prompt). The loop does not reproduce in the
+  ported code; this pins that it stays fixed.
 - Add `test_christmas_pterodactyl.lua` — pins the boss's dive FSM (patrol → telegraph → dive →
   recover) by driving the enemy prop table directly with fake enemy/player tables, no Level needed.
 - Extend the scenario harness with two-player support (`spawn2`, per-player input via a `who`
