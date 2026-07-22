@@ -91,12 +91,13 @@ function module.load(character)
   return json.decode(contents)
 end
 
--- Load the current character. Do all the crazy stuff too
-function module.current()
-  if _loaded_character then
-    return _loaded_character
-  end
-
+-- Build a FRESH character object for the currently-selected _character/_costume.
+-- Does all the crazy stuff (JSON decode, image load, anim8 grids/animations) and
+-- returns a brand-new, fully independent instance every call. Reads NO shared
+-- state and writes NO cache — so a second live player (co-op) can own its own
+-- character with independent animation/sprite state. module.current() is the
+-- caching wrapper around this for single-player's shared singleton.
+function module.build()
   local beamPath = 'images/characters/' .. _character .. '/beam.png'
   local basePath = 'images/characters/' .. _character .. '/base.png'
   local characterPath = "characters/" .. _character .. ".json"
@@ -172,8 +173,18 @@ function module.current()
     table.insert(character.categorytocostumes[c.category], c)
   end
 
-  _loaded_character = character
   return character
+end
+
+-- Load the current character singleton, building (and caching) it on first use.
+-- Single-player relies on this returning the SAME cached object across all call
+-- sites; only the cache write lives here — the construction is module.build().
+function module.current()
+  if _loaded_character then
+    return _loaded_character
+  end
+  _loaded_character = module.build()
+  return _loaded_character
 end
 
 

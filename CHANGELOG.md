@@ -54,6 +54,13 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   Phase 1): `Player.all()` and `level.players` (with `level.player` kept as a live alias of
   `players[1]`); `Level:update` now iterates the list. Single-player is byte-identical — the
   list always holds exactly the one live player.
+- De-singleton the character object and engine-drive a second player (co-op spike Phase 2):
+  split `character.current()` into a non-caching `character.build()` plus a thin caching
+  wrapper (`current()`/`pick()` behaviour unchanged), so a second player can hold its own
+  character/animation state. The scenario harness's `spawn2` now appends P2 to `level.players`
+  and gives it a fresh `character.build()`, so `Level:update`'s list loop drives P2's input and
+  physics with no harness poke; two new coop tests prove opposite-direction engine-driven
+  movement and independent per-player animation state. Single-player untouched.
 
 ## [1.1.3] - 2026-07-20
 

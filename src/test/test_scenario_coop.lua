@@ -116,6 +116,74 @@ function test_overlapping_players_do_not_collide_pathologically()
   s:teardown()
 end
 
+-- Engine-driven independence (Phase 2): P2 is now in level.players, so ONLY
+-- Level:update (via step) moves both players — the harness no longer direct-drives
+-- P2. P1 holds RIGHT and P2 holds LEFT in the same frames; each player's own
+-- InputController polls its own keys through the engine loop and they diverge,
+-- with no cross-bleed. This is the engine-driven movement proof.
+function test_players_engine_driven_opposite_directions()
+  local s = Scenario.new('greendale-biology')
+  local base = s.level.default_position
+  s:spawn(base.x + 4 * TILE, base.y)
+  s:spawn2(base.x + 1 * TILE, base.y)
+  s:step(8) -- settle both onto the floor
+
+  -- The engine owns P2: it must be in the level's live player list.
+  local inList = false
+  for _, p in ipairs(s.level.players) do
+    if p == s.player2 then inList = true end
+  end
+  assert_true(inList, "P2 must be in level.players so the engine drives it")
+
+  local p1x0 = s.player.position.x
+  local p2x0 = s.player2.position.x
+
+  -- Opposite continuous inputs in the same frames, delivered only through the
+  -- stubbed keyboard + each player's own controller polling inside Level:update.
+  s:hold('RIGHT', 1)
+  s:hold('LEFT', 2)
+  s:step(20)
+  s:release('RIGHT', 1)
+  s:release('LEFT', 2)
+
+  assert_true(s.player.position.x > p1x0 + 1,
+    string.format("P1 should have walked right; x0=%.1f x=%.1f", p1x0, s.player.position.x))
+  assert_true(s.player2.position.x < p2x0 - 1,
+    string.format("P2 should have walked left; x0=%.1f x=%.1f", p2x0, s.player2.position.x))
+  assert_true(s.player.velocity.x > 0, "P1 velocity points right")
+  assert_true(s.player2.velocity.x < 0, "P2 velocity points left")
+
+  s:teardown()
+end
+
+-- Independent character state (Phase 2): P1 and P2 hold DISTINCT character
+-- objects, and driving one into a walk animation must not change the other's
+-- idle state. Engine-driven — only step()/Level:update advances the animation
+-- via each player's own character:update.
+function test_players_have_independent_character_state()
+  local s = Scenario.new('greendale-biology')
+  local base = s.level.default_position
+  s:spawn(base.x, base.y)
+  s:spawn2(base.x + 3 * TILE, base.y)
+  s:step(8) -- settle both
+
+  assert_true(s.player.character ~= s.player2.character,
+    "each player must own a distinct character object")
+
+  -- Walk P1; leave P2 idle. P1's character.state becomes a walk state while
+  -- P2's stays idle — proof the sprite/animation state does not bleed across.
+  s:hold('RIGHT', 1)
+  s:step(10)
+  s:release('RIGHT', 1)
+
+  assert_equal('walk', s.player.character.state,
+    "P1 (walking) should be in the walk state")
+  assert_equal('idle', s.player2.character.state,
+    "P2 (idle) should stay idle — character state must not cross-bleed")
+
+  s:teardown()
+end
+
 -- The two-player scenario must leave the module singleton exactly as it found
 -- it — player 2 is a plain instance, never the singleton, so teardown's
 -- existing snapshot/restore covers it.

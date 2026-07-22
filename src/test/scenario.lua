@@ -31,6 +31,7 @@
 local Level = require 'level'
 local Player = require 'player'
 local InputController = require 'inputcontroller'
+local character = require 'character'
 
 -- Fixed frame delta. Matches a steady 60fps; keeps physics integration
 -- reproducible across runs (unlike the real game's variable dt).
@@ -156,11 +157,24 @@ end
 --
 -- Player 2 gets its own InputController preset with keys disjoint from player 1
 -- (see P2_ACTIONMAP) so per-player input helpers can drive them independently.
+--
+-- Phase 2: P2 is given its OWN character object (character.build(), not the
+-- shared character.current() singleton P1 holds) so its animation/sprite state
+-- is independent, and P2 is APPENDED to self.level.players so the engine's own
+-- Level:update player-list loop drives it — no direct harness poke (see step()).
 -----------------------------------------------------------------------------
 function Scenario:spawn2(x, y)
   assert(self.player2 == nil, 'spawn2 already called for this scenario')
 
   local p2 = Player.new(self.level.collider)
+
+  -- Give P2 its own character instance. Player.new sets p2.character to the
+  -- shared character.current() singleton (same object P1 holds); swap in a fresh
+  -- build so P2's animation/sprite state can't bleed into P1's. Mirror how
+  -- Player.new/refreshPlayer initialise the character (reset + cache the height).
+  p2.character = character.build()
+  p2.character:reset()
+  p2.previous_character_height = p2.character.bbox.height
 
   -- Distinct controller so P2's polled input doesn't alias P1's. new(name,map)
   -- with a table map loads it directly and never touches the controls db.
@@ -177,6 +191,11 @@ function Scenario:spawn2(x, y)
 
   self.player2 = p2
   self:_place(p2, x, y)
+
+  -- Engine-drive P2: appending to level.players makes Level:update's player-list
+  -- loop step P2's physics/input every frame, exactly like P1. The level's
+  -- single-player read sites (level.player) still point at P1 = players[1].
+  table.insert(self.level.players, p2)
   return self
 end
 
@@ -312,13 +331,11 @@ function Scenario:step(frames, dt)
   frames = frames or 1
   dt = dt or FIXED_DT
   for _ = 1, frames do
-    -- Player 2 (if any) is updated first so its freshly-moved bounding boxes
-    -- are seen by this same frame's collider:update inside Level:update. The
-    -- level itself only knows about player 1; the harness stands in for the
-    -- co-op update loop Phase 1 will add to Level:update.
-    if self.player2 then
-      self.player2:update(dt, self.level.map)
-    end
+    -- Phase 2: P2 is in self.level.players, so Level:update's player-list loop
+    -- drives it (input poll + physics) in the same pass as P1 before this frame's
+    -- collider:update fires. The harness no longer direct-drives P2 — its
+    -- continuous input (hold) flows through the engine via P2's own controller
+    -- polling the stubbed keyboard, exactly like P1.
     self.level:update(dt)
   end
   return self
@@ -349,6 +366,11 @@ function Scenario:teardown()
   -- player 1.
   if self.player2 then
     local p2 = self.player2
+    -- Remove P2 from the engine's player list so a subsequent Level:update (or a
+    -- later scenario reusing the cached level) can't drive a torn-down player.
+    for i = #self.level.players, 1, -1 do
+      if self.level.players[i] == p2 then table.remove(self.level.players, i) end
+    end
     if p2.top_bb then self.level.collider:remove(p2.top_bb) end
     if p2.bottom_bb then self.level.collider:remove(p2.bottom_bb) end
     if p2.attack_box and p2.attack_box.bb then
