@@ -233,7 +233,7 @@
     <property name="info" value="I've made a terrible mistake coming here.  Maybe it's not too late to get out of my contract..."/>
    </properties>
   </object>
-  <object id="34" name="bathroom" type="door" x="72" y="168" width="24" height="72">
+  <object id="34" name="bathroom" type="door" x="72" y="168" width="24" height="98">
    <properties>
     <property name="button" value="LEFT"/>
     <property name="info" value="It looks like the light is broken.  You need a flashlight to see anything."/>

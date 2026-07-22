@@ -10,21 +10,21 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
 
 ## [Unreleased]
 
+### Fixed
+- The teacher-lounge bathroom door was unreachable (PR #2530): in a floorspace room the player's
+  feet sit at a fixed depth, and this door's bounding box sat 25px above it — past `Door:switch`'s
+  10px reach gate — so pressing its button silently did nothing. Extended the door's box down to
+  the floorspace feet band so it exits correctly. The lounge and speakeasy doors already passed.
+
+### Internal
+- Extend the `scenario` harness to boot **floorspace** (top-down interior) levels — it now enters
+  the primary walk-polygon so the player is planted on the floor instead of falling through — and
+  add `test_scenario_floorspace.lua`, which drives the player to each teacher-lounge door and
+  asserts reachability against the same 10px gate `Door:switch` uses (PR #2530).
+
+## [1.4.0] - 2026-07-22
+
 ### Added
-- **Drop-in local co-op** (co-op spike Phase 2 completion) — a second player can now actually
-  join a level by pressing **Start** on a free gamepad, and drop out again the same way (or by
-  unplugging). Player 1 keeps the flexible keyboard-or-gamepad handling; player 2 claims the
-  next free pad, and neither can hijack the other's device. Both walk/jump/attack independently,
-  share one zoom-and-centroid camera and one health bar, and enemies hit whichever they touch.
-  The **overworld stays single-player** — player 1 drives it and player 2 "comes along",
-  reappearing automatically in the next level (`Level:spawnCoopPlayer` rebuilds them on each
-  level's collider via the existing restart path). Input events are routed per-device to the
-  owning player (`main.lua` + new `coop.lua`; `Level:keypressed/keyreleased` take a player index),
-  and a downed-in-a-pit player 2 leashes back to player 1 rather than falling off-screen. Spike
-  scope: levels only, player 2's skin is hardcoded, no P2 character-select/menus/save yet.
-  The scenario harness's `spawn2` now delegates to `Level:spawnCoopPlayer`, so the existing
-  two-player tests exercise the production build path; new `test_coop.lua` pins device ownership,
-  join/drop, event routing, and the restart-rebuild.
 - **Greendale speakeasy** — final slice of the teacher-lounge expansion (PR #2530), ported
   forward to LÖVE 11.5. Adds a hidden speakeasy reachable through Sophie's room (`sophieb`,
   rebuilt to house the entrance and Shirley's Sandwiches): a new `greendale-speakeasy` map with a
@@ -55,41 +55,10 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   with a later slice. Two upstream bugs were fixed in the port: the removed
   `love.graphics.newScreenshot` call now uses the async `captureScreenshot`, and the `iamount`
   variable-shadowing that would have zeroed every shop's sell count was dropped.
-- **Underwater levels** — ported from the `underwater2` branch. Adds an oxygen/drowning
-  system and supporting enemies, hazards, and art:
-  - **Oxygen system:** the player gains an oxygen meter (`max_oxygen = 20`). While submerged in
-    air-less liquid, `Player:suffocate()` drains oxygen instead of health on a timer; hitting zero
-    kills the player. Oxygen refills fully on leaving the water and on level refresh. A HUD oxygen
-    bar shows only while oxygen is below full.
-  - **`liquid` node** gains a numeric `injure` + `injure_timer` mode that drains N oxygen every
-    T seconds (distinct from the existing boolean `injure`, which drains health).
-  - **Jellyfish enemies:** `jellyfish-strawberry` (slow, constantly homes in) and
-    `jellyfish-blueberry` (drifts until the player is near, then chases faster) — both antigravity,
-    6 HP, vulnerable to blunt attacks.
-  - **`bubbles`** — decorative, peaceful floating bubbles that bob in place.
-  - **`healing_floor`** — an invisible air-pocket zone that refills oxygen on contact.
-  - **`killing_floor_underwater`** — an underwater variant of `killing_floor` for bottom hazards.
-  - New assets: `underwater.png` tileset, jellyfish/bubbles sprites, HUD `oxygenbar.png`, and the
-    `jellyfish_die.ogg` sound.
-- **Santa's Grotto** — ported from the `santas-grotto` branch. A self-contained holiday
-  side-room, reachable through a new `grotto` door in Winter Wonderland, housing the
-  `christmas-pterodactyl` boss. The boss was reworked to the swooping bird boss from *Super
-  Mario Land 2*: it cruises the ceiling, telegraphs above the player, then commits a fast dive
-  at where the player was standing (a late sideways dodge beats it), bottoming out just above
-  the floor before climbing back. 50 HP, vulnerable to blunt attacks. New `santas-grotto.tmx`
-  map, `santas-grotto.png` tileset, and winter decoration sprites (toy + present boxes). The
-  visible entrance-tile art for the Winter Wonderland door is a pending art follow-up; the door
-  is functional (an invisible trigger) without it.
 
 ### Changed
 - The `sophieb` room was widened and redrawn to add the speakeasy entrance and the Shirley's
   Sandwiches storefront (part of PR #2530).
-
-### Fixed
-- Several `Player` methods (jump/swim ladder-release, `die`, and `refreshPlayer`'s holdable
-  re-pickup) referenced the module-global `player` singleton instead of `self`. Harmless in
-  single-player (they're the same object) but a latent bug: any future second player would
-  release *player 1's* ladder or re-pickup onto *player 1*. Now use `self` throughout.
 
 ### Internal
 - Add `test_todd_sandwich.lua` — regression coverage for the Shirley's-Sandwiches NPC ported
@@ -98,8 +67,32 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   branches (decline, accept, returning visit) and asserts each settles: the prompt clears, the
   menu closes once, and the player unfreezes (no re-prompt). The loop does not reproduce in the
   ported code; this pins that it stays fixed.
-- Add `test_christmas_pterodactyl.lua` — pins the boss's dive FSM (patrol → telegraph → dive →
-  recover) by driving the enemy prop table directly with fake enemy/player tables, no Level needed.
+
+## [1.3.0] - 2026-07-22
+
+### Added
+- **Drop-in local co-op** (co-op spike Phase 2 completion) — a second player can now actually
+  join a level by pressing **Start** on a free gamepad, and drop out again the same way (or by
+  unplugging). Player 1 keeps the flexible keyboard-or-gamepad handling; player 2 claims the
+  next free pad, and neither can hijack the other's device. Both walk/jump/attack independently,
+  share one zoom-and-centroid camera and one health bar, and enemies hit whichever they touch.
+  The **overworld stays single-player** — player 1 drives it and player 2 "comes along",
+  reappearing automatically in the next level (`Level:spawnCoopPlayer` rebuilds them on each
+  level's collider via the existing restart path). Input events are routed per-device to the
+  owning player (`main.lua` + new `coop.lua`; `Level:keypressed/keyreleased` take a player index),
+  and a downed-in-a-pit player 2 leashes back to player 1 rather than falling off-screen. Spike
+  scope: levels only, player 2's skin is hardcoded, no P2 character-select/menus/save yet.
+  The scenario harness's `spawn2` now delegates to `Level:spawnCoopPlayer`, so the existing
+  two-player tests exercise the production build path; new `test_coop.lua` pins device ownership,
+  join/drop, event routing, and the restart-rebuild.
+
+### Fixed
+- Several `Player` methods (jump/swim ladder-release, `die`, and `refreshPlayer`'s holdable
+  re-pickup) referenced the module-global `player` singleton instead of `self`. Harmless in
+  single-player (they're the same object) but a latent bug: any future second player would
+  release *player 1's* ladder or re-pickup onto *player 1*. Now use `self` throughout.
+
+### Internal
 - Extend the scenario harness with two-player support (`spawn2`, per-player input via a `who`
   arg, two-player teardown) and add `test_scenario_coop.lua` — Phase 0 of the local co-op spike.
   Proves two `Player` instances register on one HardonCollider and move independently, with the
@@ -137,6 +130,39 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   game-over path) and marks the rest of the team out. No new per-player death/revive state; the
   rebound/invulnerability/hurt animation still stay on whoever actually took the hit. Three coop
   tests pin single-player parity, cross-player drain, and shared-zero game-over.
+
+## [1.2.0] - 2026-07-21
+
+### Added
+- **Underwater levels** — ported from the `underwater2` branch. Adds an oxygen/drowning
+  system and supporting enemies, hazards, and art:
+  - **Oxygen system:** the player gains an oxygen meter (`max_oxygen = 20`). While submerged in
+    air-less liquid, `Player:suffocate()` drains oxygen instead of health on a timer; hitting zero
+    kills the player. Oxygen refills fully on leaving the water and on level refresh. A HUD oxygen
+    bar shows only while oxygen is below full.
+  - **`liquid` node** gains a numeric `injure` + `injure_timer` mode that drains N oxygen every
+    T seconds (distinct from the existing boolean `injure`, which drains health).
+  - **Jellyfish enemies:** `jellyfish-strawberry` (slow, constantly homes in) and
+    `jellyfish-blueberry` (drifts until the player is near, then chases faster) — both antigravity,
+    6 HP, vulnerable to blunt attacks.
+  - **`bubbles`** — decorative, peaceful floating bubbles that bob in place.
+  - **`healing_floor`** — an invisible air-pocket zone that refills oxygen on contact.
+  - **`killing_floor_underwater`** — an underwater variant of `killing_floor` for bottom hazards.
+  - New assets: `underwater.png` tileset, jellyfish/bubbles sprites, HUD `oxygenbar.png`, and the
+    `jellyfish_die.ogg` sound.
+- **Santa's Grotto** — ported from the `santas-grotto` branch. A self-contained holiday
+  side-room, reachable through a new `grotto` door in Winter Wonderland, housing the
+  `christmas-pterodactyl` boss. The boss was reworked to the swooping bird boss from *Super
+  Mario Land 2*: it cruises the ceiling, telegraphs above the player, then commits a fast dive
+  at where the player was standing (a late sideways dodge beats it), bottoming out just above
+  the floor before climbing back. 50 HP, vulnerable to blunt attacks. New `santas-grotto.tmx`
+  map, `santas-grotto.png` tileset, and winter decoration sprites (toy + present boxes). The
+  visible entrance-tile art for the Winter Wonderland door is a pending art follow-up; the door
+  is functional (an invisible trigger) without it.
+
+### Internal
+- Add `test_christmas_pterodactyl.lua` — pins the boss's dive FSM (patrol → telegraph → dive →
+  recover) by driving the enemy prop table directly with fake enemy/player tables, no Level needed.
 
 ## [1.1.3] - 2026-07-20
 
@@ -176,7 +202,10 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   Fork modernization continues above. (Changes between this release and 1.1.1 — the LÖVE 11.5 /
   love.js migration of late 2024 — predate this changelog and are not itemized here.)
 
-[Unreleased]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.1.3...v1.2.0
 [1.1.3]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/8bitgentleman/hawkthorne-journey/compare/v1.1.0...v1.1.1

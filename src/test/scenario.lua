@@ -33,6 +33,7 @@ local Player = require 'player'
 local InputController = require 'inputcontroller'
 local character = require 'character'
 local coop = require 'coop'
+local Floorspaces = require 'floorspaces'
 
 -- Fixed frame delta. Matches a steady 60fps; keeps physics integration
 -- reproducible across runs (unlike the real game's variable dt).
@@ -127,6 +128,13 @@ function Scenario.new(name, opts)
   if spawn.y == nil then spawn.y = self.level.default_position.y end
   self:spawn(spawn.x, spawn.y)
 
+  -- Floorspace (top-down) levels need each floorspace node's enter() run to set
+  -- the primary walk-polygon and build the player's Footprint — the very setup
+  -- Level:enter does (level.lua:489) but restartLevel() skips, which is why an
+  -- unpatched harness drops the player through the floor here. Run it AFTER the
+  -- spawn above so the footprint is built from the player's real start position.
+  self:_enterFloorspaces()
+
   return self
 end
 
@@ -206,6 +214,23 @@ end
 -- The map's live list of moving platforms (in map order).
 function Scenario:movingPlatforms()
   return self.level.map.moving_platforms or {}
+end
+
+-----------------------------------------------------------------------------
+-- Floorspace (top-down movement)
+-----------------------------------------------------------------------------
+
+-- Enter every floorspace node the map instantiated, mirroring Level:enter's
+-- node-enter pass (level.lua:489) that restartLevel() skips. Floorspace:enter()
+-- registers the primary walk-polygon with the Floorspaces singleton and creates
+-- the player's Footprint; without it the player has no floor and falls through.
+-- restartLevel() already ran Floorspaces:init(), so the singleton starts clean.
+-- No-op on side-scrolling levels (level.floorspace is nil there).
+function Scenario:_enterFloorspaces()
+  if not self.level.floorspace then return end
+  for _, node in pairs(self.level.nodes) do
+    if node.isFloorspace and node.enter then node:enter() end
+  end
 end
 
 -----------------------------------------------------------------------------
@@ -349,6 +374,11 @@ function Scenario:teardown()
   if self.level and self.level.map then
     self.level.map.moving_platforms = {}
   end
+  -- Reset the Floorspaces singleton so a leftover primary can't trip the
+  -- "only one primary floorspace" assert (or leak walk-state) into whatever
+  -- suite runs next. restartLevel() re-inits it per scenario, but a scenario
+  -- that never restarts again would otherwise leave ours installed globally.
+  Floorspaces:init()
   -- Drop player 2's shapes off the collider. The collider is per-scenario
   -- (Level.new mints a fresh one), so this can't leak across scenarios — but
   -- player 2 is never the module singleton, so nothing else would clean it up.
