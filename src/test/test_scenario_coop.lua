@@ -235,3 +235,57 @@ function test_camera_focus_single_player_is_byte_identical()
 
   s:teardown()
 end
+
+-- Shared health, single-player parity (Phase 4b): with no second player the
+-- damage holder is the player itself, so hurting drains its own health exactly
+-- as before — the shared-health hook must be byte-identical for one player.
+function test_single_player_hurt_is_unchanged()
+  local s = Scenario.new('greendale-biology')
+  s:spawn(s.level.default_position.x, s.level.default_position.y)
+  s:step(6)
+
+  local before = s.player.health
+  s.player:hurt(30)
+  assert_equal(before - 30, s.player.health,
+    "single-player: hurting the player drains its own health, unchanged")
+
+  s:teardown()
+end
+
+-- Shared health bar (Phase 4b): P2's damage drains the ONE shared pool that P1
+-- physically holds, so the bar the HUD reads (P1.health) drops when P2 is hit.
+function test_shared_health_drains_from_second_player()
+  local s = Scenario.new('greendale-biology')
+  local base = s.level.default_position
+  s:spawn(base.x, base.y)
+  s:spawn2(base.x + 3 * TILE, base.y)
+  s:step(6)
+
+  assert_true(s.player2.shared_health == s.player,
+    "P2's shared_health must point at P1, the pool holder")
+  local barBefore = s.player.health
+  s.player2:hurt(25)
+  assert_equal(barBefore - 25, s.player.health,
+    "hurting P2 must drain the shared bar that P1 holds")
+
+  s:teardown()
+end
+
+-- Shared health bar (Phase 4b): draining the shared pool to zero from the second
+-- player's damage empties the bar P1 holds, so P1 dies — which is exactly the
+-- existing game-over trigger (the level checks player 1's dead flag). Both
+-- players are out when the shared bar is empty.
+function test_shared_health_zero_ends_the_game_via_p1()
+  local s = Scenario.new('greendale-biology')
+  local base = s.level.default_position
+  s:spawn(base.x, base.y)
+  s:spawn2(base.x + 3 * TILE, base.y)
+  s:step(6)
+
+  s.player2:hurt(s.player.max_health + 50) -- one lethal hit, drains the shared bar
+  assert_equal(0, s.player.health, "shared bar drained to zero")
+  assert_true(s.player.dead, "P1 (bar holder) dies -> the existing game-over trigger fires")
+  assert_true(s.player2.dead, "P2 is out too once the shared bar is empty")
+
+  s:teardown()
+end

@@ -75,6 +75,14 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Vers
   construction path (e.g. an on-load quest-mismatch `die`), so with one living player targeting
   is byte-identical. A dead `Player.factory()` local in `tSnake`'s `die` was removed. No
   death/revive changes here.
+- Share one health bar across players (co-op spike Phase 4b): `Player:hurt` now drains an
+  optional `self.shared_health` holder instead of `self.health`. In single-player the holder is
+  `self` (byte-identical); in co-op every extra player's `shared_health` points at player 1, who
+  physically holds the team's health — so damage to *any* player drains the one bar the HUD and
+  the existing game-over check already read, and emptying it kills player 1 (firing the current
+  game-over path) and marks the rest of the team out. No new per-player death/revive state; the
+  rebound/invulnerability/hurt animation still stay on whoever actually took the hit. Three coop
+  tests pin single-player parity, cross-player drain, and shared-zero game-over.
 
 ## [1.1.3] - 2026-07-20
 

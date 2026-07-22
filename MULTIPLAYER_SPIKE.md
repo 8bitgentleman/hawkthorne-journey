@@ -121,12 +121,28 @@ select for P2, overworld, save/load with two players, netcode.
   the spike keeps a fixed scale; players walking far apart go off-screen (acceptable for a
   proof). Zoom-to-fit is a self-contained later task against `camera:setScale` + the clamp math.
 
-### Phase 4 — targeting + death/revive (2–3 days)
-- Replace `Player.factory()` in the ~7 boss/special nodes with a `level:nearestLivingPlayer(pos)`
-  helper. Base enemies already take the player param — leave them.
-- Per-player death: `players[i].dead`; level only fully game-overs when **all** are dead. Revive
-  rule: respawn the dead player at the living player's position after a delay (simplest co-op
-  convention; decide with owner).
+### Phase 4 — targeting + death (2–3 days) — **done**
+- **4a targeting (done):** `Level:nearestLivingPlayer(pos)` (squared-distance scan over
+  `level.players`, falls back to `self.player` when all dead) replaces the singleton reach in the
+  five boss/projectile combat sites — including three (`qfo`, `laserlotusBoss`, `cornelius`) that
+  captured the singleton *at module load* and so could never see P2. Each keeps a
+  `player.factory()` fallback for the pre-`addNode` construction path (an on-load quest-mismatch
+  `die` runs before `containerLevel` is set), so single-player targeting is byte-identical. Base
+  enemies already take the player param and were left alone. `tSnake.die` had a dead
+  `Player.factory()` local (the result was unused; `Enemy:die` passes only `self`) — removed.
+  Boss levels can't boot in the headless harness, so 4a was verified by diff review +
+  single-player-parity argument per site, not a test.
+- **4b death model — SHARED HEALTH BAR (owner's call, done):** one shared health pool, not
+  per-player lives. `Player:hurt` drains an optional `self.shared_health` holder; unset it's
+  `self` (single-player byte-identical), in co-op every extra player points it at player 1 who
+  physically holds the team's health. So damage to *any* player drains the one bar the HUD and
+  the existing `level.lua:479` game-over check already read — **no change to the game-over check
+  was needed**, because emptying the bar drives player 1 to `die()` (the current trigger). No
+  per-player death/revive state was added; a downed team is simply the shared bar at zero. Three
+  coop tests pin parity, cross-player drain, and shared-zero game-over.
+- **Superseded from the original plan:** the "per-player `dead` + respawn-on-partner" revive
+  convention was *not* built — the owner chose a shared health bar instead, which removes the
+  revive concept entirely for the spike.
 
 **Spike total: ~1.5–2 weeks** to a harness-proven two-player side-scroller. That's the "prove the
 architecture" milestone. Polished co-op (menus, P2 character select, overworld, save format) is a

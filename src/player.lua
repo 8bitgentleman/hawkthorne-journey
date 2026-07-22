@@ -724,16 +724,24 @@ function Player:hurt(damage)
   self.color = {1, 0, 0, 1}
   if not color then color = self.color end
 
+  -- Shared-health co-op (spike Phase 4b): damage drains a single shared pool.
+  -- `self.shared_health`, when set, points at the player that physically holds
+  -- the team's health (players[1]); unset (single-player) the holder is `self`,
+  -- so the two lines below are byte-identical to the original per-player health.
+  -- The rebound / invulnerability / hurt animation above stay on whoever was hit.
+  local holder = self.shared_health or self
+
   if damage ~= nil then
     self.healthText.x = self.position.x + self.width / 2
     self.healthText.y = self.position.y
     self.healthVel.y = -35
     self.damageTaken = damage
-    self.health = math.max(self.health - damage, 0)
+    holder.health = math.max(holder.health - damage, 0)
   end
 
-  if self.health <= 0 then
-    self:die()
+  if holder.health <= 0 then
+    holder:die()
+    if holder ~= self then self:die() end  -- shared bar empty: the whole team is out
   else
     self.attacked = true
     self.character.state = 'hurt'

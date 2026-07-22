@@ -189,6 +189,11 @@ function Scenario:spawn2(x, y)
   p2.freeze = false
   p2:setSpriteStates(p2.current_state_set or 'default')
 
+  -- Shared-health co-op (Phase 4b): P2's damage drains the one shared pool, which
+  -- P1 physically holds (P1.health is what the HUD and the game-over check read).
+  -- Real P2-join would set this the same way when a second player enters a level.
+  p2.shared_health = self.player
+
   self.player2 = p2
   self:_place(p2, x, y)
 
