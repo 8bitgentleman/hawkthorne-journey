@@ -31,6 +31,12 @@ Versions are **local, lightweight git tags** (`vX.Y.Z`) — **we do not cut GitH
   compare-link footnotes, and tag the commit: `git tag vX.Y.Z`. Choose the bump per SemVer —
   **patch** = bug fix / balance, **minor** = new backwards-compatible feature/content, **major** =
   save-breaking or removed content. Tags stay local; the owner may `git push --tags` at will.
+- **Don't let `[Unreleased]` silently pile up:** right after a commit that completes a
+  self-contained feature arc (the last slice of a multi-part port, the last phase of a spike,
+  a standalone fix/feature with nothing left pending) — as opposed to a commit that's
+  mid-arc (an intermediate phase, a prep step, a WIP slice) — proactively ask the owner whether
+  to cut a version now, instead of waiting for a manual pass to reconstruct boundaries later.
+  This is a nudge, not an auto-cut: the owner still decides whether and how to bump.
 
 ## Build / test / lint
 
